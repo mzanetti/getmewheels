@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gpx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:rmc="urn:net:trekbuddy:1.0:nmea:rmc" creator="QLandkarteGT 1.1.1 http://www.qlandkarte.org/" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3">
+ <metadata>
+  <time>2011-05-22T19:45:59Z</time>
+ </metadata>
+ <trk>
+  <name>Exclude_University-4</name>
+  <extensions>
+   <gpxx:TrackExtension>
+    <gpxx:DisplayColor>DarkBlue</gpxx:DisplayColor>
+   </gpxx:TrackExtension>
+  </extensions>
+  <trkseg>
+   <trkpt lon="-97.72685242" lat="30.28289986"/>
+   <trkpt lon="-97.72868347" lat="30.27903366"/>
+   <trkpt lon="-97.72856903" lat="30.27883339"/>
+   <trkpt lon="-97.72803497" lat="30.27873421"/>
+   <trkpt lon="-97.72531891" lat="30.27918243"/>
+   <trkpt lon="-97.72333527" lat="30.27955055"/>
+   <trkpt lon="-97.72411346" lat="30.28333282"/>
+  </trkseg>
+ </trk>
+ <trk>
+  <name>Exclude_University-3</name>
+  <extensions>
+   <gpxx:TrackExtension>
+    <gpxx:DisplayColor>DarkBlue</gpxx:DisplayColor>
+   </gpxx:TrackExtension>
+  </extensions>
+  <trkseg>
+   <trkpt lon="-97.72219849" lat="30.28391647"/>
+   <trkpt lon="-97.72201538" lat="30.28433418"/>
+   <trkpt lon="-97.72271729" lat="30.28504944"/>
+   <trkpt lon="-97.72386932" lat="30.28574944"/>
+   <trkpt lon="-97.72476959" lat="30.28614998"/>
+   <trkpt lon="-97.72669983" lat="30.28318405"/>
+  </trkseg>
+ </trk>
+ <trk>
+  <name>Exclude_Unversity-1</name>
+  <extensions>
+   <gpxx:TrackExtension>
+    <gpxx:DisplayColor>DarkBlue</gpxx:DisplayColor>
+   </gpxx:TrackExtension>
+  </extensions>
+  <trkseg>
+   <trkpt lon="-97.73220062" lat="30.27921677"/>
+   <trkpt lon="-97.73126984" lat="30.27966690"/>
+   <trkpt lon="-97.73061371" lat="30.28036690"/>
+   <trkpt lon="-97.72903442" lat="30.28229904"/>
+   <trkpt lon="-97.72821808" lat="30.28326607"/>
+   <trkpt lon="-97.72714996" lat="30.28693390"/>
+   <trkpt lon="-97.72851562" lat="30.28759956"/>
+   <trkpt lon="-97.72985077" lat="30.28866577"/>
+   <trkpt lon="-97.73093414" lat="30.28896713"/>
+   <trkpt lon="-97.73323059" lat="30.28893280"/>
+   <trkpt lon="-97.73448181" lat="30.28899956"/>
+   <trkpt lon="-97.73680115" lat="30.28921700"/>
+   <trkpt lon="-97.73906708" lat="30.28936577"/>
+   <trkpt lon="-97.74113464" lat="30.28944969"/>
+   <trkpt lon="-97.74134827" lat="30.28775024"/>
+   <trkpt lon="-97.74148560" lat="30.28496742"/>
+   <trkpt lon="-97.74160004" lat="30.28381729"/>
+   <trkpt lon="-97.73971558" lat="30.28366661"/>
+   <trkpt lon="-97.73988342" lat="30.28145027"/>
+  </trkseg>
+ </trk>
+ <trk>
+  <name>Exclude_University-2</name>
+  <extensions>
+   <gpxx:TrackExtension>
+    <gpxx:DisplayColor>DarkBlue</gpxx:DisplayColor>
+   </gpxx:TrackExtension>
+  </extensions>
+  <trkseg>
+   <trkpt lon="-97.73065186" lat="30.27841759"/>
+   <trkpt lon="-97.73211670" lat="30.27885056"/>
+   <trkpt lon="-97.73236847" lat="30.27871704"/>
+   <trkpt lon="-97.73274994" lat="30.27813339"/>
+   <trkpt lon="-97.73301697" lat="30.27726746"/>
+   <trkpt lon="-97.73336792" lat="30.27669907"/>
+   <trkpt lon="-97.73408508" lat="30.27626610"/>
+   <trkpt lon="-97.73461914" lat="30.27573395"/>
+   <trkpt lon="-97.73229980" lat="30.27506638"/>
+   <trkpt lon="-97.73190308" lat="30.27510071"/>
+  </trkseg>
+ </trk>
+ <trk>
+  <name>Exclude_Texas-State-Cemetery</name>
+  <extensions>
+   <gpxx:TrackExtension>
+    <gpxx:DisplayColor>DarkBlue</gpxx:DisplayColor>
+   </gpxx:TrackExtension>
+  </extensions>
+  <trkseg>
+   <trkpt lon="-97.72783661" lat="30.26473427"/>
+   <trkpt lon="-97.72619629" lat="30.26411629"/>
+   <trkpt lon="-97.72463226" lat="30.26738358"/>
+   <trkpt lon="-97.72560120" lat="30.26776695"/>
+   <trkpt lon="-97.72631836" lat="30.26803398"/>
+  </trkseg>
+ </trk>
+ <trk>
+  <name>Austin</name>
+  <extensions>
+   <gpxx:TrackExtension>
+    <gpxx:DisplayColor>DarkBlue</gpxx:DisplayColor>
+   </gpxx:TrackExtension>
+  </extensions>
+  <trkseg>
+   <trkpt lon="-97.77508545" lat="30.31259918"/>
+   <trkpt lon="-97.77610016" lat="30.30853271"/>
+   <trkpt lon="-97.77773285" lat="30.30504990"/>
+   <trkpt lon="-97.78108215" lat="30.30245018"/>
+   <trkpt lon="-97.78341675" lat="30.29920006"/>
+   <trkpt lon="-97.78459930" lat="30.29466629"/>
+   <trkpt lon="-97.78563690" lat="30.29111671"/>
+   <trkpt lon="-97.78495026" lat="30.28660011"/>
+   <trkpt lon="-97.78143311" lat="30.28206635"/>
+   <trkpt lon="-97.77715302" lat="30.27866745"/>
+   <trkpt lon="-97.77069855" lat="30.27421570"/>
+   <trkpt lon="-97.77320099" lat="30.27109909"/>
+   <trkpt lon="-97.77808380" lat="30.26770020"/>
+   <trkpt lon="-97.78271484" lat="30.26539993"/>
+   <trkpt lon="-97.78735352" lat="30.26368332"/>
+   <trkpt lon="-97.79824829" lat="30.25753403"/>
+   <trkpt lon="-97.80075073" lat="30.25538254"/>
+   <trkpt lon="-97.80220032" lat="30.25168419"/>
+   <trkpt lon="-97.80391693" lat="30.24811745"/>
+   <trkpt lon="-97.79775238" lat="30.23663330"/>
+   <trkpt lon="-97.79620361" lat="30.23500061"/>
+   <trkpt lon="-97.78803253" lat="30.23061752"/>
+   <trkpt lon="-97.78314972" lat="30.22861671"/>
+   <trkpt lon="-97.77208710" lat="30.22816658"/>
+   <trkpt lon="-97.76914978" lat="30.22691727"/>
+   <trkpt lon="-97.76529694" lat="30.22431755"/>
+   <trkpt lon="-97.75595093" lat="30.21949959"/>
+   <trkpt lon="-97.75140381" lat="30.21711731"/>
+   <trkpt lon="-97.74614716" lat="30.21705055"/>
+   <trkpt lon="-97.73971558" lat="30.21668243"/>
+   <trkpt lon="-97.73011780" lat="30.21520042"/>
+   <trkpt lon="-97.71276855" lat="30.21311760"/>
+   <trkpt lon="-97.70812988" lat="30.21341705"/>
+   <trkpt lon="-97.69104767" lat="30.21883392"/>
+   <trkpt lon="-97.68650055" lat="30.22143364"/>
+   <trkpt lon="-97.68393707" lat="30.22453308"/>
+   <trkpt lon="-97.68341827" lat="30.22891617"/>
+   <trkpt lon="-97.69087982" lat="30.24254990"/>
+   <trkpt lon="-97.69208527" lat="30.24996758"/>
+   <trkpt lon="-97.68393707" lat="30.25144958"/>
+   <trkpt lon="-97.68033600" lat="30.25331688"/>
+   <trkpt lon="-97.67527008" lat="30.26095009"/>
+   <trkpt lon="-97.67079926" lat="30.26770020"/>
+   <trkpt lon="-97.66143036" lat="30.30386734"/>
+   <trkpt lon="-97.66238403" lat="30.30993271"/>
+   <trkpt lon="-97.66366577" lat="30.31565094"/>
+   <trkpt lon="-97.66445160" lat="30.31771660"/>
+   <trkpt lon="-97.67355347" lat="30.32489967"/>
+   <trkpt lon="-97.67818451" lat="30.32808304"/>
+   <trkpt lon="-97.70033264" lat="30.33898354"/>
+   <trkpt lon="-97.70375061" lat="30.34186745"/>
+   <trkpt lon="-97.71276855" lat="30.34698296"/>
+   <trkpt lon="-97.73113251" lat="30.35586739"/>
+   <trkpt lon="-97.72976685" lat="30.36201668"/>
+   <trkpt lon="-97.74658203" lat="30.36993408"/>
+   <trkpt lon="-97.74701691" lat="30.37171745"/>
+   <trkpt lon="-97.74976349" lat="30.37311745"/>
+   <trkpt lon="-97.75173187" lat="30.37244987"/>
+   <trkpt lon="-97.75524902" lat="30.37416649"/>
+   <trkpt lon="-97.75758362" lat="30.37031746"/>
+   <trkpt lon="-97.75988007" lat="30.36689949"/>
+   <trkpt lon="-97.76290131" lat="30.36504936"/>
+   <trkpt lon="-97.76633453" lat="30.35993385"/>
+   <trkpt lon="-97.74830627" lat="30.35164642"/>
+   <trkpt lon="-97.75448608" lat="30.33601761"/>
+   <trkpt lon="-97.75568390" lat="30.32150078"/>
+   <trkpt lon="-97.75713348" lat="30.30904961"/>
+   <trkpt lon="-97.76194763" lat="30.30993271"/>
+   <trkpt lon="-97.76546478" lat="30.31223297"/>
+   <trkpt lon="-97.76914978" lat="30.31423378"/>
+   <trkpt lon="-97.77182007" lat="30.31274986"/>
+  </trkseg>
+ </trk>
+ <trk>
+  <name>Exclude_State-Capitol-Grounds</name>
+  <extensions>
+   <gpxx:TrackExtension>
+    <gpxx:DisplayColor>DarkBlue</gpxx:DisplayColor>
+   </gpxx:TrackExtension>
+  </extensions>
+  <trkseg>
+   <trkpt lon="-97.73880005" lat="30.27223396"/>
+   <trkpt lon="-97.73836517" lat="30.27325058"/>
+   <trkpt lon="-97.73791504" lat="30.27441597"/>
+   <trkpt lon="-97.73760223" lat="30.27531624"/>
+   <trkpt lon="-97.73729706" lat="30.27621651"/>
+   <trkpt lon="-97.74185181" lat="30.27750015"/>
+   <trkpt lon="-97.74246979" lat="30.27574921"/>
+   <trkpt lon="-97.74181366" lat="30.27555084"/>
+   <trkpt lon="-97.74255371" lat="30.27355003"/>
+   <trkpt lon="-97.74244690" lat="30.27326584"/>
+   <trkpt lon="-97.74109650" lat="30.27286720"/>
+  </trkseg>
+ </trk>
+ <trk>
+  <name>Exclude_Oakwood-Cemetery</name>
+  <extensions>
+   <gpxx:TrackExtension>
+    <gpxx:DisplayColor>DarkBlue</gpxx:DisplayColor>
+   </gpxx:TrackExtension>
+  </extensions>
+  <trkseg>
+   <trkpt lon="-97.72329712" lat="30.27924919"/>
+   <trkpt lon="-97.72901917" lat="30.27841759"/>
+   <trkpt lon="-97.73023224" lat="30.27623367"/>
+   <trkpt lon="-97.72850037" lat="30.27648354"/>
+   <trkpt lon="-97.72811890" lat="30.27466583"/>
+   <trkpt lon="-97.72246552" lat="30.27556610"/>
+  </trkseg>
+ </trk>
+ <extensions/>
+</gpx>
