@@ -89,6 +89,16 @@ MapWidget::MapWidget() :
     connect(this, SIGNAL(zoomLevelChanged(qreal)), SLOT(updateMapItems()), Qt::QueuedConnection);
 }
 
+MapWidget::~MapWidget()
+{
+    rowsAboutToBeRemoved(QModelIndex(), 0, m_items.count() - 1);
+    removeMapObject(&m_itemGroup);
+    removeMapObject(&m_positionMarker);
+    removeMapObject(&m_accuracyMarker);
+    removeMapObject(&m_routeObject);
+    removeMapObject(&m_businessAreaGroup);
+}
+
 void MapWidget::positionUpdated(const QGeoPositionInfo &info) {
 //    qDebug() << "GPS Position updated:" << QDateTime::currentDateTime().toString();
     m_positionMarker.setCoordinate(info.coordinate());

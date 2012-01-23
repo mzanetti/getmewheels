@@ -50,6 +50,7 @@ class MapWidget : public QGraphicsGeoMap
 
 public:
     MapWidget();
+    ~MapWidget();
 
     GMWItemModel *model();
     void setModel(GMWItemModel *model);
