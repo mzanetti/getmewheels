@@ -42,14 +42,14 @@ public:
         TypeUnknown    = 0x01,
         TypeVehicle    = 0x02,
         TypeGasStation = 0x04,
-        TypeParkingLot = 0x08
+        TypeParkingSpot = 0x08
     };
     Q_DECLARE_FLAGS(Types, Type)
 
     friend QDataStream &operator<<(QDataStream& stream, const GMWItem& item);
     friend QDataStream &operator>>(QDataStream& stream, GMWItem& item);
 
-    GMWItem(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap image);
+    GMWItem(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap &image, const QPixmap &imageL);
 
     virtual GMWItem::Type objectType() const;
 
@@ -58,6 +58,7 @@ public:
     QGeoCoordinate location() const;
 
     QPixmap image() const;
+    QPixmap imageL() const;
     void setImage(const QPixmap &image);
 
     void calculateDistance(const QGeoCoordinate &currentPosition, qreal direction);
@@ -72,6 +73,7 @@ private:
     QString m_address;
     QGeoCoordinate m_location;
     QPixmap m_image;
+    QPixmap m_imageL;
     QPixmap m_azimuthImage;
 
     qreal m_distance;

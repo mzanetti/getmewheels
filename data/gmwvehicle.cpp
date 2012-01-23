@@ -19,10 +19,15 @@
 
 #include "gmwvehicle.h"
 
-GMWVehicle::GMWVehicle(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap image,
-        quint8 fuelLevel, GMWVehicle::State interiorState, GMWVehicle::State exteriorState, const QString &vin) :
-    GMWItem(name, address, location, image),
-    m_fuelLevel(fuelLevel), m_interiorState(interiorState), m_exteriorState(exteriorState), m_vin(vin), m_booking(new GMWBooking(this))
+GMWVehicle::GMWVehicle(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap &image, const QPixmap &imageL,
+        quint8 fuelLevel, GMWVehicle::State interiorState, GMWVehicle::State exteriorState, const QString &vin, EngineType engineType) :
+    GMWItem(name, address, location, image, imageL),
+    m_fuelLevel(fuelLevel),
+    m_interiorState(interiorState),
+    m_exteriorState(exteriorState),
+    m_vin(vin),
+    m_booking(new GMWBooking(this)),
+    m_engineType(engineType)
 {
 }
 
@@ -59,6 +64,11 @@ GMWVehicle::State GMWVehicle::exteriorState() const
 QString GMWVehicle::vin() const
 {
     return m_vin;
+}
+
+GMWVehicle::EngineType GMWVehicle::engineType() const
+{
+    return m_engineType;
 }
 
 void GMWVehicle::setBooking(GMWBooking *booking)

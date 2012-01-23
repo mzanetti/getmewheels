@@ -1,15 +1,22 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+import com.nokia.extras 1.0
 import GetMeWheels 1.0
 import QtMobility.location 1.1
 
 Page {
+    id: mainPage
     tools: commonTools
+    property string name: "mapwindow"
     property alias tracking: map.tracking
 
     function zoomToCurrentPosition() {
         map.zoomLevel = 16;
         map.tracking = true;
+    }
+
+    function routeTo(item) {
+        map.routeTo(item);
     }
 
     GmwMap {
@@ -18,20 +25,25 @@ Page {
         //zoomLevel: 1 //14
         model: gmwModel
         tracking: true
+        visible: pageStack.count() === 1
 
-        onItemClicked: {
-            print("yeeha: " + item);
-            detailsSheet.gmwItem = item;
+        onItemsClicked: {
+            print("yeeha: " + items);
+            detailsSheet.model = items;
             detailsSheet.open();
+        }
+
+        onRoutingFailed: {
+            infoBanner.text = "Routing failed: Service Temporarily Unavailable";
+            infoBanner.show();
         }
     }
 
     ItemDetailsSheet {
         id: detailsSheet
 
-        onAccepted: {
-            //            map.animatedPanTo(detailsSheet.gmwItem);
-            map.routeTo(detailsSheet.gmwItem);
+        onGoTo: {
+            map.routeTo(item);
         }
     }
 
@@ -97,7 +109,7 @@ Page {
             if (__isPanning) {
                 var dx = mouse.x - __lastX
                 var dy = mouse.y - __lastY
-                if(dx > 0 || dy > 0) {
+                if(Math.abs(dx) > 5 || Math.abs(dy) > 5) {
                     __panned = true
                     map.pan(-dx, -dy)
                     __lastX = mouse.x
@@ -125,17 +137,47 @@ Page {
         border.width: 2
     }
 
-    Slider {
-        anchors.centerIn: sliderBackground
+    Column {
         height: sliderBackground.height - 10
-        orientation: Qt.Vertical
-        value: map.zoomLevel
-        minimumValue: map.minimumZoomLevel
-        maximumValue: map.maximumZoomLevel
-        stepSize: 1
-        onValueChanged: {
-            map.zoomLevel = value;
+        anchors.centerIn: sliderBackground
+        Slider {
+            orientation: Qt.Vertical
+            height: parent.height - centerButton.height - 10
+            value: map.zoomLevel
+            minimumValue: map.minimumZoomLevel
+            maximumValue: map.maximumZoomLevel
+            stepSize: 1
+            onValueChanged: {
+                map.zoomLevel = value;
+            }
+        }
+//        Rectangle {
+//            id: centerButton
+//            width: parent.width - 20
+//            height: width
+//            anchors.horizontalCenter: parent.horizontalCenter
+//            border.width: 1
+//            border.color: "white"
+//            radius: 15
+
+            Image {
+                id: centerButton
+                anchors.horizontalCenter: parent.horizontalCenter
+                source: "/usr/share/themes/blanco/meegotouch/icons/icon-l-location-test-main-view.png"
+                MouseArea {
+                    anchors.fill: parent
+                    anchors.margins: -10
+                    onClicked: mainPage.zoomToCurrentPosition();
+                }
+//            }
+
         }
     }
+
+    InfoBanner {
+        id: infoBanner
+        timerShowTime: 5000
+    }
+
 
 }

@@ -29,7 +29,7 @@ public:
     friend QDataStream &operator<<(QDataStream& stream, const GMWGasStation& gasStation);
     friend QDataStream &operator>>(QDataStream& stream, GMWGasStation& gasStation);
 
-    GMWGasStation(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap image);
+    GMWGasStation(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap &image, const QPixmap &imageL);
 
     GMWItem::Type objectType() const;
 };

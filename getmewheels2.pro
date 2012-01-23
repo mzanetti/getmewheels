@@ -50,7 +50,9 @@ SOURCES += main.cpp \
     data/gmwbusinessarea.cpp \
     engines/gmwengine.cpp \
     engines/car2go/car2goengine.cpp \
-    settings.cpp
+    settings.cpp \
+    engines/location.cpp \
+    engines/engineplugin.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -73,7 +75,9 @@ HEADERS += \
     data/gmwbusinessarea.h \
     engines/gmwengine.h \
     engines/car2go/car2goengine.h \
-    settings.h
+    settings.h \
+    engines/location.h \
+    engines/engineplugin.h
 
 OTHER_FILES += \
     qtc_packaging/debian_harmattan/rules \
@@ -87,5 +91,12 @@ OTHER_FILES += \
 
 INCLUDEPATH += /usr/include/QtCrypto
 
+simulator: {
+LIBS+= -lqoauth -lqjson -L$$PWD -lqca
+} else {
 LIBS+= -lqoauth -lqjson -lqtgeoservices_openstreetmap -L$$PWD -lqca
+}
+
+RESOURCES += \
+    getmewheels2.qrc
 

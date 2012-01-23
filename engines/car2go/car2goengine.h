@@ -21,6 +21,9 @@
 #define CAR2GOENGINE_H
 
 #include "engines/gmwengine.h"
+#include "engines/location.h"
+#include "data/gmwgasstation.h"
+#include "data/gmwparkingspot.h"
 
 #include <QtCore/QList>
 
@@ -30,7 +33,7 @@
 
 #include <QtOAuth/QtOAuth>
 
-class Car2goEngine : public GMWEngine
+class Car2goEngine : public EnginePlugin
 {
     Q_OBJECT
 
@@ -38,62 +41,49 @@ public:
     // See http://code.google.com/p/car2go/wiki/OpenAPIv20r10Locations
     Car2goEngine();
 
-    QStringList supportedLocations();
+    QList<Location*> fetchLocations();
 
-    Q_INVOKABLE QGeoBoundingBox startingBounds();
-    Q_INVOKABLE QGeoCoordinate center() {return startingBounds().center(); }
-
-    GMWBusinessArea businessArea();
+    void fetchGasStations(Location *location);
+    void fetchParkingSpots(Location *location);
+    void fetchVehicles(Location *location);
 
     bool startAuthentication();
     bool setAccessCode(const QString &code);
     bool authenticated();
     QDateTime authExpirationDate();
+    QList<GMWAccount> accounts(Location *location);
+    GMWAccount account();
+    void setAccount(const GMWAccount &account);
+
+    bool createBooking(Location *location, GMWVehicle *vehicle, const GMWAccount &account);
+    bool cancelBooking(GMWVehicle *vehicle);
+    QList<GMWVehicle*> bookings(Location *location);
 
     QString error() {return m_error;}
 
-public slots: // for easier testing now
-    QList<GMWAccount> accounts();
-    void setDefaultAccount(const GMWAccount &account);
-    GMWAccount defaultAccount();
-
-    bool createBooking(GMWVehicle *vehicle, const GMWAccount &account = GMWAccount());
-    QList<GMWVehicle*> bookings();
-    bool cancelBooking(GMWVehicle *vehicle);
-
-
-public slots:
-    void refreshStationary(bool useCache = true);
-    void refreshVehicles(bool useCache = true);
-
 private:
-    QMap<QString, QString> m_locations;
-
     enum NetworkReplyType {IconReply, GasStationReply, VehiclesReply, ParkingSpotsReply};
-    QString m_cacheDir;
 
     QNetworkAccessManager m_network;
 
     QNetworkReply* m_networkReplyParkingSpots;
     QNetworkReply* m_networkReplyGasStations;
     QNetworkReply* m_networkReplyVehicles;
-    QNetworkReply* m_networkReplyParkingSpotsImage;
-    QNetworkReply* m_networkReplyGasStationsImage;
-    QNetworkReply* m_networkReplyVehiclesImage;
-    QNetworkReply* m_networkReplyAccounts;
-    QNetworkReply* m_networkReplyBookings;
-    QNetworkReply* m_networkReplyCreateBooking;
-    QNetworkReply* m_networkReplyCancelBooking;
-
-    QList<QNetworkReply*> m_downloads;
 
     QString m_xmlParkingSpots;
     QString m_xmlGasStations;
     QString m_xmlVehicles;
 
     QPixmap m_imageParkingSpots;
+    QPixmap m_imageParkingSpotsCP;
     QPixmap m_imageGasStations;
     QPixmap m_imageVehicles;
+    QPixmap m_imageVehiclesED;
+    QPixmap m_imageParkingSpotsL;
+    QPixmap m_imageParkingSpotsCPL;
+    QPixmap m_imageGasStationsL;
+    QPixmap m_imageVehiclesL;
+    QPixmap m_imageVehiclesEDL;
 
     QTime m_stats;
 
@@ -116,21 +106,22 @@ private:
     QByteArray m_token;
     QByteArray m_tokenSecret;
     GMWAccount m_account;
+
     QEventLoop m_loop;
-
-    void parseImage(NetworkReplyType type, const QString &xml);
-    void parse(NetworkReplyType type, const QString &xml);
-    bool hasDownloadError() const;
-
-    void refreshGasStations(bool useCache);
-    void refreshParkingSpots(bool useCache);
-
     bool waitForResponse();
     bool m_timeout;
 
-    QList<GMWAccount> m_accounts;
+    Location *m_currentDownloadLocation;
 
+    void parseVehicles(const QVariantMap &vehiclesMap);
     GMWVehicle *parseVehicle(const QVariantMap &vehicleMap);
+    GMWVehicle *parseBookedVehicle(const QVariantMap &vehicleMap);
+
+    void parseGasStations(const QVariantMap &gasStationsMap);
+    GMWGasStation *parseGasStation(const QVariantMap &gasStationMap);
+
+    void parseParkingSpots(const QVariantMap &parkingSpotsMap);
+    GMWParkingSpot *parseParkingSpot(const QVariantMap &parkingSpotMap);
 
     QString m_error;
 

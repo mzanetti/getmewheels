@@ -34,6 +34,7 @@ class GMWMarkerPrivate
 public:
     GMWItem *m_item;
     bool m_highlight;
+    int m_count;
 };
 
 GMWMarker::GMWMarker(GMWItem *item) :
@@ -42,10 +43,11 @@ GMWMarker::GMWMarker(GMWItem *item) :
 {
     d->m_item = item;
     d->m_highlight = false;
+    d->m_count = 0;
     setCoordinate(item->location());
 
     QPixmap image = d->m_item->image();
-    setOffset(QPoint(0, -image.height()));
+    setOffset(QPoint(-image.width()/2, -image.height()));
     setPixmap(image);
     setZValue(0);
 
@@ -62,34 +64,71 @@ void GMWMarker::setHighlight(bool highlight)
     calculatePixmap();
 }
 
+int GMWMarker::count() const
+{
+    return d->m_count;
+}
+
+void GMWMarker::setCount(int count)
+{
+    d->m_count = count;
+    calculatePixmap();
+}
+
 void GMWMarker::calculatePixmap()
 {
-    qDebug() << "calculating pixmap for:" << d->m_item->name();
+//    qDebug() << "calculating pixmap for:" << d->m_item->name();
     bool booked = false;
+    int timeLeft;
     if(d->m_item->objectType() == GMWItem::TypeVehicle) {
         GMWVehicle *vehicle = qobject_cast<GMWVehicle*>(d->m_item);
-        if(vehicle->booking()->isValid() && !vehicle->booking()->isExpired()) {
+        if(vehicle->booking()->isValid()) {
             booked = true;
+            timeLeft = vehicle->booking()->timeLeft();
         }
     }
 
-    QPixmap image = d->m_item->image();
     if (d->m_highlight || booked) {
-        QSize newSize = QSize(image.width()*1.5, image.height()*1.5);
-        setOffset(QPoint(0, -newSize.height()));
-        setZValue(1);
+        QPixmap pixmap = d->m_item->imageL();
         if(booked) {
             qDebug() << "car is booked:" << d->m_item->name();
-            QImage overlay = d->m_item->image().toImage();
-            QPainter painter(&overlay);
-            painter.drawPixmap(overlay.width() - overlay.width() / 1.5, overlay.height() - overlay.height() / 1.5, QPixmap("/usr/share/themes/blanco/meegotouch/icons/icon-m-common-presence-away.png").scaled(overlay.size() / 1.5, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-            image = QPixmap::fromImage(overlay);
+            QImage image = pixmap.toImage();
+            QPainter painter(&image);
+            QPixmap overlay;
+            if(timeLeft > 900) {
+                overlay = QPixmap("/usr/share/themes/blanco/meegotouch/icons/icon-s-common-presence-online.png");
+            } else if(timeLeft > 0){
+                overlay = QPixmap("/usr/share/themes/blanco/meegotouch/icons/icon-s-common-presence-away.png");
+            } else {
+                overlay = QPixmap("/usr/share/themes/blanco/meegotouch/icons/icon-s-common-presence-busy.png");
+            }
+            painter.drawPixmap(image.width() - overlay.width() - 5, 5, overlay);
+            pixmap = QPixmap::fromImage(image);
         }
-        setPixmap(image.scaled(newSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        setPixmap(pixmap);
+        setOffset(QPoint(-pixmap.width()/2, -pixmap.height()));
+        setZValue(1);
     } else {
-        setOffset(QPoint(0, -image.height()));
-        setPixmap(image);
+        setPixmap(d->m_item->image());
+        setOffset(QPoint(-pixmap().width()/2, -pixmap().height()));
         setZValue(0);
+    }
+
+    if(d->m_count > 0) {
+        QImage image = pixmap().toImage();
+        QPainter painter(&image);
+
+        QPixmap overlay = QPixmap(":qml/getmewheels2/images/squircle_s_gray.png");
+        painter.drawPixmap(image.width() - overlay.width(), 0, overlay);
+
+        QPen pen(Qt::white);
+        painter.setPen(pen);
+        QFont font = painter.font();
+        font.setPixelSize(14);
+        painter.setFont(font);
+        painter.drawText(image.width() - 13, 14, QString::number(d->m_count));
+        setPixmap(QPixmap::fromImage(image));
+
     }
 
 }

@@ -3,16 +3,16 @@
 
 #include <QObject>
 #include <QSettings>
+#include "engines/location.h"
 
 class Settings : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString location READ location WRITE setLocation)
 public:
     explicit Settings(QObject *parent = 0);
 
-    QString location();
-    void setLocation(const QString &location);
+    void writeDefaultLocation(const Location *location);
+    bool readDefaultLocation(Location *location);
 
 private:
     QSettings *m_settings;

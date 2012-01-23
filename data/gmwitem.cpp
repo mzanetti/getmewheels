@@ -21,11 +21,12 @@
 
 #include <QApplication>
 
-GMWItem::GMWItem(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap image) :
+GMWItem::GMWItem(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap &image, const QPixmap &imageL) :
     m_name(name),
     m_address(address),
     m_location(location),
     m_image(image),
+    m_imageL(imageL),
     m_distance(-1),
     m_azimuth(-1)
 {
@@ -54,6 +55,11 @@ QGeoCoordinate GMWItem::location() const
 QPixmap GMWItem::image() const
 {
     return m_image;
+}
+
+QPixmap GMWItem::imageL() const
+{
+    return m_imageL;
 }
 
 void GMWItem::setImage(const QPixmap &image)

@@ -20,10 +20,14 @@
 #ifndef GMWENGINE_H
 #define GMWENGINE_H
 
+#include "engineplugin.h"
+#include "location.h"
 #include "data/gmwitem.h"
 #include "data/gmwvehicle.h"
 #include "data/gmwbusinessarea.h"
 #include "data/gmwbooking.h"
+#include "data/gmwgasstation.h"
+#include "data/gmwparkingspot.h"
 
 #include <QtNetwork/QNetworkReply>
 
@@ -32,9 +36,8 @@
 class GMWEngine : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString location READ location WRITE setLocation NOTIFY locationChanged)
-    Q_PROPERTY(QGeoBoundingBox startingBounds READ startingBounds NOTIFY locationChanged)
-    Q_PROPERTY(QString defaultAccountName READ defaultAccountName NOTIFY defaultAccountChanged)
+    Q_PROPERTY(QString locationName READ locationName WRITE setLocationName NOTIFY locationChanged)
+    Q_PROPERTY(QString defaultAccountName READ defaultAccountName WRITE setDefaultAccountName NOTIFY defaultAccountChanged)
     Q_PROPERTY(bool authenticated READ authenticated NOTIFY authenticatedChanged)
     Q_PROPERTY(QDateTime authExpirationDate READ authExpirationDate NOTIFY authenticatedChanged())
 
@@ -42,39 +45,37 @@ public:
     GMWEngine();
     virtual ~GMWEngine();
 
-    void setLocation(const QString &location);
-    QString location();
+    void setLocationName(const QString &location);
+    QString locationName();
+    Location* location();
 
-    Q_INVOKABLE virtual QGeoBoundingBox startingBounds() = 0;
-    Q_INVOKABLE virtual QGeoCoordinate center() = 0;
 
-    Q_INVOKABLE virtual QStringList supportedLocations() = 0;
+    Q_INVOKABLE QStringList supportedLocationNames();
+    Q_INVOKABLE QList<Location *> supportedLocations();
 
-    virtual GMWBusinessArea businessArea() = 0;
+    Q_INVOKABLE bool startAuthentication();
+    Q_INVOKABLE bool setAccessCode(const QString &code);
+    Q_INVOKABLE QDateTime authExpirationDate();
+    bool authenticated();
 
-    Q_INVOKABLE virtual bool startAuthentication() = 0;
-    Q_INVOKABLE virtual bool setAccessCode(const QString &code) = 0;
-    Q_INVOKABLE virtual QDateTime authExpirationDate() = 0;
-    virtual bool authenticated() = 0;
-
-    Q_INVOKABLE virtual QList<GMWAccount> accounts() = 0;
-    Q_INVOKABLE QStringList accountNames();
-    virtual GMWAccount defaultAccount() = 0;
+    Q_INVOKABLE QList<GMWAccount> accounts(Location *location = 0);
+    Q_INVOKABLE QStringList accountNames(const QString &location);
+    GMWAccount defaultAccount();
     Q_INVOKABLE QString defaultAccountName();
 
-    virtual QList<GMWVehicle*> bookings() = 0;
+    QList<GMWVehicle*> bookings();
 
-    Q_INVOKABLE virtual QString error() = 0;
+    Q_INVOKABLE QString error();
 
 public slots:
-    virtual void refreshStationary(bool useCache = true) = 0;
-    virtual void refreshVehicles(bool useCache = true) = 0;
+    void refreshStationary(bool useCache = true);
+    void refreshVehicles(bool useCache = true);
 
-    virtual void setDefaultAccount(const GMWAccount &account) = 0;
+    void setDefaultAccount(const GMWAccount &account);
     void clearDefaultAccount();
     void setDefaultAccountName(const QString &accountName);
-    virtual bool createBooking(GMWVehicle *vehicle, const GMWAccount &account = GMWAccount()) = 0;
-    virtual bool cancelBooking(GMWVehicle *vehicle) = 0;
+    bool createBooking(GMWVehicle *vehicle, const GMWAccount &account = GMWAccount());
+    bool cancelBooking(GMWVehicle *vehicle);
 
 signals:
     void objectsReceived(QList<GMWItem*> list);
@@ -87,8 +88,17 @@ signals:
     void authenticatedChanged();
     void defaultAccountChanged();
 
+private slots:
+    void gasStationsReceived(QList<GMWGasStation*> gasStations);
+    void parkingSpotsReceived(QList<GMWParkingSpot*> parkingSpots);
+    void vehiclesReceived(QList<GMWVehicle*> vehicles);
 private:
-    QString m_location;
+    EnginePlugin *m_plugin;
+
+    QList<Location*> m_supportedLocations;
+    Location *m_location;
+
+    QHash<Location*, QList<GMWAccount> > m_accounts;
 };
 
 #endif // GMWENGINE_H

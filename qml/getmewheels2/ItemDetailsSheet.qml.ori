@@ -1,0 +1,275 @@
+import QtQuick 1.1
+import com.nokia.meego 1.0
+import com.nokia.extras 1.0
+import GetMeWheels 1.0
+
+Sheet {
+    id: settingsSheet
+    acceptButtonText: "Go to"
+    rejectButtonText: "Close"
+
+    property QtObject gmwItem
+
+    content: Column {
+        id: contentColumn
+        anchors.fill: parent
+        anchors.margins: 20
+        spacing: 20
+
+        Row {
+            width: parent.width
+            height: nameLabel.height
+            spacing: 10
+            Image {
+                id: iconImage
+                source: itemTypeToImageSource(gmwItem.itemType, gmwItem.engineType, gmwItem.chargingPole)
+                anchors.verticalCenter: parent.verticalCenter
+
+                function itemTypeToImageSource(itemType, engineType, parkingCP) {
+                    switch(itemType) {
+                    case GmwItem.TypeGasStation:
+                        return "images/gas.png";
+                    case GmwItem.TypeVehicle:
+                        return engineType === GmwVehicle.EngineTypeED ? "images/car_green.png" : "images/car_blue.png";
+                    case GmwItem.TypeParkingSpot:
+                        return parkingCP ? "images/parking_cp.png" : "images/parking.png"
+                    }
+                }
+
+            }
+
+            Label {
+                id: nameLabel
+                text: gmwItem.name
+                font.pixelSize: 40
+                width: parent.width - iconImage.width - parent.spacing
+                wrapMode: Text.WordWrap
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        SectionHeader {
+            width: parent.width
+            headerText: "Location"
+        }
+
+        Label {
+            text: gmwItem.address
+            width: parent.width
+            wrapMode: Text.WordWrap
+        }
+        Row {
+            spacing: 10
+            Label {
+                text: "Distance:"
+            }
+
+            Label {
+                text: gmwItem.distance === -1 ? "Waiting for GPS..." : gmwItem.distance
+            }
+        }
+
+        SectionHeader {
+            width: parent.width
+            headerText: "State"
+            visible: gmwItem.itemType == GmwItem.TypeVehicle
+        }
+
+        Grid {
+            id: vehicleGrid
+            spacing: 10
+            visible: gmwItem.itemType == GmwItem.TypeVehicle
+            columns: 2
+
+            Label {
+                height: fuelRow.height
+                text: "Fuel level:"
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            Row {
+                id: fuelRow
+                spacing: 10
+                Image {
+                    source: gmwItem.fuelLevel > 25 ? "images/fuel_green.png" : gmwItem.fuelLevel > 15 ? "images/fuel_orange.png" : "images/fuel_red.png"
+                }
+
+                Label {
+                    height: parent.height
+                    text: gmwItem.fuelLevel + " %"
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            function stateToIconSource(state) {
+                switch(state) {
+                case GmwVehicle.StateUnacceptable:
+                    return "image://theme/icon-m-messaging-smiley-cry";
+                case GmwVehicle.StateIssuesExist:
+                    return "image://theme/icon-m-messaging-smiley-sad";
+                case GmwVehicle.StateSatisfied:
+                    return "image://theme/icon-m-messaging-smiley-happy";
+                case GmwVehicle.StateGood:
+                    return "image://theme/icon-m-messaging-smiley-happy";
+                case GmwVehicle.StateExcellent:
+                    return "image://theme/icon-m-messaging-smiley-very-happy";
+                }
+                return "image://theme/icon-m-invitation-pending";
+            }
+
+            Label {
+                text: "Interior State:"
+                height: stateImage.height
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            Image {
+                id: stateImage
+                source: vehicleGrid.stateToIconSource(gmwItem.interiorState)
+            }
+            Label {
+                text: "Exterior State:"
+                height: stateImage.height
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            Image {
+                source: vehicleGrid.stateToIconSource(gmwItem.exteriorState)
+            }
+        }
+
+        SectionHeader {
+            width: parent.width
+            headerText: "Availability"
+            visible: gmwItem.itemType == GmwItem.TypeParkingSpot || gmwItem.itemType == GmwItem.TypeVehicle
+        }
+
+
+        Row {
+            width: parent.width
+            visible: gmwItem.itemType == GmwItem.TypeVehicle
+            spacing: 10
+            Image {
+                id: availabilityIcon
+                source: gmwItem.booking.valid ? (gmwItem.booking.expired ? "image://theme/icon-m-common-presence-busy" : "image://theme/icon-m-common-presence-away") : "image://theme/icon-m-common-presence-online"
+            }
+            Label {
+                width: parent.width - availabilityIcon.width - 10
+                anchors.verticalCenter: parent.verticalCenter
+                text: gmwItem.booking.text
+                wrapMode: Text.WordWrap
+            }
+        }
+        Button {
+            width: parent.width
+            visible: gmwItem.itemType == GmwItem.TypeVehicle
+            text: gmwItem.booking.valid && !gmwItem.booking.expired ? "Cancel" : "Book"
+            enabled: gmwEngine.defaultAccountName.length > 0;
+            onClicked: {
+                if(gmwItem.booking.valid && !gmwItem.booking.expired) {
+                    createBookingDialog.state = "cancel"
+                    createBookingDialog.open();
+                } else {
+                    createBookingDialog.state = "book"
+                    createBookingDialog.open();
+                }
+            }
+        }
+
+        Row {
+            spacing: 10
+            visible: gmwItem.itemType === GmwItem.TypeParkingSpot
+            Image {
+                id: parkingFreeIcon
+                source: gmwItem.capacityTotal - gmwItem.capacityUsed === 0 ? "image://theme/icon-m-common-presence-busy" : "image://theme/icon-m-common-presence-online"
+            }
+
+            Label {
+                text: (gmwItem.capacityTotal - gmwItem.capacityUsed) + " free / " + gmwItem.capacityTotal + " total"
+            }
+        }
+    }
+
+    Dialog {
+        id: createBookingDialog
+        width: parent.width
+
+        states: [
+            State {
+                name: "book"
+                PropertyChanges { target: createBookingHeaderLabel; text: "Create booking?" }
+                PropertyChanges { target: createBookingTextLabel; text: "The booking will be valid for 30 minutes from now. Cancelling or missing a booked car is associated with additional costs."}
+            },
+            State {
+                name: "cancel"
+                PropertyChanges { target: createBookingHeaderLabel; text: "Cancel booking?" }
+                PropertyChanges { target: createBookingTextLabel; text: "Cancelling or missing a booking is associated with additional costs."}
+            }
+        ]
+        title: Column {
+            width: parent.width
+            Label {
+                id: createBookingHeaderLabel
+                width: parent.width
+                font.pixelSize: 40
+                color: "white"
+            }
+        }
+
+        content: Column {
+            width: parent.width
+            Label {
+                id: createBookingTextLabel
+                width: parent.width
+                wrapMode: Text.WordWrap
+                color: "white"
+            }
+            Item {
+                width: parent.width
+                height: 50
+            }
+        }
+
+        buttons {
+            ButtonRow {
+                width: parent.width
+                Button {
+                    id: yesButton
+                    text: "yes";
+                    onClicked: {
+                        if(createBookingDialog.state == "book") {
+                            if(gmwEngine.createBooking(gmwItem)) {
+                                infoBanner.text = "Car booked successfully";
+                                infoBanner.show();
+                            } else {
+                                infoBanner.text = "Failed to create booking: " + gmwEngine.error();
+                                infoBanner.show();
+                            }
+                        } else if(createBookingDialog.state == "cancel") {
+                            if(gmwEngine.cancelBooking(gmwItem)) {
+                                infoBanner.text = "Booking cancelled successfully";
+                                infoBanner.show();
+                            } else {
+                                infoBanner.text = "Failed to cancel booking: " + gmwEngine.error();
+                                infoBanner.show();
+                            }
+
+                        }
+                        createBookingDialog.close();
+                    }
+                }
+                Button {
+                    id: noButton
+                    text: "no";
+                    onClicked: createBookingDialog.close();
+                }
+            }
+        }
+    }
+
+
+    InfoBanner {
+        id: infoBanner
+        timerShowTime: 5000
+    }
+}

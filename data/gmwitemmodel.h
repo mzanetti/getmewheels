@@ -34,6 +34,17 @@ class GMWItemModel : public QAbstractTableModel
     Q_PROPERTY(GMWEngine* engine READ engine WRITE setEngine NOTIFY engineChanged)
 
 public:
+    enum Role {
+        RoleName = Qt::DisplayRole,
+        RoleObject = Qt::UserRole,
+        RoleAddress,
+        RoleDistance,
+        RoleType,
+        RoleDistanceString,
+        RoleEngineType,
+        RoleParkingCP
+    };
+
     explicit GMWItemModel(QObject *parent = 0);
 
     QVariant data(const QModelIndex &index, int role) const;

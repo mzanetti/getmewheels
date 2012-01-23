@@ -10,6 +10,7 @@
 #include "engines/car2go/car2goengine.h"
 #include "core.h"
 
+#include <QtCore/qmath.h>
 #include <QDebug>
 #include <QDir>
 #include <QTimer>
@@ -19,6 +20,7 @@
 #include <QGeoRoutingManager>
 #include <QGeoRouteSegment>
 #include <QGeoMapPolygonObject>
+#include <QDeclarativeContext>
 
 // A widget for QML, therefore we need the parameter-less constructor.
 MapWidget::MapWidget() :
@@ -27,18 +29,21 @@ MapWidget::MapWidget() :
 {
     addMapObject(&m_itemGroup);
 
-    QPen pen(Qt::red);
+    QPen pen;
+    pen.setColor(QColor(0x24, 0x78, 0x00, 100));
     pen.setWidth(2);
     pen.setCosmetic(true);
 
-//    m_positionMarker.setPen(pen);
-//    QColor fill(QColor(255, 0, 0, 127));
-//    m_positionMarker.setBrush(QBrush(fill));
-//    m_positionMarker.setVisible(true);
+    m_accuracyMarker.setPen(pen);
+    QColor fill(0x24, 0x78, 0x00, 50);
+    m_accuracyMarker.setBrush(QBrush(fill));
+    m_accuracyMarker.setVisible(false);
+    addMapObject(&m_accuracyMarker);
 //    m_positionMarker.setRadius(10);
-    QPixmap ownPosition("/usr/share/themes/blanco/meegotouch/icons/icon-m-common-location-selected.png");
+//    QPixmap ownPosition("/usr/share/themes/blanco/meegotouch/icons/icon-m-common-location-selected.png");
+    QPixmap ownPosition(":qml/getmewheels2/images/location_mark.png");
     m_positionMarker.setPixmap(ownPosition);
-    m_positionMarker.setOffset(QPoint(-ownPosition.width() / 2, -ownPosition.height()));
+    m_positionMarker.setOffset(QPoint(-ownPosition.width() / 2, -ownPosition.height() / 2));
     addMapObject(&m_positionMarker);
     m_positionMarker.setZValue(2);
 
@@ -62,14 +67,21 @@ MapWidget::MapWidget() :
     m_routeObject.setPen(pen);
     m_routeObject.setZValue(2);
     addMapObject(&m_routeObject);
+
+    connect(this, SIGNAL(zoomLevelChanged(qreal)), SLOT(updateMapItems()), Qt::QueuedConnection);
 }
 
 void MapWidget::positionUpdated(const QGeoPositionInfo &info) {
-    qDebug() << "GPS Position updated:" << QDateTime::currentDateTime().toString();
+//    qDebug() << "GPS Position updated:" << QDateTime::currentDateTime().toString();
     m_positionMarker.setCoordinate(info.coordinate());
-//    if(info.hasAttribute(QGeoPositionInfo::HorizontalAccuracy) && info.hasAttribute(QGeoPositionInfo::VerticalAccuracy)) {
-//        m_positionMarker.setRadius(qMax(info.attribute(QGeoPositionInfo::HorizontalAccuracy), info.attribute(QGeoPositionInfo::VerticalAccuracy)));
-//    }
+    m_accuracyMarker.setCenter(info.coordinate());
+    if(info.hasAttribute(QGeoPositionInfo::HorizontalAccuracy) && info.hasAttribute(QGeoPositionInfo::VerticalAccuracy)) {
+        m_accuracyMarker.setRadius(qMax(info.attribute(QGeoPositionInfo::HorizontalAccuracy), info.attribute(QGeoPositionInfo::VerticalAccuracy)));
+//        qDebug() << "got accuracy" << m_accuracyMarker.radius();
+        m_accuracyMarker.setVisible(true);
+    } else {
+        m_accuracyMarker.setVisible(false);
+    }
 
     if(m_tracking) {
         animatedPanTo(info.coordinate());
@@ -123,39 +135,95 @@ void MapWidget::setBusinessArea()
     color.setAlpha(20);
     QBrush brush(color);
 
-    foreach(const Area &area, m_model->engine()->businessArea().areaList()) {
-        QGeoMapPolygonObject *region = new QGeoMapPolygonObject();
-        region->setBrush(brush);
-        region->setPen(pen);
+//    foreach(const Area &area, m_model->engine()->businessArea().areaList()) {
+//        QGeoMapPolygonObject *region = new QGeoMapPolygonObject();
+//        region->setBrush(brush);
+//        region->setPen(pen);
 
-        region->setPath(area.path());
-        m_businessAreaGroup.addChildObject(region);
-        m_businessAreaList.append(region);
-    }
+//        region->setPath(area.path());
+//        m_businessAreaGroup.addChildObject(region);
+//        m_businessAreaList.append(region);
+//    }
 
     color = QColor(Qt::red);
     color.setAlpha(30);
     brush.setColor(color);
 
-    foreach(const Area &area, m_model->engine()->businessArea().excludes()) {
-        QGeoMapPolygonObject *region = new QGeoMapPolygonObject();
-        region->setBrush(brush);
-        region->setPen(pen);
+//    foreach(const Area &area, m_model->engine()->businessArea().excludes()) {
+//        QGeoMapPolygonObject *region = new QGeoMapPolygonObject();
+//        region->setBrush(brush);
+//        region->setPen(pen);
 
-        region->setPath(area.path());
-        region->setZValue(0);
-        m_businessAreaGroup.addChildObject(region);
-        m_businessAreaList.append(region);
-    }
+//        region->setPath(area.path());
+//        region->setZValue(0);
+//        m_businessAreaGroup.addChildObject(region);
+//        m_businessAreaList.append(region);
+//    }
 
     addMapObject(&m_businessAreaGroup);
     m_businessAreaGroup.setZValue(0);
 }
 
+void MapWidget::updateMapItems()
+{
+    removeMapObject(&m_itemGroup);
+
+    while(!m_itemGroup.childObjects().isEmpty()) {
+        m_itemGroup.removeChildObject(m_itemGroup.childObjects().first());
+    }
+
+    double degrees;
+    if(zoomLevel() < 9) {
+        degrees = .1;
+    } else if(zoomLevel() < 17){
+        degrees = .2 / qPow(2,(zoomLevel() - 8));
+    } else {
+        degrees = 0;
+    }
+//    qDebug() << "zoomlevel changed to" << zoomLevel() << "degrees" << degrees;
+
+    QHash<GMWItem *, QGeoBoundingBox> presentItems;
+    foreach(GMWItem *newItem, m_items.keys()) {
+        bool alwaysShown = false;
+        if(newItem->objectType() == GMWItem::TypeVehicle) {
+            GMWVehicle *vehicle = qobject_cast<GMWVehicle*>(newItem);
+            if(vehicle->booking()->isValid()) {
+                alwaysShown = true;
+            }
+        }
+        bool intersects = false;
+        if(!alwaysShown && zoomLevel() < 17) {
+            foreach(GMWItem *tmp, presentItems.keys()) {
+                if(tmp->objectType() == newItem->objectType() && presentItems.value(tmp).contains(newItem->location())) {
+                    intersects = true;
+                    break;
+                }
+            }
+        }
+        if(!intersects) {
+            presentItems.insert(newItem, QGeoBoundingBox(newItem->location(), degrees, degrees));
+        }
+    }
+
+    foreach(GMWItem *item, presentItems.keys()) {
+        m_itemGroup.addChildObject(m_items.value(item));
+    }
+
+    qDebug() << "addMapObject start";
+    addMapObject(&m_itemGroup);
+    qDebug() << "addMapObject done";
+;}
+
 void MapWidget::centerToStartCoordinates()
 {
-    fitInViewport(m_model->engine()->startingBounds());
-    setZoomLevel(14);
+    if(m_model->engine()) {
+        QGeoBoundingBox box = m_model->engine()->location()->area();
+        fitInViewport(box);
+
+        // workaround for fitinviewport's sporadic zoom level bug
+        double distance = box.topLeft().distanceTo(box.bottomRight());
+        setZoomLevel(24 - 1.3 * log(distance));
+    }
 }
 
 GMWItemModel *MapWidget::model()
@@ -193,16 +261,28 @@ void MapWidget::rowsInserted(const QModelIndex &parent, int start, int end)
 {
     Q_UNUSED(parent)
 
-    qDebug() << "Inserting markers into map";
-    removeMapObject(&m_itemGroup);
-
     for(int i = start; i <= end; ++i) {
         GMWItem *item = m_model->index(i, 0).data(Qt::UserRole).value<GMWItem*>();
         GMWMarker *marker = new GMWMarker(item);
         m_items.insert(item, marker);
-        m_itemGroup.addChildObject(marker);
     }
-    addMapObject(&m_itemGroup);
+    qDebug() << "inserted into map";
+
+    foreach(GMWItem *item, m_items.keys()) {
+        if(item->objectType() == GMWItem::TypeParkingSpot || item->objectType() == GMWItem::TypeVehicle) {
+            int count = 0;
+            foreach(GMWItem *tmp, m_items.keys()) {
+                if(tmp->objectType() == GMWItem::TypeVehicle && tmp->location() == item->location()) {
+                    ++count;
+                }
+            }
+            if(item->objectType() == GMWItem::TypeParkingSpot || count > 1) {
+                m_items.value(item)->setCount(count);
+            }
+        }
+    }
+
+    updateMapItems();
 }
 
 void MapWidget::rowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
@@ -229,7 +309,7 @@ void MapWidget::animatedPanTo(GMWItem *item)
 
 void MapWidget::animatedPanTo(const QGeoCoordinate &center)
 {
-    qDebug() << "panning to" << center;
+//    qDebug() << "panning to" << center;
     if(!center.isValid()) return;
 
     QPropertyAnimation *latAnim = new QPropertyAnimation(this, "centerLatitude");
@@ -273,10 +353,7 @@ void MapWidget::clicked(qreal mouseX, qreal mouseY)
 {
     qDebug() << "clicked at" << mouseX << mouseY;
 
-    foreach(GMWMarker*marker, m_items) {
-        marker->setHighlight(false);
-    }
-
+    QList<QObject*> clickedItems;
     // walk in reverse order to pick the topmost item
     for(int i = mapObjectsInViewport().count() - 1; i >= 0; --i) {
         QGeoMapObject *obj = mapObjectsInViewport().at(i);
@@ -286,11 +363,15 @@ void MapWidget::clicked(qreal mouseX, qreal mouseY)
         if(topLeft.x() <= mouseX && topLeft.y() <= mouseY && bottomRight.x() >= mouseX && bottomRight.y() >= mouseY) {
             GMWMarker *po = qobject_cast<GMWMarker*>(obj);
             if(po) {
-                po->setHighlight(true);
+//                po->setHighlight(true);
+                clickedItems.append(m_items.key(po));
                 emit itemClicked(m_items.key(po));
-                return;
+//                return;
             }
         }
+    }
+    if(!clickedItems.isEmpty()) {
+        emit itemsClicked(QVariant::fromValue(clickedItems));
     }
 }
 
@@ -308,6 +389,27 @@ void MapWidget::routeTo(GMWItem *item)
     request.setWaypoints(QList<QGeoCoordinate>() << m_positionMarker.coordinate() << item->location());
 
     Core::instance()->serviceProvider()->routingManager()->calculateRoute(request);
+
+    QGeoCoordinate topLeft;
+    topLeft.setLatitude(qMax(m_positionMarker.coordinate().latitude(), item->location().latitude()));
+    topLeft.setLongitude(qMin(m_positionMarker.coordinate().longitude(), item->location().longitude()));
+    QGeoCoordinate bottomRight;
+    bottomRight.setLatitude(qMin(m_positionMarker.coordinate().latitude(), item->location().latitude()));
+    bottomRight.setLongitude(qMax(m_positionMarker.coordinate().longitude(), item->location().longitude()));
+    qDebug() << "topLeft" << topLeft << "bottomRight" << bottomRight;
+
+    fitInViewport(QGeoBoundingBox(topLeft, bottomRight));
+
+    // workaround for fitinviewport's sporadic zoom level bug
+    double distance = m_positionMarker.coordinate().distanceTo(item->location());
+    setZoomLevel(24 - 1.3 * log(distance));
+
+    foreach(GMWMarker*marker, m_items) {
+        marker->setHighlight(false);
+    }
+    m_items.value(item)->setHighlight(true);
+
+    m_tracking = false;
 }
 
 void MapWidget::routingFinished(QGeoRouteReply *reply)
@@ -336,5 +438,6 @@ void MapWidget::routingError(QGeoRouteReply *reply, QGeoRouteReply::Error error,
 {
     Q_UNUSED(error);
     qDebug() << "Routing failed:" << errorString;
+    emit routingFailed(errorString);
     reply->deleteLater();
 }

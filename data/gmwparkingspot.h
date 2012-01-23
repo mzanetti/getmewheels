@@ -27,18 +27,20 @@ class GMWParkingSpot : public GMWItem
     Q_OBJECT
     Q_PROPERTY(quint16 capacityUsed READ capacityUsed NOTIFY changed)
     Q_PROPERTY(quint16 capacityTotal READ capacityTotal NOTIFY changed)
+    Q_PROPERTY(bool chargingPole READ chargingPole NOTIFY changed)
 
 public:
     friend QDataStream &operator<<(QDataStream& stream, const GMWParkingSpot& parkingSpot);
     friend QDataStream &operator>>(QDataStream& stream, GMWParkingSpot& parkingSpot);
 
-    GMWParkingSpot(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap image,
-        quint16 capacityUsed, quint16 capacityTotal);
+    GMWParkingSpot(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap &image, const QPixmap &imageL,
+        quint16 capacityUsed, quint16 capacityTotal, bool chargingPole);
 
     GMWItem::Type objectType() const;
 
     quint16 capacityUsed() const;
     quint16 capacityTotal() const;
+    bool chargingPole() const;
 
 signals:
     void changed();
@@ -46,6 +48,7 @@ signals:
 private:
     quint16 m_capacityUsed;
     quint16 m_capacityTotal;
+    bool m_chargingPole;
 };
 
 QDataStream &operator<<(QDataStream& stream, const GMWParkingSpot& parkingSpot);

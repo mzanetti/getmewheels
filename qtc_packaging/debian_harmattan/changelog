@@ -1,3 +1,14 @@
+getmewheels2 (1.1.1) unstable; urgency=low
+  * Artwork rework
+  * Added a list for cars sorted by distance to easily find nearest car
+  * Performance improvements
+  * Added an "Are you sure question" before creating or cancelling bookings
+  * Added flattr button
+  * Added support for Electric Drive cars and charging poles
+  * Updated engine to work with car2go API version 2.1
+
+ -- Michael Zanetti <michael_zanetti@gmx.net>  Sun, 15 Jan 2012 15:32:44 +0100
+
 getmewheels2 (1.0) unstable; urgency=low
 
   * Initial Release for MeeGo 1.2 Harmattan

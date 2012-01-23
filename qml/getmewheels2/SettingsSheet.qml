@@ -6,6 +6,9 @@ Sheet {
     acceptButtonText: "Save"
     rejectButtonText: "Cancel"
 
+    property alias locationName: locationButton.subTitleText
+    property alias accountName: accountSelectionButton.subTitleText
+
     content: Column {
         anchors.fill: parent
         anchors.margins: 10
@@ -17,13 +20,14 @@ Sheet {
         }
 
         SelectionButton {
+            id: locationButton
             titleText: "Location"
-            subTitleText: gmwEngine.location
+            subTitleText: gmwEngine.locationName
             width: parent.width
             onClicked: {
                 selectLocationsDialog.model = 0;
                 locationsModel.clear();
-                gmwEngine.supportedLocations().forEach(function(item) { print("got location:" + item); locationsModel.append( {name: item} ) });
+                gmwEngine.supportedLocationNames().forEach(function(item) { print("got location:" + item); locationsModel.append( {name: item} ) });
                 selectLocationsDialog.model = locationsModel;
                 selectLocationsDialog.open();
             }
@@ -71,7 +75,7 @@ Sheet {
             onClicked: {
                 selectAccountDialog.model = 0;
                 accountModel.clear();
-                gmwEngine.accountNames().forEach(function(item) { accountModel.append({name: item}) } );
+                gmwEngine.accountNames(locationButton.subTitleText).forEach(function(item) { accountModel.append({name: item}) } );
                 selectAccountDialog.model = accountModel;
                 selectAccountDialog.open();
             }
@@ -89,8 +93,7 @@ Sheet {
         titleText: "Select Location"
         model: locationsModel
         onAccepted: {
-            gmwEngine.location = locationsModel.get(selectLocationsDialog.selectedIndex).name;
-            gmwSettings.location = locationsModel.get(selectLocationsDialog.selectedIndex).name;
+            locationButton.subTitleText = locationsModel.get(selectLocationsDialog.selectedIndex).name;
         }
     }
 
@@ -102,8 +105,7 @@ Sheet {
         titleText: "Select Account"
         onAccepted: {
             print("selected: "+ accountModel.get(selectAccountDialog.selectedIndex).name);
-            gmwEngine.setDefaultAccountName(accountModel.get(selectAccountDialog.selectedIndex).name);
-//            accountSelectionButton.subTitleText = gmwEngine.defaultAccountName();
+            accountSelectionButton.subTitleText = gmwEngine.defaultAccountName();
         }
     }
 

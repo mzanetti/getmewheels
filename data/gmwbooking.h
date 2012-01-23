@@ -11,6 +11,7 @@ class GMWBooking: public QObject
     Q_PROPERTY(QString text READ toString NOTIFY changed)
     Q_PROPERTY(bool valid READ isValid NOTIFY changed)
     Q_PROPERTY(bool expired READ isExpired NOTIFY changed)
+    Q_PROPERTY(int timeLeft READ timeLeft NOTIFY changed)
 public:
     GMWBooking(QObject *parent = 0);
     GMWBooking(int id = -1, GMWAccount account = GMWAccount(), QObject *parent = 0);
@@ -31,6 +32,7 @@ public:
 
     QString toString() const;
     bool isExpired() const;
+    int timeLeft() const;
 
 protected:
     void timerEvent(QTimerEvent *);

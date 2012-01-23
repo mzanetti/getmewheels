@@ -19,16 +19,18 @@
 
 #include "gmwparkingspot.h"
 
-GMWParkingSpot::GMWParkingSpot(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap image,
-        quint16 capacityUsed, quint16 capacityTotal) :
-    GMWItem(name, address, location, image),
-    m_capacityUsed(capacityUsed), m_capacityTotal(capacityTotal)
+GMWParkingSpot::GMWParkingSpot(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap &image,
+        const QPixmap &imageL, quint16 capacityUsed, quint16 capacityTotal, bool chargingPole) :
+    GMWItem(name, address, location, image, imageL),
+    m_capacityUsed(capacityUsed),
+    m_capacityTotal(capacityTotal),
+    m_chargingPole(chargingPole)
 {
 }
 
 GMWItem::Type GMWParkingSpot::objectType() const
 {
-    return GMWItem::TypeParkingLot;
+    return GMWItem::TypeParkingSpot;
 }
 
 quint16 GMWParkingSpot::capacityUsed() const
@@ -41,10 +43,15 @@ quint16 GMWParkingSpot::capacityTotal() const
     return m_capacityTotal;
 }
 
+bool GMWParkingSpot::chargingPole() const
+{
+    return m_chargingPole;
+}
+
 QDataStream &operator<<(QDataStream& stream, const GMWParkingSpot& parkingSpot)
 {
     stream << dynamic_cast<const GMWItem&>(parkingSpot);
-    stream << parkingSpot.m_capacityUsed << parkingSpot.m_capacityTotal;
+    stream << parkingSpot.m_capacityUsed << parkingSpot.m_capacityTotal << parkingSpot.chargingPole();
     return stream;
 }
 
@@ -53,5 +60,6 @@ QDataStream &operator>>(QDataStream& stream, GMWParkingSpot& parkingSpot)
     stream >> dynamic_cast<GMWItem&>(parkingSpot);
     stream >> parkingSpot.m_capacityUsed;
     stream >> parkingSpot.m_capacityTotal;
+    stream >> parkingSpot.m_chargingPole;
     return stream;
 }

@@ -7,7 +7,9 @@
 #include "qmlapplicationviewer.h"
 #include <QtDeclarative>
 
+#ifndef QT_SIMULATOR
 Q_IMPORT_PLUGIN(qtgeoservices_osm)
+#endif
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
@@ -16,17 +18,14 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     qmlRegisterType<MapWidget>("GetMeWheels", 1, 0, "GmwMap");
     qmlRegisterType<GMWItemModel>("GetMeWheels", 1, 0, "GmwModel");
+    qmlRegisterType<GMWItemSortFilterProxyModel>("GetMeWheels", 1, 0, "GmwProxyModel");
     qmlRegisterType<GMWItem>();
+    qmlRegisterType<Location>();
     qmlRegisterUncreatableType<GMWItem>("GetMeWheels", 1, 0, "GmwItem", "Cannot create items of type GmwItem");
     qmlRegisterUncreatableType<GMWVehicle>("GetMeWheels", 1, 0, "GmwVehicle", "Cannot create items of type GmwVehicle");
     qmlRegisterType<GMWBooking>();
 
-    qmlRegisterType<GMWEngine>();
-    qmlRegisterType<Car2goEngine>("GetMeWheels", 1, 0, "Car2goEngine");
-
-    Settings settings;
-    qmlRegisterType<Settings>("GetMeWheels", 1, 0, "Settings");
-    viewer->rootContext()->setContextProperty("gmwSettings", &settings);
+    qmlRegisterType<GMWEngine>("GetMeWheels", 1, 0, "GmwEngine");
 
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
     viewer->setMainQmlFile(QLatin1String("qml/getmewheels2/main.qml"));

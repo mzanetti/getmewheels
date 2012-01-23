@@ -37,6 +37,8 @@ public:
 
 public slots:
     void setHighlight(bool highlight);
+    int count() const;
+    void setCount(int count);
 
 private:
     GMWMarkerPrivate *d;

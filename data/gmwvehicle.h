@@ -27,11 +27,13 @@ class GMWVehicle : public GMWItem
 {
     Q_OBJECT
     Q_ENUMS(State)
+    Q_ENUMS(EngineType)
     Q_PROPERTY(quint8 fuelLevel READ fuelLevel NOTIFY changed)
     Q_PROPERTY(State interiorState READ interiorState NOTIFY changed)
     Q_PROPERTY(State exteriorState READ exteriorState NOTIFY changed)
     Q_PROPERTY(QString vin READ vin NOTIFY changed)
     Q_PROPERTY(GMWBooking* booking READ booking NOTIFY changed)
+    Q_PROPERTY(EngineType engineType READ engineType NOTIFY changed)
 
 public:
     friend QDataStream &operator<<(QDataStream& stream, const GMWVehicle& vehicle);
@@ -46,8 +48,13 @@ public:
         StateExcellent
     };
 
-    GMWVehicle(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap image,
-        quint8 fuelLevel, GMWVehicle::State interiorState, GMWVehicle::State exteriorState, const QString &vin);
+    enum EngineType {
+        EngineTypeED,
+        EngineTypeCD
+    };
+
+    GMWVehicle(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap &image, const QPixmap &imageL,
+        quint8 fuelLevel, GMWVehicle::State interiorState, GMWVehicle::State exteriorState, const QString &vin, EngineType engineType);
 
     static GMWVehicle::State vehicleStateFromString(const QString &state);
 
@@ -57,6 +64,7 @@ public:
     GMWVehicle::State interiorState() const;
     GMWVehicle::State exteriorState() const;
     QString vin() const;
+    EngineType engineType() const;
 
     void setBooking(GMWBooking *booking);
     GMWBooking *booking() const;
@@ -71,6 +79,7 @@ private:
     GMWVehicle::State m_exteriorState;
     QString m_vin;      // Vehicle identification number
     GMWBooking *m_booking;
+    EngineType m_engineType;
 };
 
 QDataStream &operator<<(QDataStream& stream, const GMWVehicle& vehicle);

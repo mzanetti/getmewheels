@@ -19,8 +19,8 @@
 
 #include "gmwgasstation.h"
 
-GMWGasStation::GMWGasStation(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap image) :
-    GMWItem(name, address, location, image)
+GMWGasStation::GMWGasStation(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap &image, const QPixmap &imageL) :
+    GMWItem(name, address, location, image, imageL)
 {
 }
 

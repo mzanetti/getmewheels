@@ -103,7 +103,7 @@ QDateTime GMWBooking::expirationTime() const
 QString GMWBooking::toString() const
 {
     if(!isValid()) {
-        return tr("Free");
+        return tr("Free for everyone");
     }
     if(QDateTime::currentDateTime() < m_expriationTime) {
         return QObject::tr("Booked - Expires: %1  (%2min)")
@@ -119,4 +119,9 @@ QString GMWBooking::toString() const
 bool GMWBooking::isExpired() const
 {
     return QDateTime::currentDateTime() > m_expriationTime;
+}
+
+int GMWBooking::timeLeft() const
+{
+    return QDateTime::currentDateTime().secsTo(m_expriationTime);
 }

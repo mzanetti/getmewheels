@@ -15,7 +15,11 @@ Core *Core::instance()
 Core::Core(QObject *parent) :
     QObject(parent)
 {
+#ifndef QT_SIMULATOR
     m_serviceProvider = new QGeoServiceProvider("openstreetmap");
+#else
+    m_serviceProvider = new QGeoServiceProvider("nokia");
+#endif
 }
 
 QGeoServiceProvider *Core::serviceProvider()

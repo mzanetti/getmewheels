@@ -24,26 +24,41 @@
 #include <QGeoPositionInfo>
 
 #include "gmwitem.h"
+#include "gmwitemmodel.h"
 
 class GMWItemSortFilterProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 
+    Q_PROPERTY(GMWItemModel *model READ itemModel WRITE setItemModel NOTIFY itemModelChanged())
+    Q_PROPERTY(bool onlyBooked READ onlyBooked WRITE setOnlyBooked)
+
 public:
+
     explicit GMWItemSortFilterProxyModel(QObject *parent = 0);
-    GMWItem::Types filterGMWObjectType() const;
-    void setFilterGMWObjectType(GMWItem::Types types);
+    GMWItem::Types filterType() const;
+    void setFilterType(GMWItem::Types types);
+    void setItemModel(GMWItemModel *model);
+    GMWItemModel *itemModel();
+
+    bool onlyBooked();
+    void setOnlyBooked(bool onlyBooked);
 
 signals:
     void filterChanged(GMWItem::Types types);
+    void itemModelChanged();
 
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-    bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+//    bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
 
+private slots:
+    void modelDataChanged(const QModelIndex &firstIndex, const QModelIndex &lastIndex);
 private:
     GMWItem::Types m_gmwObjectTypes;
     QGeoCoordinate m_currentPosition;
+    bool m_onlyBooked;
 };
+
 
 #endif // GMWITEMSORTFILTERPROXYMODEL_H

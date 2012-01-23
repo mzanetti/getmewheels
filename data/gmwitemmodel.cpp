@@ -20,6 +20,7 @@
 #include "gmwitemmodel.h"
 #include "gmwitem.h"
 #include "gmwvehicle.h"
+#include "gmwparkingspot.h"
 
 #include <QDebug>
 #include <QPaintEngine>
@@ -32,7 +33,14 @@ GMWItemModel::GMWItemModel(QObject *parent) :
     qRegisterMetaType<GMWItem*>("GMWObject*");
 
     QHash<int, QByteArray> roleNames;
-    roleNames.insert(Qt::UserRole, "gmwitem");
+    roleNames.insert(RoleObject, "gmwitem");
+    roleNames.insert(RoleName, "itemName");
+    roleNames.insert(RoleAddress, "itemAddress");
+    roleNames.insert(RoleDistance, "itemDistance");
+    roleNames.insert(RoleDistanceString, "itemDistanceString");
+    roleNames.insert(RoleType, "itemType");
+    roleNames.insert(RoleEngineType, "itemEngineType");
+    roleNames.insert(RoleParkingCP, "itemParkingCP");
     setRoleNames(roleNames);
 }
 
@@ -62,7 +70,9 @@ void GMWItemModel::addObject(GMWItem *item) {
 void GMWItemModel::addObjects(QList<GMWItem*> items) {
     qDebug() << "Adding " << items.count() << " items to model; Current size is" << m_objects.count();
     beginInsertRows(QModelIndex(), m_objects.size(), m_objects.size() + items.count() - 1);
+    int i = 0;
     foreach(GMWItem* item, items) {
+//        qDebug() << "Adding item" << i++ << item->name();
         connect(item, SIGNAL(changed()), SLOT(itemChanged()));
         m_objects.append(item);
     }
@@ -134,29 +144,33 @@ QVariant GMWItemModel::data(const QModelIndex &index, int role) const
 {
     GMWItem *object = m_objects.at(index.row());
 
-    if (role == Qt::DecorationRole) {
-        switch (index.column()) {
-            case 0: return object->image();
-            case 2: return object->azimuthImage();
-        }
-    }
-
-    if (role == Qt::DisplayRole) {
-        switch (index.column()) {
-            case 0: return object->address();
-            case 1: return object->distanceString();
-        }
-    }
-
-    if (role == Qt::UserRole) {
+    switch(role) {
+    case RoleName:
+        return object->name();
+    case RoleObject:
         return qVariantFromValue(object);
-    }
-
-    if (role == Qt::TextAlignmentRole) {
-        switch (index.column()) {
-            case 1:
-                return QVariant(Qt::AlignRight | Qt::AlignVCenter);
+    case RoleAddress:
+        return object->address();
+    case RoleDistance:
+        return object->distance();
+    case RoleDistanceString:
+        return object->distanceString();
+    case RoleType:
+        return object->objectType();
+    case RoleEngineType: {
+        GMWVehicle *vehicle = qobject_cast<GMWVehicle*>(object);
+        if(vehicle) {
+            return vehicle->engineType();
         }
+        break;
+    }
+    case RoleParkingCP: {
+        GMWParkingSpot *spot = qobject_cast<GMWParkingSpot*>(object);
+        if(spot) {
+            return spot->chargingPole();
+        }
+        break;
+    }
     }
 
     return QVariant();

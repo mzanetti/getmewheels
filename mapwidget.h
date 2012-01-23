@@ -59,6 +59,8 @@ public slots:
 
 signals:
     void itemClicked(GMWItem* item);
+    void itemsClicked(const QVariant &items);
+    void routingFailed(const QString &error);
 
 private slots:
     void rowsInserted(const QModelIndex &parent, int start, int end);
@@ -72,6 +74,8 @@ private slots:
     void mapEngineChanged();
     void setBusinessArea();
 
+    void updateMapItems();
+
 private:
     GMWItemModel *m_model;
     GMWItemSortFilterProxyModel *m_proxyModel;
@@ -83,6 +87,7 @@ private:
 
     QGeoPositionInfoSource *m_gps;
     QGeoMapPixmapObject m_positionMarker;
+    QGeoMapCircleObject m_accuracyMarker;
 
     bool m_tracking;
 
