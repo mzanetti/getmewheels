@@ -73,7 +73,7 @@ Sheet {
             width: parent.width
             enabled: gmwEngine.authenticated
             onClicked: {
-                selectAccountDialog.model = 0;
+                selectAccountDialog.model = undefined;
                 accountModel.clear();
                 gmwEngine.accountNames(locationButton.subTitleText).forEach(function(item) { accountModel.append({name: item}) } );
                 selectAccountDialog.model = accountModel;
