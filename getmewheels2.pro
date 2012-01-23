@@ -100,3 +100,7 @@ LIBS+= -lqoauth -lqjson -lqtgeoservices_openstreetmap -L$$PWD -lqca
 RESOURCES += \
     getmewheels2.qrc
 
+splash.files = splash.png
+splash.path = /opt/$${TARGET}
+INSTALLS += splash
+

@@ -25,7 +25,7 @@ Sheet {
             subTitleText: gmwEngine.locationName
             width: parent.width
             onClicked: {
-                selectLocationsDialog.model = 0;
+                selectLocationsDialog.model = undefined;
                 locationsModel.clear();
                 gmwEngine.supportedLocationNames().forEach(function(item) { print("got location:" + item); locationsModel.append( {name: item} ) });
                 selectLocationsDialog.model = locationsModel;
