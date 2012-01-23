@@ -1,3 +1,12 @@
+getmewheels2 (1.1.2) unstable; urgency=low
+  * Write number of cars on parking pots
+  * Fix bug where not all cars on parking spots were shown
+  * update bookings to new api
+  * fix settings dialog for PR 1.0 devices
+  * add splash screen
+
+ -- Michael Zanetti <michael_zanetti@gmx.net>  Mon, 23 Jan 2012 20:14:09 +0100
+
 getmewheels2 (1.1.1) unstable; urgency=low
   * Artwork rework
   * Added a list for cars sorted by distance to easily find nearest car
