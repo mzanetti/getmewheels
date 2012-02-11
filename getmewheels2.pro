@@ -1,5 +1,12 @@
 # Add more folders to ship with the application, here
+contains(MEEGO_EDITION,harmattan) {
+message("Including MeeGoo QML")
 qmldir.source = qml/getmewheels2
+}
+symbian: {
+message("Including Symbian QML")
+qmldir.source = qml/getmewheels2/symbian
+}
 qmldir.target = qml
 
 datadir.source = engines/car2go/data
@@ -9,21 +16,9 @@ DEPLOYMENTFOLDERS = qmldir datadir
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
 
-symbian:TARGET.UID3 = 0xE0BACF3E
-
-# Smart Installer package's UID
-# This UID is from the protected range and therefore the package will
-# fail to install if self-signed. By default qmake uses the unprotected
-# range value if unprotected UID is defined for the application and
-# 0x2002CCCF value if protected UID is given to the application
-#symbian:DEPLOYMENT.installer_header = 0x2002CCCF
-
-# Allow network access on Symbian
-symbian:TARGET.CAPABILITY += NetworkServices
-
 # If your application uses the Qt Mobility libraries, uncomment the following
 # lines and add the respective components to the MOBILITY variable.
-CONFIG += mobility
+CONFIG += mobility qt-components
 MOBILITY += location
 
 QT += network
@@ -89,12 +84,43 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/changelog
 
 
-INCLUDEPATH += /usr/include/QtCrypto
-
 simulator: {
+INCLUDEPATH += /usr/include/QtCrypto
 LIBS+= -lqoauth -lqjson -L$$PWD -lqca
-} else {
+}
+
+contains(MEEGO_EDITION,harmattan) {
+message("adding meego includes")
+INCLUDEPATH += /usr/include/QtCrypto/
 LIBS+= -lqoauth -lqjson -lqtgeoservices_openstreetmap -L$$PWD -lqca
+}
+
+symbian:{
+    TARGET.UID3 = 0xE0BACF3E
+
+    SOURCES += oauth/hash.c oauth/oauth.c oauth/xmalloc.c
+
+    # Smart Installer package's UID
+    # This UID is from the protected range and therefore the package will
+    # fail to install if self-signed. By default qmake uses the unprotected
+    # range value if unprotected UID is defined for the application and
+    # 0x2002CCCF value if protected UID is given to the application
+    #symbian:DEPLOYMENT.installer_header = 0x2002CCCF
+
+    # Allow network access on Symbian
+    TARGET.CAPABILITY += LocalServices Location NetworkServices ReadUserData UserEnvironment WriteUserData PowerMgmt ProtServ ReadDeviceData SurroundingsDD SwEvent TrustedUI WriteDeviceData
+
+    LIBS+= -lgmw_qjson -L$$PWD -llibcrypto
+
+    # You need to compile libqjson and deploy it to Symbian sysroot as
+    # libgmw_qjson.dll on your own for now as libs need to have the
+    # same capabilites (or more) than the linking binary.
+    # Don't forget to edit the capabilities there to the same as here.
+    # This will add the lib from the sysroot to the package.
+    addFiles.sources = gmw_qjson.dll
+    addFiles.path = /sys/bin
+    DEPLOYMENT += addFiles
+
 }
 
 RESOURCES += \
@@ -104,3 +130,6 @@ splash.files = splash.png
 splash.path = /opt/$${TARGET}
 INSTALLS += splash
 
+symbian {
+INCLUDEPATH += ../qoauth/
+}

@@ -25,7 +25,7 @@
 #include "qmlapplicationviewer.h"
 #include <QtDeclarative>
 
-#ifndef QT_SIMULATOR
+#if !defined QT_SIMULATOR && !defined Q_WS_S60
 Q_IMPORT_PLUGIN(qtgeoservices_osm)
 #endif
 
@@ -46,7 +46,11 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     qmlRegisterType<GMWEngine>("GetMeWheels", 1, 0, "GmwEngine");
 
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
+#if defined Q_WS_S60
+    viewer->setMainQmlFile(QLatin1String("qml/symbian/main.qml"));
+#else
     viewer->setMainQmlFile(QLatin1String("qml/getmewheels2/main.qml"));
+#endif
     viewer->showExpanded();
 
     return app->exec();

@@ -1,25 +1,5 @@
-getmewheels2 (1.1.2) unstable; urgency=low
-  * Write number of cars on parking pots
-  * Fix bug where not all cars on parking spots were shown
-  * update bookings to new api
-  * fix settings dialog for PR 1.0 devices
-  * add splash screen
+getmewheels2 (0.0.1) unstable; urgency=low
 
- -- Michael Zanetti <michael_zanetti@gmx.net>  Mon, 23 Jan 2012 20:14:09 +0100
+  * Initial Release.
 
-getmewheels2 (1.1.1) unstable; urgency=low
-  * Artwork rework
-  * Added a list for cars sorted by distance to easily find nearest car
-  * Performance improvements
-  * Added an "Are you sure question" before creating or cancelling bookings
-  * Added flattr button
-  * Added support for Electric Drive cars and charging poles
-  * Updated engine to work with car2go API version 2.1
-
- -- Michael Zanetti <michael_zanetti@gmx.net>  Sun, 15 Jan 2012 15:32:44 +0100
-
-getmewheels2 (1.0) unstable; urgency=low
-
-  * Initial Release for MeeGo 1.2 Harmattan
-
- -- Michael Zanetti <michael_zanetti@gmx.net>  Thu, 22 Dec 2011 21:23:14 +0200
+ -- unknown <micha@unknown>  Sat, 11 Feb 2012 18:47:35 +0100

@@ -50,7 +50,6 @@ const QByteArray Car2goEngine::ParamCallbackValue = "foo";
 const QByteArray Car2goEngine::ParamVerifier      = "oauth_verifier";
 const QByteArray Car2goEngine::ParamScreenName    = "screen_name";
 
-
 Car2goEngine::Car2goEngine() :
     m_networkReplyParkingSpots(NULL),
     m_networkReplyGasStations(NULL),
@@ -59,10 +58,12 @@ Car2goEngine::Car2goEngine() :
 {
     connect(&m_network, SIGNAL(finished(QNetworkReply*)), this, SLOT(receivedData(QNetworkReply*)));
 
+#ifndef Q_WS_S60
     // Init qoauth
     m_qoauth = new QOAuth::Interface( this );
     m_qoauth->setConsumerKey( ConsumerKey );
     m_qoauth->setConsumerSecret( ConsumerSecret );
+#endif
 
     QSettings settings("getmewheels", "getmewheels");
     settings.beginGroup("car2go");
@@ -195,6 +196,7 @@ QList<GMWAccount> Car2goEngine::accounts(Location *location)
 {
     QList<GMWAccount> retList;
 
+#ifndef Q_WS_S60
     QByteArray requestUrl( "https://www.car2go.com/api/v2.0/accounts");
 
     QOAuth::ParamMap map;
@@ -232,6 +234,9 @@ QList<GMWAccount> Car2goEngine::accounts(Location *location)
         }
 
     }
+#else
+
+#endif
     return retList;
 
 }
@@ -254,7 +259,7 @@ GMWAccount Car2goEngine::account()
 
 bool Car2goEngine::startAuthentication()
 {
-
+#ifndef Q_WS_S60
     // Request Token
     QOAuth::ParamMap params;
     params.insert(ParamCallback, ParamCallbackValue);
@@ -278,10 +283,26 @@ bool Car2goEngine::startAuthentication()
     QDesktopServices::openUrl(QUrl::fromEncoded(url.toUtf8()));
 
     return true;
+
+#else
+    const char *request_token_uri =  "https://www.car2go.com/api/reqtoken";
+      const char *access_token_uri = "https://www.car2go.com/api/accesstoken";
+      const char *test_call_uri =    "https://www.car2go.com/api/authorize";
+      const char *c_key         = "GetMeWheels";
+      const char *c_secret      = "qleDqQghx5lPelzT";
+    char *postarg = NULL;
+    char *req_url;
+    req_url = oauth_sign_url2(request_token_uri, &postarg, OA_HMAC, NULL, c_key, c_secret, NULL, NULL);
+
+    qDebug() << "*************************Oauth init:" << req_url;
+
+    return false;
+#endif
 }
 
 bool Car2goEngine::setAccessCode(const QString &code)
 {
+#ifndef Q_WS_S60
     // Authorize
     QOAuth::ParamMap otherArgs;
     otherArgs.insert( ParamVerifier, code.toLocal8Bit().toPercentEncoding());
@@ -309,6 +330,10 @@ bool Car2goEngine::setAccessCode(const QString &code)
     qDebug() << "OAuth completed. ScreenName:" << m_screenName << "Token:" << m_token << "TokeSecret:" << m_tokenSecret;
 
     return true;
+
+#else
+    return false;
+#endif
 }
 
 bool Car2goEngine::authenticated()
@@ -337,6 +362,7 @@ bool Car2goEngine::createBooking(Location * location, GMWVehicle *vehicle, const
 //    return true;
 
 
+#ifndef Q_WS_S60
     QByteArray requestUrl("https://www.car2go.com/api/v2.1/bookings");
 
     QOAuth::ParamMap map;
@@ -404,12 +430,17 @@ bool Car2goEngine::createBooking(Location * location, GMWVehicle *vehicle, const
 
     }
     return false;
+
+#else
+    return false;
+#endif
 }
 
 QList<GMWVehicle*> Car2goEngine::bookings(Location *location)
 {
     QList<GMWVehicle*> retList;
 
+#ifndef Q_WS_S60
     QByteArray requestUrl( "https://www.car2go.com/api/v2.1/bookings");
 
     QOAuth::ParamMap map;
@@ -458,11 +489,14 @@ QList<GMWVehicle*> Car2goEngine::bookings(Location *location)
     }
 
 //    qDebug() << "bookings are:" << retList;
+
+#endif
     return retList;
 }
 
 bool Car2goEngine::cancelBooking(GMWVehicle *vehicle)
 {
+#ifndef Q_WS_S60
     if(!vehicle->booking()->isValid()) {
         qDebug() << "Vehicle does not seem to be booked!";
         return false;
@@ -515,6 +549,8 @@ bool Car2goEngine::cancelBooking(GMWVehicle *vehicle)
         vehicle->clearBooking();
         return true;
     }
+
+#endif
     return false;
 }
 

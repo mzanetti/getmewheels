@@ -31,7 +31,11 @@
 #include <QtNetwork/QNetworkReply>
 #include <QEventLoop>
 
-#include <QtOAuth/QtOAuth>
+#ifndef Q_WS_S60
+ #include <QtOAuth/QtOAuth>
+#else
+#include "oauth/oauth.h"
+#endif
 
 class Car2goEngine : public EnginePlugin
 {
@@ -89,7 +93,9 @@ private:
 
     GMWBusinessArea m_businessArea;
 
+#ifndef Q_WS_S60
     QOAuth::Interface *m_qoauth;
+#endif
     static const QByteArray Car2GoRequestTokenURL;
     static const QByteArray Car2GoAccessTokenURL;
     static const QByteArray Car2GoAuthorizeURL;

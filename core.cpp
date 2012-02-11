@@ -33,7 +33,7 @@ Core *Core::instance()
 Core::Core(QObject *parent) :
     QObject(parent)
 {
-#ifndef QT_SIMULATOR
+#if !defined QT_SIMULATOR && !defined Q_WS_S60
     m_serviceProvider = new QGeoServiceProvider("openstreetmap");
 #else
     m_serviceProvider = new QGeoServiceProvider("nokia");
