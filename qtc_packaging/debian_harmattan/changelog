@@ -1,3 +1,8 @@
+getmewheels2 (1.1.3) unstable; urgency=low
+  * Fix bug in account selection
+
+ -- Michael Zanetti <michael_zanetti@gmx.net>  Sun, 12 Feb 2012 15:38:13 +0100
+
 getmewheels2 (1.1.2) unstable; urgency=low
   * Write number of cars on parking pots
   * Fix bug where not all cars on parking spots were shown

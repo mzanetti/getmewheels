@@ -105,7 +105,8 @@ Sheet {
         titleText: "Select Account"
         onAccepted: {
             print("selected: "+ accountModel.get(selectAccountDialog.selectedIndex).name);
-            accountSelectionButton.subTitleText = gmwEngine.defaultAccountName();
+            gmwEngine.defaultAccountName = accountModel.get(selectAccountDialog.selectedIndex).name;
+            accountSelectionButton.subTitleText = gmwEngine.defaultAccountName;
         }
     }
 
