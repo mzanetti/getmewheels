@@ -1,1 +1,14 @@
 *.user
+
+.make.cache
+Makefile
+bld.inf
+getmewheels2.loc
+getmewheels2.rss
+getmewheels2_exe.mmp
+getmewheels2_installer.pkg
+getmewheels2_reg.rss
+getmewheels2_stub.pkg
+getmewheels2_template.pkg
+moc/*
+rcc/*
