@@ -72,7 +72,7 @@ Page {
             width: parent.width
             onClicked: {
                 oauthSetupSheet.state = "step1";
-                oauthSetupSheet.open();
+                pageStack.push(oauthSetupSheet);
             }
         }
 

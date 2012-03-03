@@ -34,7 +34,9 @@
 #ifndef Q_WS_S60
  #include <QtOAuth/QtOAuth>
 #else
-#include "oauth/oauth.h"
+//#include "oauth/oauth.h"
+#include "../kqoauth/src/kqoauthmanager.h"
+#include "../kqoauth/src/kqoauthrequest.h"
 #endif
 
 class Car2goEngine : public EnginePlugin
@@ -95,7 +97,18 @@ private:
 
 #ifndef Q_WS_S60
     QOAuth::Interface *m_qoauth;
+    QByteArray m_screenName;
+    QByteArray m_token;
+    QByteArray m_tokenSecret;
+#else
+    KQOAuthManager *m_oauthManager;
+    KQOAuthRequest *m_oauthRequest;
+    QString m_screenName;
+    QString m_token;
+    QString m_tokenSecret;
 #endif
+    GMWAccount m_account;
+
     static const QByteArray Car2GoRequestTokenURL;
     static const QByteArray Car2GoAccessTokenURL;
     static const QByteArray Car2GoAuthorizeURL;
@@ -108,14 +121,10 @@ private:
     static const QByteArray ParamVerifier;
     static const QByteArray ParamScreenName;
 
-    QByteArray m_screenName;
-    QByteArray m_token;
-    QByteArray m_tokenSecret;
-    GMWAccount m_account;
-
     QEventLoop m_loop;
     bool waitForResponse();
     bool m_timeout;
+    QByteArray m_lastData;
 
     Location *m_currentDownloadLocation;
 
@@ -134,6 +143,15 @@ private:
 private slots:
     void receivedData(QNetworkReply *reply);
     void loadBusinessArea();
+
+#ifdef Q_WS_S60
+    void receivedToken(const QString &token, const QString &tokenSecret);
+    void temporaryTokenReceived(const QString & token, const QString & tokenSecret);
+    void authorizationReceived(const QString & token, const QString & verifier);
+    void accessTokenReceived(const QString & token, const QString & tokenSecret);
+    void requestReady(const QByteArray &response);
+    void authorizedRequestDone();
+#endif
 };
 
 #endif // CAR2GOENGINE_H
