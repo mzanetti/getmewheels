@@ -35,7 +35,7 @@ Page {
 
         onRoutingFailed: {
             infoBanner.text = "Routing failed: Service Temporarily Unavailable";
-            infoBanner.show();
+            infoBanner.open();
         }
     }
 

@@ -36,7 +36,7 @@ Page {
             model: settingsSheet.model
             Rectangle {
                 color: "white"
-                opacity: index == listView.currentIndex ? 1 : .6
+                opacity: index === listView.currentIndex ? 1 : .6
                 border.width: 1
                 width: 5
                 height: 5
@@ -231,46 +231,46 @@ Page {
                     SectionHeader {
                         width: parent.width
                         headerText: "Availability"
-                        visible: gmwItem.itemType == GmwItem.TypeParkingSpot // || gmwItem.itemType == GmwItem.TypeVehicle
+                        visible: gmwItem.itemType == GmwItem.TypeParkingSpot  || gmwItem.itemType == GmwItem.TypeVehicle
                     }
 
 
-//                    Row {
-//                        width: parent.width
-//                        visible: gmwItem.itemType === GmwItem.TypeVehicle
-//                        spacing: 10
-//                        Image {
-//                            id: availabilityIcon
-//                            visible: gmwItem.booking.valid
-//                            width: 48
-//                            height: 48
-//                            property int timeLeft: gmwItem.booking.timeLeft
-//                            source: timeLeft > 900 ? "image://theme/icon-m-common-presence-online" : (timeLeft > 0 ?"image://theme/icon-m-common-presence-away" : "image://theme/icon-m-common-presence-busy")
-//                        }
-//                        Label {
-//                            width: parent.width - availabilityIcon.width - 10
-//                            anchors.verticalCenter: parent.verticalCenter
-//                            text: gmwItem.booking.text
-//                            wrapMode: Text.WordWrap
-//                        }
-//                    }
-//                    Button {
-//                        width: parent.width
-//                        visible: gmwItem.itemType == GmwItem.TypeVehicle
-//                        text: gmwItem.booking.valid && !gmwItem.booking.expired ? "Cancel" : "Book"
-//                        enabled: gmwEngine.defaultAccountName.length > 0;
-//                        onClicked: {
-//                            if(gmwItem.booking.valid && !gmwItem.booking.expired) {
-//                                createBookingDialog.state = "cancel"
-//                                createBookingDialog.gmwItem = gmwItem;
-//                                createBookingDialog.open();
-//                            } else {
-//                                createBookingDialog.state = "book"
-//                                createBookingDialog.gmwItem = gmwItem;
-//                                createBookingDialog.open();
-//                            }
-//                        }
-//                    }
+                    Row {
+                        width: parent.width
+                        visible: gmwItem.itemType === GmwItem.TypeVehicle
+                        spacing: 10
+                        Image {
+                            id: availabilityIcon
+                            visible: gmwItem.booking.valid
+                            width: 48
+                            height: 48
+                            property int timeLeft: gmwItem.booking.timeLeft
+                            source: timeLeft > 900 ? "image://theme/icon-m-common-presence-online" : (timeLeft > 0 ?"image://theme/icon-m-common-presence-away" : "image://theme/icon-m-common-presence-busy")
+                        }
+                        Label {
+                            width: parent.width - availabilityIcon.width - 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: gmwItem.booking.text
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+                    Button {
+                        width: parent.width
+                        visible: gmwItem.itemType == GmwItem.TypeVehicle
+                        text: gmwItem.booking.valid && !gmwItem.booking.expired ? "Cancel" : "Book"
+                        enabled: gmwEngine.defaultAccountName.length > 0;
+                        onClicked: {
+                            if(gmwItem.booking.valid && !gmwItem.booking.expired) {
+                                createBookingDialog.state = "cancel"
+                                createBookingDialog.gmwItem = gmwItem;
+                                createBookingDialog.open();
+                            } else {
+                                createBookingDialog.state = "book"
+                                createBookingDialog.gmwItem = gmwItem;
+                                createBookingDialog.open();
+                            }
+                        }
+                    }
 
                     Row {
                         spacing: 10
@@ -291,86 +291,86 @@ Page {
         }
 
 
-//    Dialog {
-//        id: createBookingDialog
-//        width: parent.width
-//        property QtObject gmwItem
+    Dialog {
+        id: createBookingDialog
+        width: parent.width
+        property QtObject gmwItem
 
-//        states: [
-//            State {
-//                name: "book"
-//                PropertyChanges { target: createBookingHeaderLabel; text: "Create booking?" }
-//                PropertyChanges { target: createBookingTextLabel; text: "The booking will be valid for 30 minutes from now. Cancelling or missing a booked car is associated with additional costs."}
-//            },
-//            State {
-//                name: "cancel"
-//                PropertyChanges { target: createBookingHeaderLabel; text: "Cancel booking?" }
-//                PropertyChanges { target: createBookingTextLabel; text: "Cancelling or missing a booking is associated with additional costs."}
-//            }
-//        ]
-//        title: Column {
-//            width: parent.width
-//            Label {
-//                id: createBookingHeaderLabel
-//                width: parent.width
-//                font.pixelSize: 40
-//                color: "white"
-//            }
-//        }
+        states: [
+            State {
+                name: "book"
+                PropertyChanges { target: createBookingHeaderLabel; text: "Create booking?" }
+                PropertyChanges { target: createBookingTextLabel; text: "The booking will be valid for 30 minutes from now. Cancelling or missing a booked car is associated with additional costs."}
+            },
+            State {
+                name: "cancel"
+                PropertyChanges { target: createBookingHeaderLabel; text: "Cancel booking?" }
+                PropertyChanges { target: createBookingTextLabel; text: "Cancelling or missing a booking is associated with additional costs."}
+            }
+        ]
+        title: Column {
+            width: parent.width
+            Label {
+                id: createBookingHeaderLabel
+                width: parent.width
+                font.pixelSize: 40
+                color: "white"
+            }
+        }
 
-//        content: Column {
-//            width: parent.width
-//            Label {
-//                id: createBookingTextLabel
-//                width: parent.width
-//                wrapMode: Text.WordWrap
-//                color: "white"
-//            }
-//            Item {
-//                width: parent.width
-//                height: 50
-//            }
-//        }
+        content: Column {
+            width: parent.width
+            Label {
+                id: createBookingTextLabel
+                width: parent.width
+                wrapMode: Text.WordWrap
+                color: "white"
+            }
+            Item {
+                width: parent.width
+                height: 50
+            }
+        }
 
-//        buttons {
-//            ButtonRow {
-//                width: parent.width
-//                Button {
-//                    id: yesButton
-//                    text: "yes";
-//                    onClicked: {
-//                        if(createBookingDialog.state == "book") {
-//                            if(gmwEngine.createBooking(createBookingDialog.gmwItem)) {
-//                                infoBanner.text = "Car booked successfully";
-//                                infoBanner.show();
-//                            } else {
-//                                infoBanner.text = "Failed to create booking: " + gmwEngine.error();
-//                                infoBanner.show();
-//                            }
-//                        } else if(createBookingDialog.state == "cancel") {
-//                            if(gmwEngine.cancelBooking(createBookingDialog.gmwItem)) {
-//                                infoBanner.text = "Booking cancelled successfully";
-//                                infoBanner.show();
-//                            } else {
-//                                infoBanner.text = "Failed to cancel booking: " + gmwEngine.error();
-//                                infoBanner.show();
-//                            }
+        buttons {
+            ButtonRow {
+                width: parent.width
+                Button {
+                    id: yesButton
+                    text: "yes";
+                    onClicked: {
+                        if(createBookingDialog.state == "book") {
+                            if(gmwEngine.createBooking(createBookingDialog.gmwItem)) {
+                                infoBanner.text = "Car booked successfully";
+                                infoBanner.open();
+                            } else {
+                                infoBanner.text = "Failed to create booking: " + gmwEngine.error();
+                                infoBanner.open();
+                            }
+                        } else if(createBookingDialog.state == "cancel") {
+                            if(gmwEngine.cancelBooking(createBookingDialog.gmwItem)) {
+                                infoBanner.text = "Booking cancelled successfully";
+                                infoBanner.open();
+                            } else {
+                                infoBanner.text = "Failed to cancel booking: " + gmwEngine.error();
+                                infoBanner.open();
+                            }
 
-//                        }
-//                        createBookingDialog.close();
-//                    }
-//                }
-//                Button {
-//                    id: noButton
-//                    text: "no";
-//                    onClicked: createBookingDialog.close();
-//                }
-//            }
-//        }
-//    }
+                        }
+                        createBookingDialog.close();
+                    }
+                }
+                Button {
+                    id: noButton
+                    text: "no";
+                    onClicked: createBookingDialog.close();
+                }
+            }
+        }
+    }
 
-//    InfoBanner {
-//        id: infoBanner
-////        timerShowTime: 5000
-//    }
+    InfoBanner {
+        id: infoBanner
+//        timerShowTime: 5000
+    }
 }
