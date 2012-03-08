@@ -10,7 +10,7 @@ Page {
 
     signal goTo(variant item)
 
-//    onAccepted: goTo(listView.currentItem.gmwItem);
+    //onAccepted: goTo(listView.currentItem.gmwItem);
 
     property alias model: listView.model
     property alias currentItem: listView.currentItem

@@ -51,7 +51,7 @@ Page {
                 id: mouseArea
                 anchors.fill: background
 
-                function dialogAccepted() {
+                function dialogAccepted(gmwItem) {
 
                     var mapPage = pageStack.find(function(page) {
                         return page.name === "mapwindow";
@@ -65,8 +65,8 @@ Page {
                     if (component.status === Component.Ready) {
                         var itemDetailsSheet = component.createObject(listView)
                         itemDetailsSheet.model = [gmwitem];
-                        itemDetailsSheet.accepted.connect(dialogAccepted)
-                        itemDetailsSheet.open();
+                        itemDetailsSheet.goTo.connect(dialogAccepted)
+                        pageStack.push(itemDetailsSheet);
                     } else {
                         console.log("Error loading component:", component.errorString());
                     }

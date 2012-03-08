@@ -689,7 +689,7 @@ bool Car2goEngine::cancelBooking(GMWVehicle *vehicle)
         foreach(const QVariant &tmp, bookingDataList) {
             qDebug() << tmp;
             QVariantMap bookingData = tmp.toMap();
-        }http://www.majordojo.com/2012/02/swarming-nano-quadrotors.php
+        }
         vehicle->clearBooking();
         return true;
     }
