@@ -1,0 +1,5 @@
+QMAKE_PRL_BUILD_DIR = /home/micha/Develop/getmewheels2/3rdParty/kqoauth/src
+QMAKE_PRO_INPUT = src.pro
+QMAKE_PRL_TARGET = kqoauth
+QMAKE_PRL_CONFIG = lex yacc warn_on debug uic resources prepend_includepath qt warn_on release incremental link_prl sis_targets run_on_phone debug shared stl exceptions rtti def_files create_prl static_and_shared dll shared qtmain moc thread
+QMAKE_PRL_VERSION = 0.93
