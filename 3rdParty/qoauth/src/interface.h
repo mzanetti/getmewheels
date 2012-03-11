@@ -30,7 +30,7 @@
 
 #include <QObject>
 
-#include <QtCrypto>
+#include <QtCrypto/QtCrypto>
 
 #include "qoauth_global.h"
 #include "qoauth_namespace.h"

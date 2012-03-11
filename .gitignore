@@ -13,3 +13,4 @@
 *.make.cache
 *moc/*
 *rcc/*
+3rdParty-build*

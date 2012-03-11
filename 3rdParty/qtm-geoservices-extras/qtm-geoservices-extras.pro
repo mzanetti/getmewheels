@@ -1,12 +1,6 @@
 TEMPLATE = subdirs
 
-symbian: {
-SUBDIRS += kqoauth qjson
-}
-
-contains(MEEGO_EDITION,harmattan) {
-SUBDIRS += qoauth qtm-geoservices-extras
-}
+SUBDIRS += openstreetmap #google
 
 OTHER_FILES += \
     qtc_packaging/debian_harmattan/rules \
@@ -16,3 +10,4 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/control \
     qtc_packaging/debian_harmattan/compat \
     qtc_packaging/debian_harmattan/changelog
+
