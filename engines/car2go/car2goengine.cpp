@@ -562,27 +562,29 @@ QList<GMWVehicle*> Car2goEngine::bookings(Location *location)
     QByteArray response = reply->readAll();
 //    qDebug() << "got response" << response;
 #else
-    m_oauthRequest->clearRequest();
-    m_oauthRequest->initRequest(KQOAuthRequest::AuthorizedRequest, QUrl("https://www.car2go.com/api/v2.1/bookings"));
-    m_oauthRequest->setConsumerKey(Car2goEngine::ConsumerKey);
-    m_oauthRequest->setConsumerSecretKey(Car2goEngine::ConsumerSecret);
-    m_oauthRequest->setToken(m_token);
-    m_oauthRequest->setTokenSecret(m_tokenSecret);
-    m_oauthRequest->setHttpMethod(KQOAuthRequest::GET);
-    m_oauthRequest->setEnableDebugOutput(false);
+    KQOAuthRequest *req = new KQOAuthRequest();
+    req->clearRequest();
+    req->initRequest(KQOAuthRequest::AuthorizedRequest, QUrl("https://www.car2go.com/api/v2.1/bookings"));
+    req->setConsumerKey(Car2goEngine::ConsumerKey);
+    req->setConsumerSecretKey(Car2goEngine::ConsumerSecret);
+    req->setToken(m_token);
+    req->setTokenSecret(m_tokenSecret);
+    req->setHttpMethod(KQOAuthRequest::GET);
+    req->setEnableDebugOutput(true);
     KQOAuthParameters params;
     params.insert("format", "json");
     params.insert("loc", location->name().toUtf8());
-    m_oauthRequest->setAdditionalParameters(params);
+    req->setAdditionalParameters(params);
 
 
-    m_oauthManager->executeRequest(m_oauthRequest);
-    qDebug() << "requsting bookings" << m_oauthRequest->requestBody() << m_oauthRequest->requestParameters();
+    m_oauthManager->executeRequest(req);
+//    qDebug() << "requsting bookings" << m_oauthRequest->requestBody() << m_oauthRequest->requestParameters();
 
     if(!waitForResponse()) {
         qDebug() << "getting bookings timed out";
         return retList;
     }
+    delete req;
 
     QByteArray response = m_lastData;
 

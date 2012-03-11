@@ -6,6 +6,14 @@ Page {
 //    rejectButtonText: "Cancel"
     state: "step1"
 
+    tools: ToolBarLayout {
+        ToolButton {
+            iconSource: "toolbar-back"
+//            anchors.left: (parent === undefined) ? undefined : parent.left
+            onClicked: pageStack.pop();
+        }
+    }
+
     Column {
         anchors.fill: parent
         anchors.margins: 10

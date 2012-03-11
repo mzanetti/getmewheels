@@ -317,7 +317,7 @@ void MapWidget::rowsAboutToBeRemoved(const QModelIndex &parent, int start, int e
 {
     Q_UNUSED(parent)
 
-    qDebug() << "Removing markers from map" << start << "-" << end << "Current markers:" << m_items.count() << "Markers to remove:" << end-start+1;
+//    qDebug() << "Removing markers from map" << start << "-" << end << "Current markers:" << m_items.count() << "Markers to remove:" << end-start+1;
     for(int i = start; i <= end; ++i) {
         QModelIndex index = m_model->index(i, 0);
         GMWItem *item = m_model->data(index, Qt::UserRole).value<GMWItem*>();
