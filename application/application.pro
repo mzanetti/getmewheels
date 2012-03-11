@@ -67,7 +67,8 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/changelog
 
 
-INCLUDEPATH += $$PWD/includes $$PWD/includes/QtCrypto
+INCLUDEPATH += $$PWD/includes $$PWD/../3rdParty/qoauth/include
+message(Adding include $$PWD/../3rdParty/qoauth/include)
 
 simulator: {
 LIBS+= -lqoauth -lqjson -L$$PWD -lqca

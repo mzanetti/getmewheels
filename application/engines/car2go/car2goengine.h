@@ -32,7 +32,7 @@
 #include <QEventLoop>
 
 #ifndef Q_WS_S60
- #include <QtOAuth/QtOAuth>
+ #include <QtOAuth>
 #else
 //#include "oauth/oauth.h"
 #include "../3rdParty/kqoauth/src/kqoauthmanager.h"
