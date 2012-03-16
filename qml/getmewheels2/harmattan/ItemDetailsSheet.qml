@@ -4,7 +4,7 @@ import com.nokia.extras 1.0
 import GetMeWheels 1.0
 
 Sheet {
-    id: settingsSheet
+    id: itemDetailsSheet
     acceptButtonText: "Go to"
     rejectButtonText: "Close"
 

@@ -148,7 +148,7 @@ void MapWidget::mapEngineChanged()
 
 void MapWidget::setBusinessArea()
 {
-    qDebug() << "Settings business area";
+    qDebug() << "Setting business area";
     // clean old ones
     removeMapObject(&m_businessAreaGroup);
 
