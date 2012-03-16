@@ -25,7 +25,7 @@
 #include "qmlapplicationviewer.h"
 #include <QtDeclarative>
 
-#if !defined QT_SIMULATOR && !defined Q_WS_S60
+#if !defined QT_SIMULATOR //&& !defined Q_WS_S60
 Q_IMPORT_PLUGIN(qtgeoservices_osm)
 #endif
 

@@ -1,21 +1,13 @@
-#TARGET = getmewheels2
-#datadir.source = engines/car2go/data
-#DEPLOYMENTFOLDERS = qmldir datadir
+# General project config
 
-# Additional import path used to resolve QML modules in Creator's code model
-QML_IMPORT_PATH =
-
-# If your application uses the Qt Mobility libraries, uncomment the following
-# lines and add the respective components to the MOBILITY variable.
 CONFIG += mobility
 MOBILITY += location
 
 QT += network
 
-# Speed up launching on MeeGo/Harmattan when using applauncherd daemon
-CONFIG += qdeclarative-boostable
 
-# The .cpp file which was generated for your project. Feel free to hack it.
+# Files used on all platforms
+
 SOURCES += main.cpp \
     mapwidget.cpp \
     gmwmarker.cpp \
@@ -63,27 +55,37 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/compat \
     qtc_packaging/debian_harmattan/changelog
 
+RESOURCES += \
+    getmewheels2.qrc
 
+
+# MeeGo specific stuff
 contains(MEEGO_EDITION,harmattan) {
+    # Speed up launching on MeeGo/Harmattan when using applauncherd daemon
+    CONFIG += qdeclarative-boostable
+    DEFINES += MEEGO
+
     INCLUDEPATH += $$PWD/3rdParty/qoauth/include
     LIBS += -L$$PWD/3rdParty/qoauth/lib/ -L$$PWD/3rdParty/qtm-geoservices-extras/build/ -lqca -lqoauth -lqjson -lqtgeoservices_osm
 
     qmldir.source = qml/getmewheels2/harmattan
     qmldir.target = qml
     DEPLOYMENTFOLDERS = qmldir
+
+    splash.files = splash.png
+    splash.path = /opt/$${TARGET}
+    INSTALLS += splash
 }
 
+# Simulator specific stuff
 simulator: {
+    INCLUDEPATH += $$PWD/3rdParty/qoauth/include
     LIBS+= -lqoauth -lqjson -L$$PWD -lqca
 }
 
-maemo5: {
-    qmldir.source = qml/getmewheels2
-    qmldir.target = qml
-    DEPLOYMENTFOLDERS = qmldir
-}
-
+# Symbian specific stuff
 symbian: {
+    DEPLOYMENT.display_name = "GetMeWheels"
     CONFIG += qt-components
 
     TARGET.UID3 = 0xE0BACF3E
@@ -103,18 +105,15 @@ symbian: {
     oauthFiles.path = /sys/bin
     DEPLOYMENT += oauthFiles
 
+    LIBS += -lgmw_qtgeoservices_osm.lib
+#    osmFiles.sources = gmw_qtgeoservices_osm.dll
+#    osmFiles.path = /sys/bin
+#    DEPLOYMENT += osmFiles
+
     qmldir.source = qml/getmewheels2/symbian
     qmldir.target = qml
     DEPLOYMENTFOLDERS = qmldir
-
 }
-
-RESOURCES += \
-    getmewheels2.qrc
-
-splash.files = splash.png
-splash.path = /opt/$${TARGET}
-INSTALLS += splash
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)

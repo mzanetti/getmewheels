@@ -106,6 +106,8 @@ private:
     QString m_screenName;
     QString m_token;
     QString m_tokenSecret;
+    QString m_temporaryToken;
+    QString m_temporaryTokenSecret;
 #endif
     GMWAccount m_account;
 

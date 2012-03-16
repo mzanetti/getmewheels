@@ -34,9 +34,9 @@ Core *Core::instance()
 Core::Core(QObject *parent) :
     QObject(parent)
 {
-#if !defined QT_SIMULATOR && !defined Q_WS_S60
+#if !defined QT_SIMULATOR //&& !defined Q_WS_S60
     m_serviceProvider = new QGeoServiceProvider("openstreetmap");
-    qDebug() << "created GeoServiceProvider" << m_serviceProvider;
+    qDebug() << "created GeoServiceProvider" << m_serviceProvider->mappingManager();
 #else
     m_serviceProvider = new QGeoServiceProvider("nokia");
 #endif

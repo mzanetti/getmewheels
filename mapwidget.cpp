@@ -406,6 +406,7 @@ void MapWidget::clicked(qreal mouseX, qreal mouseY)
 
 void MapWidget::routeTo(GMWItem *item)
 {
+    qDebug() << "routing to" << item;//->name();
     if(!Core::instance()->serviceProvider()->routingManager()) {
         qDebug() << "Routing not supported by map provider";
         return;

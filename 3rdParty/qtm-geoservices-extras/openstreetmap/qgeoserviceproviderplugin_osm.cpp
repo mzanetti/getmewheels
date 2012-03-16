@@ -47,8 +47,12 @@
 #include "qgeoroutingmanagerengine_osm.h"
 
 #include <QtPlugin>
+#include <QDebug>
 
-QGeoServiceProviderFactoryOsm::QGeoServiceProviderFactoryOsm() {}
+QGeoServiceProviderFactoryOsm::QGeoServiceProviderFactoryOsm()
+{
+    qDebug() << "Creating GeoServiceProvider for OSM";
+}
 
 QGeoServiceProviderFactoryOsm::~QGeoServiceProviderFactoryOsm() {}
 
@@ -66,6 +70,7 @@ QGeoMappingManagerEngine* QGeoServiceProviderFactoryOsm::createMappingManagerEng
         QGeoServiceProvider::Error *error,
         QString *errorString)const
 {
+    qDebug() << "Creaging Mapping Manager";
     return new QGeoMappingManagerEngineOsm(parameters, error, errorString);
 }
 

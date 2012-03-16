@@ -17,6 +17,7 @@ Page {
 
     function routeTo(item) {
         map.routeTo(item);
+        pageStack.pop();
     }
 
     GmwMap {
@@ -43,7 +44,9 @@ Page {
         id: detailsSheet
 
         onGoTo: {
+            console.log("routing to " + item);
             map.routeTo(item);
+            pageStack.pop();
         }
     }
 

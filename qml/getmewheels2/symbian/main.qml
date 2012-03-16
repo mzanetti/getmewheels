@@ -134,14 +134,16 @@ PageStackWindow {
 
         content:Item {
             id: name
-            height: 200
+            height: 350
             width: parent.width
             Label {
                 id: text
                 font.pixelSize: 22
                 anchors.centerIn: parent
+                width: parent.width - 20
                 color: "white"
-                text: "Copyright\n Michael Zanetti\n  michael_zanetti@gmx.net\n Christian Fetzer\n  fetzerch@googlemail.com"
+                text: "Copyright\n Michael Zanetti\n  michael_zanetti@gmx.net\n Christian Fetzer\n  fetzerch@googlemail.com\n\nThis product uses the car2go API but is not endorsed or certified by car2go.\nThe use of this application requires a data connection which may be associated with additional costs."
+                wrapMode: Text.WordWrap
             }
         }
 
@@ -149,21 +151,10 @@ PageStackWindow {
             Button {
                 id: closeButton
                 text: "close"; onClicked: aboutDialog.close()
+                width: parent.width*2/3
+                anchors.horizontalCenter: parent.horizontalCenter
             }
-            Button {
-                id: donateButton
-                anchors.top: closeButton.bottom
-                anchors.topMargin: 10
-                text: "donate";
 
-                onClicked: Qt.openUrlExternally("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UPA7TFA73GKFY")
-            }
-            Button {
-                anchors.top: donateButton.bottom
-                anchors.topMargin: 10
-                text: "flattr";
-                onClicked: Qt.openUrlExternally("https://flattr.com/thing/465960/GetMeWheels")
-            }
         }
     }
 

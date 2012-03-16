@@ -1,7 +1,12 @@
+*.directory
+*qmakepluginstubs*
 *_dll.mmp
+*_lib.mmp
+*.def
 *_installer.pkg
 *_stub.pkg
 *_template.pkg
+*-armv5.pkg*
 *.sis
 *_dll.mmp
 *_exe.mmp

@@ -1,7 +1,7 @@
 TEMPLATE = subdirs
 
 symbian: {
-SUBDIRS += kqoauth qjson
+SUBDIRS += kqoauth qjson qtm-geoservices-extras
 }
 
 contains(MEEGO_EDITION,harmattan) {

@@ -254,12 +254,12 @@ Sheet {
             State {
                 name: "book"
                 PropertyChanges { target: createBookingHeaderLabel; text: "Create booking?" }
-                PropertyChanges { target: createBookingTextLabel; text: "The booking will be valid for 30 minutes from now. Cancelling or missing a booked car is associated with additional costs."}
+                PropertyChanges { target: createBookingTextLabel; text: "The booking will be valid for 30 minutes from now. Cancelling or missing a booked car can be associated with additional costs."}
             },
             State {
                 name: "cancel"
                 PropertyChanges { target: createBookingHeaderLabel; text: "Cancel booking?" }
-                PropertyChanges { target: createBookingTextLabel; text: "Cancelling or missing a booking is associated with additional costs."}
+                PropertyChanges { target: createBookingTextLabel; text: "Cancelling or missing a booking can be associated with additional costs."}
             }
         ]
         title: Column {

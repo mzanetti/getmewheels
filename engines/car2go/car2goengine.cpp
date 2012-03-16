@@ -389,8 +389,8 @@ bool Car2goEngine::setAccessCode(const QString &code)
     m_oauthRequest->setHttpMethod(KQOAuthRequest::POST);
     m_oauthRequest->setConsumerKey(Car2goEngine::ConsumerKey);
     m_oauthRequest->setConsumerSecretKey(Car2goEngine::ConsumerSecret);
-    m_oauthRequest->setToken(m_token);
-    m_oauthRequest->setTokenSecret(m_tokenSecret);
+    m_oauthRequest->setToken(m_temporaryToken);
+    m_oauthRequest->setTokenSecret(m_temporaryTokenSecret);
     m_oauthRequest->setEnableDebugOutput(false);
     //m_oauthRequest->setCallbackUrl(QUrl(Car2goEngine::ParamCallbackValue));
 
@@ -400,7 +400,7 @@ bool Car2goEngine::setAccessCode(const QString &code)
         qDebug() << "getting oauth access token timed out...";
         return false;
     }
-    return true;
+    return m_oauthManager->lastError() == 0;
 
 #endif
 }
@@ -820,12 +820,12 @@ void Car2goEngine::receivedToken(const QString &token, const QString &tokenSecre
 void Car2goEngine::temporaryTokenReceived(const QString &token, const QString &tokenSecret)
 {
     qDebug() << "got token" << token << tokenSecret;
-    m_tokenSecret = tokenSecret;
-    m_token = token;
+    m_temporaryTokenSecret = tokenSecret;
+    m_temporaryToken = token;
 
     QString url = Car2GoAuthorizeURL;
     url.append( "?" );
-    url.append( "&oauth_token=" + m_token );
+    url.append( "&oauth_token=" + m_temporaryToken );
     qDebug() << "got url:" << QUrl(url);
 
     QDesktopServices::openUrl(QUrl::fromEncoded(url.toUtf8()));
@@ -838,18 +838,19 @@ void Car2goEngine::authorizationReceived(const QString &token, const QString &ve
 
 void Car2goEngine::accessTokenReceived(const QString &token, const QString &tokenSecret)
 {
-    qDebug() << "got access token" << token << tokenSecret;
+    qDebug() << "got access token" << token << tokenSecret << m_oauthManager->lastError();
 
-    // Save informations
-//    m_screenName = accessToken.value( ParamScreenName );
-    m_token = token;
-    m_tokenSecret = tokenSecret;
+    if(m_oauthManager->lastError() == 0) {
+        // Save informations
+        m_token = token;
+        m_tokenSecret = tokenSecret;
 
-    QSettings settings("getmewheels", "getmewheels");
-    settings.beginGroup("car2go");
-    settings.setValue("OAuthAccessToken", m_token);
-    settings.setValue("OAuthAccessTokenSecret", m_tokenSecret);
-    settings.setValue("AuthExpirationDate", QDateTime::currentDateTime().addDays(31));
+        QSettings settings("getmewheels", "getmewheels");
+        settings.beginGroup("car2go");
+        settings.setValue("OAuthAccessToken", m_token);
+        settings.setValue("OAuthAccessTokenSecret", m_tokenSecret);
+        settings.setValue("AuthExpirationDate", QDateTime::currentDateTime().addDays(31));
+    }
 
     m_timeout = false;
     m_loop.quit();

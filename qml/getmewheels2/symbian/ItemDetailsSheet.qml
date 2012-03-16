@@ -53,7 +53,9 @@ Page {
         ToolButton {
             iconSource: "toolbar-mediacontrol-play"
 //            anchors.left: (parent === undefined) ? undefined : parent.left
-            onClicked: settingsSheet.goTo(settingsSheet.currentItem);
+            onClicked: {
+                settingsSheet.goTo(settingsSheet.currentItem.gmwItem);
+            }
         }
     }
 
@@ -177,17 +179,17 @@ Page {
                         function stateToIconSource(state) {
                             switch(state) {
                             case GmwVehicle.StateUnacceptable:
-                                return "image://theme/icon-m-messaging-smiley-cry";
+                                return "images/smiley_sad.png";
                             case GmwVehicle.StateIssuesExist:
-                                return "image://theme/icon-m-messaging-smiley-sad";
+                                return "images/smiley_sad.png";
                             case GmwVehicle.StateSatisfied:
-                                return "image://theme/icon-m-messaging-smiley-happy";
+                                return "images/smiley_happy.png";
                             case GmwVehicle.StateGood:
-                                return "image://theme/icon-m-messaging-smiley-happy";
+                                return "images/smiley_happy.png";
                             case GmwVehicle.StateExcellent:
-                                return "image://theme/icon-m-messaging-smiley-very-happy";
+                                return "images/smiley_happy.png";
                             }
-                            return "image://theme/icon-m-invitation-pending";
+                            return "images/smiley_unknown.png";
                         }
 
                         function stateToString(state) {
@@ -206,26 +208,34 @@ Page {
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        Label {
-                            text: vehicleGrid.stateToString(gmwItem.interiorState)
-                        }
+                        Row {
+                            spacing: 10
 
-//                        Image {
-//                            id: stateImage
-//                            source: vehicleGrid.stateToIconSource(gmwItem.interiorState)
-//                        }
+                            Image {
+                                id: stateImage
+                                source: vehicleGrid.stateToIconSource(gmwItem.interiorState)
+                            }
+                            Label {
+                                text: vehicleGrid.stateToString(gmwItem.interiorState)
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                        }
                         Label {
                             text: "Exterior State:"
 //                            height: stateImage.height
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        Label {
-                            text: vehicleGrid.stateToString(gmwItem.exteriorState)
+                        Row {
+                            spacing: 10
+                            Image {
+                                source: vehicleGrid.stateToIconSource(gmwItem.exteriorState)
+                            }
+                            Label {
+                                text: vehicleGrid.stateToString(gmwItem.exteriorState)
+                                verticalAlignment: Text.AlignVCenter
+                            }
                         }
-//                        Image {
-//                            source: vehicleGrid.stateToIconSource(gmwItem.exteriorState)
-//                        }
                     }
 
                     SectionHeader {
@@ -242,10 +252,10 @@ Page {
                         Image {
                             id: availabilityIcon
                             visible: gmwItem.booking.valid
-                            width: 48
-                            height: 48
+                            width: 32
+                            height: 32
                             property int timeLeft: gmwItem.booking.timeLeft
-                            source: timeLeft > 900 ? "image://theme/icon-m-common-presence-online" : (timeLeft > 0 ?"image://theme/icon-m-common-presence-away" : "image://theme/icon-m-common-presence-busy")
+                            source: timeLeft > 900 ? "images/bookingstate_green.png" : (timeLeft > 0 ?"images/bookingstate_yellow.png" : "images/bookingstate_red.png")
                         }
                         Label {
                             width: parent.width - availabilityIcon.width - 10
@@ -294,22 +304,25 @@ Page {
     Dialog {
         id: createBookingDialog
         width: parent.width
+        height: 250
         property QtObject gmwItem
 
         states: [
             State {
                 name: "book"
                 PropertyChanges { target: createBookingHeaderLabel; text: "Create booking?" }
-                PropertyChanges { target: createBookingTextLabel; text: "The booking will be valid for 30 minutes from now. Cancelling or missing a booked car is associated with additional costs."}
+                PropertyChanges { target: createBookingTextLabel; text: "The booking will be valid for 30 minutes from now. Cancelling or missing a booked car can be associated with additional costs. Please refer to www.car2go.com for details."}
             },
             State {
                 name: "cancel"
                 PropertyChanges { target: createBookingHeaderLabel; text: "Cancel booking?" }
-                PropertyChanges { target: createBookingTextLabel; text: "Cancelling or missing a booking is associated with additional costs."}
+                PropertyChanges { target: createBookingTextLabel; text: "Cancelling or missing a booking can be associated with additional costs."}
             }
         ]
         title: Column {
-            width: parent.width
+            width: parent.width - 20
+            anchors.horizontalCenter: parent.horizontalCenter
+
             Label {
                 id: createBookingHeaderLabel
                 width: parent.width
@@ -319,16 +332,14 @@ Page {
         }
 
         content: Column {
-            width: parent.width
+            anchors.fill: parent
+            anchors.margins: 10
+            //anchors.horizontalCenter: parent.horizontalCenter
             Label {
                 id: createBookingTextLabel
                 width: parent.width
                 wrapMode: Text.WordWrap
                 color: "white"
-            }
-            Item {
-                width: parent.width
-                height: 50
             }
         }
 

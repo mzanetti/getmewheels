@@ -95,8 +95,16 @@ Page {
 
     }
 
-    ListModel {
+    ListModel { // Fill with dummy stuff to make the Dialog resize itself propertly
         id: locationsModel
+        ListElement { name: "0" }
+        ListElement { name: "0" }
+        ListElement { name: "0" }
+        ListElement { name: "0" }
+        ListElement { name: "0" }
+        ListElement { name: "0" }
+        ListElement { name: "0" }
+        ListElement { name: "0" }
     }
     SelectionDialog {
         id: selectLocationsDialog

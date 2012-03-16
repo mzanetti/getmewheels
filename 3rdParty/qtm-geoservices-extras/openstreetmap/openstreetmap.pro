@@ -1,6 +1,15 @@
 TEMPLATE = lib
-CONFIG += plugin static
+CONFIG += plugin
+
+    CONFIG += static
+contains(MEEGO_EDITION,harmattan) {
+}
+
 TARGET = $$qtLibraryTarget(qtgeoservices_osm)
+symbian {
+TARGET = gmw_$$qtLibraryTarget(qtgeoservices_osm)
+}
+
 PLUGIN_TYPE=geoservices
 
 include(../common.pri)
@@ -34,8 +43,10 @@ SOURCES += \
             routeparser.cpp
 
 symbian {
+    MMP_RULES += EXPORTUNFROZEN
     TARGET.EPOCALLOWDLLDATA = 1
-    TARGET.CAPABILITY = ALL -TCB
+    #TARGET.CAPABILITY = ALL -TCB
+    TARGET.CAPABILITY += NetworkServices ReadDeviceData WriteDeviceData Location
     pluginDep.sources = $${TARGET}.dll
     pluginDep.path = $${QT_PLUGINS_BASE_DIR}/$${PLUGIN_TYPE}
     DEPLOYMENT += pluginDep
