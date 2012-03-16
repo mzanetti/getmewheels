@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Name=GetMeWheels
+Exec=/usr/bin/invoker -s --splash=/opt/getmewheels2/splash.png --type=d /opt/getmewheels2/bin/getmewheels2
+Icon=/usr/share/icons/hicolor/80x80/apps/getmewheels280.png
+X-Window-Icon=
+X-HildonDesk-ShowInToolbar=true
+X-Osso-Type=application/x-executable
