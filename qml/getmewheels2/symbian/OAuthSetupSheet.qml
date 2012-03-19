@@ -3,6 +3,7 @@ import com.nokia.symbian 1.1
 
 Page {
     id: settingsSheet
+    orientationLock: PageOrientation.LockPortrait
 //    rejectButtonText: "Cancel"
     state: "step1"
 

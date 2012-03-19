@@ -3,6 +3,7 @@ import com.nokia.symbian 1.1
 
 Page {
     id: settingsSheet
+    orientationLock: PageOrientation.LockPortrait
 //    acceptButtonText: "Save"
 //    rejectButtonText: "Cancel"
 
@@ -43,11 +44,11 @@ Page {
             }
         }
 
-        Item {
-            id: spacer1
-            width: parent.width
-            height: 20
-        }
+//        Item {
+//            id: spacer1
+//            width: parent.width
+//            height: 20
+//        }
 
         SectionHeader {
             width: parent.width
@@ -56,13 +57,13 @@ Page {
 
         Label {
             width: parent.width
-            text: "To be able to create bookings for cars you need to be signed in with your car2go account. Note that there may be costs associated with it. Please visit http://www.car2go.com for detailed informations."
+            text: "To be able to create bookings for cars you need to be signed in with your car2go account. Please visit http://www.car2go.com for detailed informations on costs."
             wrapMode: Text.WordWrap
         }
 
         Label {
             width: parent.width
-            text: "GetMeWheels is authenticated until " + gmwEngine.authExpirationDate
+            text: "Authentication expiry: " + Qt.formatDate(gmwEngine.authExpirationDate)
             wrapMode: Text.WordWrap
             visible: gmwEngine.authenticated
         }

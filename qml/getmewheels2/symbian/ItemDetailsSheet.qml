@@ -5,6 +5,7 @@ import GetMeWheels 1.0
 
 Page {
     id: settingsSheet
+    orientationLock: PageOrientation.LockPortrait
 //    acceptButtonText: "Go to"
 //    rejectButtonText: "Close"
 

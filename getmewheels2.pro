@@ -85,7 +85,7 @@ simulator: {
 
 # Symbian specific stuff
 symbian: {
-    DEPLOYMENT.display_name = "GetMeWheels"
+    DEPLOYMENT.display_name = GetMeWheels
     CONFIG += qt-components
 
     TARGET.UID3 = 0xE0BACF3E
@@ -95,15 +95,15 @@ symbian: {
 
     # In case of Symbian we use our 3rdParty distribution of qjson
     INCLUDEPATH += $$PWD/3rdParty/
-    LIBS += -lgmw_qjson
-    jsonFiles.sources = gmw_qjson.dll
-    jsonFiles.path = /sys/bin
-    DEPLOYMENT += jsonFiles
+    LIBS += -lgmw_qjson.lib
+#    jsonFiles.sources = gmw_qjson.dll
+#    jsonFiles.path = /sys/bin
+#    DEPLOYMENT += jsonFiles
 
-    LIBS += -lgmw_kqoauth
-    oauthFiles.sources = gmw_kqoauth.dll
-    oauthFiles.path = /sys/bin
-    DEPLOYMENT += oauthFiles
+    LIBS += -lgmw_kqoauth.lib
+#    oauthFiles.sources = gmw_kqoauth.dll
+#    oauthFiles.path = /sys/bin
+#    DEPLOYMENT += oauthFiles
 
     LIBS += -lgmw_qtgeoservices_osm.lib
 #    osmFiles.sources = gmw_qtgeoservices_osm.dll
@@ -113,6 +113,12 @@ symbian: {
     qmldir.source = qml/getmewheels2/symbian
     qmldir.target = qml
     DEPLOYMENTFOLDERS = qmldir
+
+    my_deployment.pkg_prerules += vendorinfo
+
+    DEPLOYMENT += my_deployment
+
+    vendorinfo += "%{\"Michael Zanetti\"}" ":\"Michael Zanetti\""
 }
 
 # Please do not modify the following two lines. Required for deployment.
