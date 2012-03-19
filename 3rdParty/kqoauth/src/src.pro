@@ -1,4 +1,4 @@
-TARGET = kqoauth
+TARGET = gmw_kqoauth
 DESTDIR = ../lib
 win32:DLLDESTDIR = $${DESTDIR}
 symbian:DLLDESTDIR = $${DESTDIR}
@@ -7,7 +7,7 @@ VERSION = 0.93
 
 TEMPLATE = lib
 QT += network
-CONFIG += \
+CONFIG += static\
     create_prl
 
 !macx: CONFIG += static_and_shared
@@ -93,7 +93,7 @@ symbian {
     target.path = $$[QT_INSTALL_LIBS]
     headers.path = $$[QMAKE_INCDIR]
 
-    kqoauth.sources = kqoauth.dll
+    kqoauth.sources = gmw_kqoauth.dll
     kqoauth.path = \sys\bin
     DEPLOYMENT += kqoauth
 

@@ -3,6 +3,7 @@
 *_dll.mmp
 *_lib.mmp
 *.def
+*.prl
 *_installer.pkg
 *_stub.pkg
 *_template.pkg
