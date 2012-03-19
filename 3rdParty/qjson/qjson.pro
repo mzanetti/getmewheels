@@ -8,6 +8,7 @@ QT       -= gui
 
 TARGET = gmw_qjson
 TEMPLATE = lib
+CONFIG += static
 
 DEFINES += QJSON_LIBRARY QJSON_MAKEDLL
 
