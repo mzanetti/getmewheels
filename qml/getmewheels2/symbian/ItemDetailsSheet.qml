@@ -113,8 +113,9 @@ Page {
                                 id: nameLabel
                                 width: parent.width
                                 text: gmwItem.name
-                                font.pixelSize: 40
+                                font.pixelSize: text.length > 14 ? 30 : (text.length > 10 ? 35 : 40)
                                 wrapMode: Text.WordWrap
+                                elide: Text.ElideRight
                             }
                             Label {
                                 text: gmwItem.engineType === GmwVehicle.EngineTypeED ? "Electric Drive" : gmwItem.chargingPole ? "Electric Drive Charging Pole" : ""
