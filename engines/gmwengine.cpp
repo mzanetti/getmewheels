@@ -172,6 +172,12 @@ void GMWEngine::clearDefaultAccount()
     setDefaultAccount(GMWAccount());
 }
 
+void GMWEngine::clearAuthentication()
+{
+    m_plugin->removeAuthentication();
+    emit authenticatedChanged();
+}
+
 void GMWEngine::refreshStationary(bool useCache)
 {
     if(!m_location) {

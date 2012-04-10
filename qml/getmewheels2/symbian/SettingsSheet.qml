@@ -20,6 +20,15 @@ Page {
         }
     }
 
+    Connections {
+        target: gmwEngine
+        onAuthenticatedChanged: {
+            if(gmwEngine.authenticated) {
+                accountSelectionButton.clicked();
+            }
+        }
+    }
+
     Column {
         anchors.fill: parent
         anchors.margins: 10
@@ -74,6 +83,15 @@ Page {
             onClicked: {
                 oauthSetupSheet.state = "step1";
                 pageStack.push(oauthSetupSheet);
+            }
+        }
+        Button {
+            text: "Clear Authentication"
+            width: parent.width
+            visible: gmwEngine.authenticated
+            onClicked: {
+                gmwEngine.clearDefaultAccount();
+                gmwEngine.clearAuthentication();
             }
         }
 

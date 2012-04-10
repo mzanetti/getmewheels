@@ -9,6 +9,15 @@ Sheet {
     property alias locationName: locationButton.subTitleText
     property alias accountName: accountSelectionButton.subTitleText
 
+    Connections {
+        target: gmwEngine
+        onAuthenticatedChanged: {
+            if(gmwEngine.authenticated) {
+                accountSelectionButton.clicked();
+            }
+        }
+    }
+
     content: Column {
         anchors.fill: parent
         anchors.margins: 10
@@ -63,6 +72,15 @@ Sheet {
             onClicked: {
                 oauthSetupSheet.state = "step1";
                 oauthSetupSheet.open();
+            }
+        }
+        Button {
+            text: "Clear Authentication"
+            width: parent.width
+            visible: gmwEngine.authenticated
+            onClicked: {
+                gmwEngine.clearDefaultAccount();
+                gmwEngine.clearAuthentication();
             }
         }
 

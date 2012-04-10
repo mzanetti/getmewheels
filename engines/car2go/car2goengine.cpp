@@ -410,6 +410,12 @@ bool Car2goEngine::authenticated()
     return !m_token.isEmpty() && !m_tokenSecret.isEmpty();
 }
 
+void Car2goEngine::removeAuthentication()
+{
+    m_token.clear();
+    m_tokenSecret.clear();
+}
+
 QDateTime Car2goEngine::authExpirationDate()
 {
     QSettings settings("getmewheels", "getmewheels");

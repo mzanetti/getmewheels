@@ -56,6 +56,7 @@ public:
     bool startAuthentication();
     bool setAccessCode(const QString &code);
     bool authenticated();
+    void removeAuthentication();
     QDateTime authExpirationDate();
     QList<GMWAccount> accounts(Location *location);
     GMWAccount account();

@@ -43,6 +43,7 @@ public:
     virtual bool startAuthentication() = 0;
     virtual bool setAccessCode(const QString &accessCode) = 0;
     virtual bool authenticated() = 0;
+    virtual void removeAuthentication() = 0;
     virtual QDateTime authExpirationDate() = 0;
     virtual QList<GMWAccount> accounts(Location *location) = 0;
     virtual GMWAccount account() = 0;

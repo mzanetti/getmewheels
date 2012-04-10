@@ -127,7 +127,6 @@ Page {
             name: "step3"
             PropertyChanges { target: step3Header; visible: true; headerText: "Done" }
             PropertyChanges { target: statusLabel; visible: true; text: "GetMeWheels authenticated successfully. You should now be able to select an account and manage your bookings for cars. <b>The authentication will expire in 31 days.</b>" }
-            PropertyChanges { target: settingsSheet; acceptButtonText: "OK" ; rejectButtonText: "" }
         },
         State {
             name: "step4"

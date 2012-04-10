@@ -73,6 +73,8 @@ public slots:
 
     void setDefaultAccount(const GMWAccount &account);
     void clearDefaultAccount();
+    void clearAuthentication();
+
     void setDefaultAccountName(const QString &accountName);
     bool createBooking(GMWVehicle *vehicle, const GMWAccount &account = GMWAccount());
     bool cancelBooking(GMWVehicle *vehicle);
