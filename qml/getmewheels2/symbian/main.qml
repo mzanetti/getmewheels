@@ -94,6 +94,10 @@ PageStackWindow {
                 text: qsTr("About")
                 onClicked: aboutDialog.open();
             }
+            MenuItem {
+                text: qsTr("Exit")
+                onClicked: Qt.quit();
+            }
         }
     }
 
