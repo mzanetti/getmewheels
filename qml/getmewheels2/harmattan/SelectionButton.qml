@@ -66,6 +66,6 @@ Item {
         }
         height: sourceSize.height
         width: sourceSize.width
-        source: "image://theme/meegotouch-combobox-indicator"
+        source: "image://theme/meegotouch-combobox-indicator" + (theme.inverted ? "-inverted" : "")
     }
 }

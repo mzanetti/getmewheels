@@ -54,6 +54,7 @@ Page {
         ToolButton {
             iconSource: "toolbar-mediacontrol-play"
 //            anchors.left: (parent === undefined) ? undefined : parent.left
+            visible: appWindow.gpsAvailable
             onClicked: {
                 settingsSheet.goTo(settingsSheet.currentItem.gmwItem);
             }
@@ -118,7 +119,7 @@ Page {
                                 elide: Text.ElideRight
                             }
                             Label {
-                                text: gmwItem.engineType === GmwVehicle.EngineTypeED ? "Electric Drive" : gmwItem.chargingPole ? "Electric Drive Charging Pole" : ""
+                                text: gmwItem.engineType === GmwVehicle.EngineTypeED ? qsTr("Electric Drive") : gmwItem.chargingPole ? qsTr("Electric Drive Charging Pole") : ""
                                 visible: text.length > 0
                             }
                         }
@@ -126,7 +127,7 @@ Page {
 
                     SectionHeader {
                         width: parent.width
-                        headerText: "Location"
+                        headerText: qsTr("Location")
                     }
 
                     Label {
@@ -137,17 +138,17 @@ Page {
                     Row {
                         spacing: 10
                         Label {
-                            text: "Distance:"
+                            text: qsTr("Distance:")
                         }
 
                         Label {
-                            text: gmwItem.distance === -1 ? "Waiting for GPS..." : gmwItem.distance
+                            text: gmwItem.distance === -1 ? qsTr("Waiting for GPS...") : gmwItem.distance
                         }
                     }
 
                     SectionHeader {
                         width: parent.width
-                        headerText: "State"
+                        headerText: qsTr("State")
                         visible: gmwItem.itemType === GmwItem.TypeVehicle
                     }
 
@@ -159,7 +160,7 @@ Page {
 
                         Label {
                             height: fuelRow.height
-                            text: gmwItem.engineType === GmwVehicle.EngineTypeED ? "Battery level:" : "Fuel level:"
+                            text: gmwItem.engineType === GmwVehicle.EngineTypeED ? qsTr("Battery level:") : qsTr("Fuel level:")
                             verticalAlignment: Text.AlignVCenter
                         }
 
@@ -197,15 +198,15 @@ Page {
                         function stateToString(state) {
                             switch(state) {
                             case GmwVehicle.StateUnacceptable:
-                                return "Bad";
+                                return qsTr("Bad");
                             case GmwVehicle.StateGood:
-                                return "Good";
+                                return qsTr("Good");
                             }
-                            return "Unknown";
+                            return qsTr("Unknown");
                         }
 
                         Label {
-                            text: "Interior State:"
+                            text: qsTr("Interior State:")
 //                            height: stateImage.height
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -223,7 +224,7 @@ Page {
                             }
                         }
                         Label {
-                            text: "Exterior State:"
+                            text: qsTr("Exterior State:")
 //                            height: stateImage.height
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -242,7 +243,7 @@ Page {
 
                     SectionHeader {
                         width: parent.width
-                        headerText: "Availability"
+                        headerText: qsTr("Availability")
                         visible: gmwItem.itemType == GmwItem.TypeParkingSpot  || gmwItem.itemType == GmwItem.TypeVehicle
                     }
 
@@ -269,9 +270,14 @@ Page {
                     Button {
                         width: parent.width
                         visible: gmwItem.itemType == GmwItem.TypeVehicle
-                        text: gmwItem.booking.valid && !gmwItem.booking.expired ? "Cancel" : "Book"
-                        enabled: gmwEngine.defaultAccountName.length > 0;
+                        text: gmwItem.booking.valid && !gmwItem.booking.expired ? qsTr("Cancel") : qsTr("Book")
                         onClicked: {
+                            if(gmwEngine.defaultAccountName.length === 0) {
+                                createBookingDialog.state = "error"
+                                createBookingDialog.open();
+                                return;
+                            }
+
                             if(gmwItem.booking.valid && !gmwItem.booking.expired) {
                                 createBookingDialog.state = "cancel"
                                 createBookingDialog.gmwItem = gmwItem;
@@ -293,7 +299,7 @@ Page {
 //                        }
 
                         Label {
-                            text: (gmwItem.capacityTotal - gmwItem.capacityUsed) + " free / " + gmwItem.capacityTotal + " total"
+                            text: (gmwItem.capacityTotal - gmwItem.capacityUsed) + " " + qsTr("free") + " / " + gmwItem.capacityTotal + " " + qsTr("total")
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }
@@ -312,13 +318,18 @@ Page {
         states: [
             State {
                 name: "book"
-                PropertyChanges { target: createBookingHeaderLabel; text: "Create booking?" }
-                PropertyChanges { target: createBookingTextLabel; text: "The booking will be valid for 30 minutes from now. Cancelling or missing a booked car can be associated with additional costs. Please refer to www.car2go.com for details."}
+                PropertyChanges { target: createBookingHeaderLabel; text: qsTr("Create booking?") }
+                PropertyChanges { target: createBookingTextLabel; text: qsTr("The booking will be valid for 30 minutes from now.")}
             },
             State {
                 name: "cancel"
-                PropertyChanges { target: createBookingHeaderLabel; text: "Cancel booking?" }
-                PropertyChanges { target: createBookingTextLabel; text: "Cancelling or missing a booking can be associated with additional costs."}
+                PropertyChanges { target: createBookingHeaderLabel; text: qsTr("Cancel booking") }
+                PropertyChanges { target: createBookingTextLabel; text: qsTr("Are you sure?")}
+            },
+            State {
+                name: "error"
+                PropertyChanges { target: createBookingHeaderLabel; text: qsTr("Not authorized") }
+                PropertyChanges { target: createBookingTextLabel; text: qsTr("To be able to create bookings for cars you need to authorize GetMeWheels and select the account which will be charged for the ride.") + "\n\n" + qsTr("Open settings now?")}
             }
         ]
         title: Column {
@@ -344,38 +355,44 @@ Page {
                 color: "white"
             }
         }
-
         buttons {
             ButtonRow {
                 width: parent.width
                 Button {
                     id: yesButton
-                    text: "yes";
+                    text: qsTr("Yes");
                     onClicked: {
                         if(createBookingDialog.state == "book") {
                             if(gmwEngine.createBooking(createBookingDialog.gmwItem)) {
-                                infoBanner.text = "Car booked successfully";
+                                infoBanner.text = qsTr("Car booked successfully");
                                 infoBanner.open();
                             } else {
-                                infoBanner.text = "Failed to create booking: " + gmwEngine.error();
+                                infoBanner.text = qsTr("Failed to create booking: %1").arg(gmwEngine.error());
                                 infoBanner.open();
                             }
                         } else if(createBookingDialog.state == "cancel") {
                             if(gmwEngine.cancelBooking(createBookingDialog.gmwItem)) {
-                                infoBanner.text = "Booking cancelled successfully";
+                                infoBanner.text = qsTr("Booking cancelled successfully");
                                 infoBanner.open();
                             } else {
-                                infoBanner.text = "Failed to cancel booking: " + gmwEngine.error();
+                                infoBanner.text = qsTr("Failed to cancel booking: %1").arg(gmwEngine.error());
                                 infoBanner.open();
                             }
 
+                        }else if(createBookingDialog.state == "error") {
+                            var component = Qt.createComponent("SettingsSheet.qml")
+                            if (component.status == Component.Ready) {
+                                pageStack.push(component);
+                            } else {
+                                console.log("Error loading component:", component.errorString());
+                            }
                         }
                         createBookingDialog.close();
                     }
                 }
                 Button {
                     id: noButton
-                    text: "no";
+                    text: qsTr("No");
                     onClicked: createBookingDialog.close();
                 }
             }

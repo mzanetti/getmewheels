@@ -40,6 +40,7 @@ class MapWidget : public QGraphicsGeoMap
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool gpsAvailable READ gpsAvailable NOTIFY gpsAvailableChanged)
     Q_PROPERTY(double centerLatitude READ centerLatitude WRITE setCenterLatitude)
     Q_PROPERTY(double centerLongitude READ centerLongitude WRITE setCenterLongitude)
 
@@ -68,6 +69,8 @@ public:
     double centerLongitude() const;
     void setCenterLongitude(double lon);
 
+    bool gpsAvailable();
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
@@ -80,6 +83,7 @@ signals:
     void itemClicked(GMWItem* item);
     void itemsClicked(const QVariant &items);
     void routingFailed(const QString &error);
+    void gpsAvailableChanged();
 
 private slots:
     void rowsInserted(const QModelIndex &parent, int start, int end);

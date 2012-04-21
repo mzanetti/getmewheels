@@ -69,10 +69,11 @@ MapWidget::MapWidget() :
 
     // GPS
     m_gps = QGeoPositionInfoSource::createDefaultSource(this);
-    qDebug() << "Got GPS:" << m_gps;
+    qDebug() << "Got GPS:" << m_gps << "available sources:" << QGeoPositionInfoSource::availableSources();
     if (m_gps) {
         m_gps->setUpdateInterval(5000);
         connect(m_gps, SIGNAL(positionUpdated(const QGeoPositionInfo&)), this, SLOT(positionUpdated(const QGeoPositionInfo&)));
+        m_gps->requestUpdate();
         m_gps->startUpdates();
     }
     qDebug() << "bla" << Core::instance()->serviceProvider()->routingManager();
@@ -102,6 +103,8 @@ MapWidget::~MapWidget()
 
 void MapWidget::positionUpdated(const QGeoPositionInfo &info) {
 //    qDebug() << "GPS Position updated:" << QDateTime::currentDateTime().toString();
+    bool firstFix = !m_positionMarker.coordinate().isValid();
+
     m_positionMarker.setCoordinate(info.coordinate());
     m_accuracyMarker.setCenter(info.coordinate());
     if(info.hasAttribute(QGeoPositionInfo::HorizontalAccuracy) && info.hasAttribute(QGeoPositionInfo::VerticalAccuracy)) {
@@ -118,6 +121,10 @@ void MapWidget::positionUpdated(const QGeoPositionInfo &info) {
 
     if(m_model->engine()) {
         m_model->currentPositionChanged(info.coordinate(), info.attribute(QGeoPositionInfo::Direction));
+    }
+
+    if(firstFix) {
+        emit gpsAvailableChanged();
     }
 }
 
@@ -204,12 +211,14 @@ void MapWidget::updateMapItems()
     double degrees;
     if(zoomLevel() < 9) {
         degrees = .1;
+    } else if(zoomLevel() < 14){
+        degrees = .4 / qPow(2,(zoomLevel() - 8));
     } else if(zoomLevel() < 17){
         degrees = .2 / qPow(2,(zoomLevel() - 8));
     } else {
         degrees = 0;
     }
-//    qDebug() << "zoomlevel changed to" << zoomLevel() << "degrees" << degrees;
+    qDebug() << "zoomlevel changed to" << zoomLevel() << "degrees" << degrees;
 
     QHash<GMWItem *, QGeoBoundingBox> presentItems;
     foreach(GMWItem *newItem, m_items.keys()) {
@@ -376,6 +385,11 @@ void MapWidget::setCenterLongitude(double lon)
     QGeoCoordinate c = center();
     c.setLongitude(lon);
     setCenter(c);
+}
+
+bool MapWidget::gpsAvailable()
+{
+    return m_positionMarker.coordinate().isValid();
 }
 
 void MapWidget::clicked(qreal mouseX, qreal mouseY)

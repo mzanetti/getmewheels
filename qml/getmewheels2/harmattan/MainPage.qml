@@ -19,6 +19,81 @@ Page {
         map.routeTo(item);
     }
 
+    ToolBarLayout {
+        id: commonTools
+        visible: true
+        ToolIcon {
+            platformIconId: "toolbar-view-menu"
+            onClicked: (myMenu.status == DialogStatus.Closed) ? myMenu.open() : myMenu.close()
+        }
+        ToolIcon {
+            platformIconId: "toolbar-refresh"
+            onClicked: {
+                gmwModel.clearVehicles();
+                gmwEngine.refreshVehicles(false);
+            }
+        }
+        ToolIcon {
+            id: mapListToggle
+            states: [
+                State {
+                    name: "map"; when: pageStack.depth === 1
+                    PropertyChanges { target: mapListToggle; iconId: "icon-m-toolbar-list"+ (theme.inverted ? "-white" : "") }
+                },
+                State {
+                    name: "list"; when: pageStack.depth === 2
+                    PropertyChanges { target: mapListToggle; iconSource: "images/icon-m-toolbar-map" + (theme.inverted ? "-inverted" : "") + ".png" }
+                }
+            ]
+            onClicked: {
+                myMenu.close();
+                if(state == "map") {
+                    var component = Qt.createComponent("ItemList.qml")
+                    if (component.status == Component.Ready) {
+                        pageStack.push(component, {model: gmwModel});
+                    } else {
+                        console.log("Error loading component:", component.errorString());
+                    }
+                } else {
+                    pageStack.pop();
+                }
+
+            }
+        }
+    }
+
+    Menu {
+        id: myMenu
+        visualParent: pageStack
+        MenuLayout {
+            MenuItem {
+                text: qsTr("Settings");
+                onClicked: {
+                    var component = Qt.createComponent("SettingsSheet.qml")
+                    if (component.status === Component.Ready) {
+                        var settingsSheet = component.createObject(mainPage)
+                        settingsSheet.open();
+                    } else {
+                        console.log("Error loading component:", component.errorString());
+                    }
+
+                }
+            }
+            MenuItem {
+                text: qsTr("Refresh all")
+                onClicked: {
+                    gmwModel.clearAll();
+                    gmwEngine.refreshStationary(false);
+                    gmwEngine.refreshVehicles(false);
+                }
+            }
+            MenuItem {
+                text: qsTr("About")
+                onClicked: aboutDialog.open();
+            }
+        }
+    }
+
     GmwMap {
         id: map
         anchors.fill: parent
@@ -37,6 +112,11 @@ Page {
             infoBanner.text = "Routing failed: Service Temporarily Unavailable";
             infoBanner.show();
         }
+
+        onGpsAvailableChanged: {
+            appWindow.gpsAvailable = gpsAvailable;
+        }
+
     }
 
     ItemDetailsSheet {
@@ -123,54 +203,51 @@ Page {
         }
     }
 
-    Rectangle {
-        id: sliderBackground
+    Column {
         height: 380
-        width: 60
         anchors.right: parent.right
         anchors.rightMargin: 20
         anchors.verticalCenter: parent.verticalCenter
-        color: "grey"
-        opacity: .5
-        radius: 15
-        border.color: "black"
-        border.width: 2
-    }
+        spacing: 10
 
-    Column {
-        height: sliderBackground.height - 10
-        anchors.centerIn: sliderBackground
-        Slider {
-            orientation: Qt.Vertical
-            height: parent.height - centerButton.height - 10
+        ZoomSlider {
+            height: parent.height - centerButton.height - parent.spacing * 3
             value: map.zoomLevel
-            minimumValue: map.minimumZoomLevel
-            maximumValue: map.maximumZoomLevel
-            stepSize: 1
+            width: 42
+            maxValue: map.maximumZoomLevel
+            minValue: 10
+            radiusFactor: 1
             onValueChanged: {
                 map.zoomLevel = value;
             }
         }
-//        Rectangle {
-//            id: centerButton
-//            width: parent.width - 20
-//            height: width
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            border.width: 1
-//            border.color: "white"
-//            radius: 15
 
-            Image {
-                id: centerButton
-                anchors.horizontalCenter: parent.horizontalCenter
-                source: "/usr/share/themes/blanco/meegotouch/icons/icon-l-location-test-main-view.png"
-                MouseArea {
-                    anchors.fill: parent
-                    anchors.margins: -10
-                    onClicked: mainPage.zoomToCurrentPosition();
+        Image {
+            id: centerButton
+            anchors.horizontalCenter: parent.horizontalCenter
+            source: "images/location_mark_big.png"
+            width: 42
+            height: 42
+            MouseArea {
+                anchors.fill: parent
+                anchors.margins: -10
+                onClicked: {
+                    if(map.gpsAvailable) {
+//                        rumbleEffect.start();
+                        mainPage.zoomToCurrentPosition();
+                    } else {
+                        print("Swallowing Mouse click");
+                    }
                 }
-//            }
-
+            }
+            Rectangle {
+                opacity: map.gpsAvailable ? 0 : .5
+                color: "black"
+                anchors.centerIn: parent
+                height: parent.height
+                width: parent.width
+                radius: parent.width / 2
+            }
         }
     }
 

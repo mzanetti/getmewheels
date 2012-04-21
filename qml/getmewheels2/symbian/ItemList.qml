@@ -8,6 +8,7 @@ Page {
     orientationLock: PageOrientation.LockPortrait
 
     property alias model: proxyModel.model
+    property bool gpsAvailable: false
 
     tools: commonTools
 
@@ -25,11 +26,11 @@ Page {
 
 //            platformStyle: TabButtonStyle { }
             TabButton {
-                text: "All"
+                text: qsTr("All")
                 onClicked: proxyModel.onlyBooked = false;
             }
             TabButton {
-                text: "Booked"
+                text: qsTr("Booked")
                 onClicked: proxyModel.onlyBooked = true;
             }
         }

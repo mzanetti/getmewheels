@@ -3,7 +3,7 @@ import com.nokia.meego 1.0
 
 Sheet {
     id: settingsSheet
-    rejectButtonText: "Cancel"
+    rejectButtonText: qsTr("Cancel")
     state: "step1"
 
     content: Column {
@@ -22,13 +22,13 @@ Sheet {
             id: step1Label
             width: parent.width
             wrapMode: Text.WordWrap
-            text: "Get the authentication code from the car2go website. Log in with your car2go account and grant access to GetMeWheels"
+            text: qsTr("Get the authorization code from the car2go website. Log in with your car2go account and grant access to GetMeWheels.")
             visible: false
         }
 
         Button {
             id: getCodeButton
-            text: "Get code"
+            text: qsTr("Get code")
             width: parent.width
             visible: false
             onClicked: {
@@ -47,7 +47,7 @@ Sheet {
         Label {
             id: codeLabel
             width: parent.width
-            text: "Enter the code in the field below."
+            text: qsTr("Enter the code in the field below.")
             visible: false
         }
 
@@ -69,7 +69,7 @@ Sheet {
             }
             Button {
                 id: confirmButton
-                text: "OK"
+                text: qsTr("OK")
                 width: 80
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
@@ -116,17 +116,17 @@ Sheet {
         },
         State {
             name: "step3"
-            PropertyChanges { target: step3Header; visible: true; headerText: "Done" }
-            PropertyChanges { target: statusLabel; visible: true; text: "GetMeWheels authenticated successfully. You should now be able to select an account and manage your bookings for cars. <b>The authentication will expire in 31 days.</b>" }
-            PropertyChanges { target: settingsSheet; acceptButtonText: "OK" ; rejectButtonText: "" }
+            PropertyChanges { target: step3Header; visible: true; headerText: qsTr("Done") }
+            PropertyChanges { target: statusLabel; visible: true; text: qsTr("GetMeWheels authorized successfully. You should now be able to select the billed account and manage your bookings for cars.") + " <b>" + qsTr("The authorization will expire in 31 days.") + "</b>"}
+            PropertyChanges { target: settingsSheet; acceptButtonText: qsTr("OK") ; rejectButtonText: "" }
         },
         State {
             name: "step4"
             PropertyChanges { target: step1Header; visible: true }
             PropertyChanges { target: step1Label; visible: true }
             PropertyChanges { target: getCodeButton; visible: true }
-            PropertyChanges { target: step3Header; visible: true; headerText: "Error" }
-            PropertyChanges { target: statusLabel; visible: true; text: "Failed to authenticate GetMeWheels. Please try again." }
+            PropertyChanges { target: step3Header; visible: true; headerText: qsTr("Error") }
+            PropertyChanges { target: statusLabel; visible: true; text: qsTr("Failed to authorize GetMeWheels. Please try again.") }
         }
 
     ]

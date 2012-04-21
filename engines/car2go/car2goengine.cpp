@@ -414,6 +414,12 @@ void Car2goEngine::removeAuthentication()
 {
     m_token.clear();
     m_tokenSecret.clear();
+
+    QSettings settings("getmewheels", "getmewheels");
+    settings.beginGroup("car2go");
+    settings.setValue("OAuthAccessToken", m_token);
+    settings.setValue("OAuthAccessTokenSecret", m_tokenSecret);
+    settings.remove("AuthExpirationDate");
 }
 
 QDateTime Car2goEngine::authExpirationDate()

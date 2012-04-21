@@ -65,7 +65,7 @@ Page {
                     if (component.status === Component.Ready) {
                         var itemDetailsSheet = component.createObject(listView)
                         itemDetailsSheet.model = [gmwitem];
-                        itemDetailsSheet.accepted.connect(dialogAccepted)
+                        itemDetailsSheet.goTo.connect(dialogAccepted)
                         itemDetailsSheet.open();
                     } else {
                         console.log("Error loading component:", component.errorString());

@@ -10,21 +10,81 @@ Page {
     property alias locationName: locationButton.subTitleText
     property alias accountName: accountSelectionButton.subTitleText
 
-    signal accepted();
+    function done() {
+        if(gmwEngine.defaultAccountName !== accountName) {
+            gmwEngine.defaultAccountName = accountName;
+        }
+
+        if(gmwEngine.locationName !== locationName) {
+            mainPage.tracking = false;
+            gmwModel.clearAll();
+            gmwEngine.locationName = locationName;
+            pageStack.pop();
+        }
+        pageStack.pop();
+    }
 
     tools: ToolBarLayout {
         ToolButton {
             iconSource: "toolbar-back"
 //            anchors.left: (parent === undefined) ? undefined : parent.left
-            onClicked: settingsSheet.accepted();
+            onClicked: {
+                if(gmwEngine.authenticated && gmwEngine.defaultAccountName.length === 0) {
+                    accountCheckDialog.open();
+                } else {
+                    done();
+                }
+            }
         }
     }
 
-    Connections {
-        target: gmwEngine
-        onAuthenticatedChanged: {
-            if(gmwEngine.authenticated) {
-                accountSelectionButton.clicked();
+    Dialog {
+        id: accountCheckDialog
+        width: parent.width
+        height: 250
+
+        title: Column {
+            width: parent.width - 20
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            Label {
+                width: parent.width
+                font.pixelSize: 40
+                color: "white"
+                text: qsTr("Warning")
+            }
+        }
+
+        content: Column {
+            anchors.fill: parent
+            anchors.margins: 10
+            //anchors.horizontalCenter: parent.horizontalCenter
+            Label {
+                width: parent.width
+                wrapMode: Text.WordWrap
+                color: "white"
+                text: qsTr("GetMeWheels is authorized for bookings but there is no account selected yet. Do you want to select an account now?")
+            }
+        }
+        buttons {
+            ButtonRow {
+                width: parent.width
+                Button {
+                    id: yesButton
+                    text: qsTr("Yes");
+                    onClicked: {
+                        accountCheckDialog.close();
+                        openAccountSelection();
+                    }
+                }
+                Button {
+                    id: noButton
+                    text: qsTr("No");
+                    onClicked: {
+                        accountCheckDialog.close();
+                        done();
+                    }
+                }
             }
         }
     }
@@ -41,7 +101,7 @@ Page {
 
         SelectionButton {
             id: locationButton
-            titleText: "Location"
+            titleText: qsTr("Location")
             subTitleText: gmwEngine.locationName
             width: parent.width
             onClicked: {
@@ -66,19 +126,19 @@ Page {
 
         Label {
             width: parent.width
-            text: "To be able to create bookings for cars you need to be signed in with your car2go account. Please visit http://www.car2go.com for detailed informations on costs."
+            text: qsTr("To be able to create bookings for cars you need to authorize GetMeWheels and select the account which will be charged for the ride.")
             wrapMode: Text.WordWrap
         }
 
         Label {
             width: parent.width
-            text: "Authentication expiry: " + Qt.formatDate(gmwEngine.authExpirationDate)
+            text: qsTr("Authorization expiry:") + " " + Qt.formatDate(gmwEngine.authExpirationDate)
             wrapMode: Text.WordWrap
             visible: gmwEngine.authenticated
         }
 
         Button {
-            text: gmwEngine.authenticated ? "Renew Authentication" : "Authenticate GetMeWheels"
+            text: gmwEngine.authenticated ? qsTr("Renew Authorization") : qsTr("Authorize GetMeWheels")
             width: parent.width
             onClicked: {
                 oauthSetupSheet.state = "step1";
@@ -86,7 +146,7 @@ Page {
             }
         }
         Button {
-            text: "Clear Authentication"
+            text: qsTr("Clear Authorization")
             width: parent.width
             visible: gmwEngine.authenticated
             onClicked: {
@@ -97,20 +157,14 @@ Page {
 
         SelectionButton {
             id: accountSelectionButton
-            titleText: "Account"
+            titleText: qsTr("Account")
             subTitleText: gmwEngine.defaultAccountName
             width: parent.width
             enabled: gmwEngine.authenticated
             onClicked: {
-                selectAccountDialog.model = undefined;
-                accountModel.clear();
-                gmwEngine.accountNames(locationButton.subTitleText).forEach(function(item) { accountModel.append({name: item}) } );
-                selectAccountDialog.model = accountModel;
-                selectAccountDialog.open();
+                openAccountSelection();
             }
         }
-
-
 
     }
 
@@ -127,11 +181,19 @@ Page {
     }
     SelectionDialog {
         id: selectLocationsDialog
-        titleText: "Select Location"
+        titleText: qsTr("Select Location")
         model: locationsModel
         onAccepted: {
             locationButton.subTitleText = locationsModel.get(selectLocationsDialog.selectedIndex).name;
         }
+    }
+
+    function openAccountSelection() {
+        selectAccountDialog.model = undefined;
+        accountModel.clear();
+        gmwEngine.accountNames(locationButton.subTitleText).forEach(function(item) { accountModel.append({name: item}) } );
+        selectAccountDialog.model = accountModel;
+        selectAccountDialog.open();
     }
 
     ListModel {
@@ -139,7 +201,7 @@ Page {
     }
     SelectionDialog {
         id: selectAccountDialog
-        titleText: "Select Account"
+        titleText: qsTr("Select Account")
         onAccepted: {
             print("selected: "+ accountModel.get(selectAccountDialog.selectedIndex).name);
             gmwEngine.defaultAccountName = accountModel.get(selectAccountDialog.selectedIndex).name;

@@ -58,6 +58,33 @@ OTHER_FILES += \
 RESOURCES += \
     getmewheels2.qrc
 
+linguist {
+    SOURCES += \
+        qml/getmewheels2/symbian/ItemDetailsSheet.qml \
+        qml/getmewheels2/symbian/ItemList.qml \
+        qml/getmewheels2/symbian/MainPage.qml \
+        qml/getmewheels2/symbian/main.qml \
+        qml/getmewheels2/symbian/OAuthSetupSheet.qml \
+        qml/getmewheels2/symbian/SectionHeader.qml \
+        qml/getmewheels2/symbian/SelectionButton.qml \
+        qml/getmewheels2/symbian/SettingsSheet.qml \
+        qml/getmewheels2/symbian/ZoomSlider.qml \
+        qml/getmewheels2/harmattan/ItemDetailsSheet.qml \
+        qml/getmewheels2/harmattan/ItemList.qml \
+        qml/getmewheels2/harmattan/MainPage.qml \
+        qml/getmewheels2/harmattan/main.qml \
+        qml/getmewheels2/harmattan/OAuthSetupSheet.qml \
+        qml/getmewheels2/harmattan/SectionHeader.qml \
+        qml/getmewheels2/harmattan/SelectionButton.qml \
+        qml/getmewheels2/harmattan/SettingsSheet.qml \
+        qml/getmewheels2/harmattan/ZoomSlider.qml
+}
+
+# translations
+#translations.files = i18n/getmewheels_de.qm
+
+#translations.path = .
+#INSTALLS += translations
 
 # MeeGo specific stuff
 contains(MEEGO_EDITION,harmattan) {
@@ -86,12 +113,22 @@ simulator: {
 # Symbian specific stuff
 symbian: {
     DEPLOYMENT.display_name = GetMeWheels
-    CONFIG += qt-components
 
-    TARGET.UID3 = 0xE0BACF3E
+    # Dependency to qt components for regular sis
+    CONFIG += qt-components qt
+    CONFIG += qtquickcomponents
+    # and for smart installer
+    DEPLOYMENT.installer_header = 0x2002CCCF
 
+    installrules.pkg_prerules += \
+        "; Dependency to Symbian Qt Quick components" \
+        "(0x200346DE), 1, 1, 0, {\"Qt Quick components\"}"
+    DEPLOYMENT += installrules
+
+    #TARGET.UID3 = 0xE0BACF3E
+    TARGET.UID3 = 0x20062245
     # Allow network access on Symbian
-    TARGET.CAPABILITY += NetworkServices ReadDeviceData WriteDeviceData Location
+    TARGET.CAPABILITY += NetworkServices Location #ReadDeviceData #WriteDeviceData
 
     # In case of Symbian we use our 3rdParty distribution of qjson
     INCLUDEPATH += $$PWD/3rdParty/

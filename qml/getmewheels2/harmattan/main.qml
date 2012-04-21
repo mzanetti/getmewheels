@@ -1,11 +1,17 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+//import QtMobility.feedback 1.1
 import GetMeWheels 1.0
 
 PageStackWindow {
     id: appWindow
 
     initialPage: mainPage
+    property bool gpsAvailable: false
+
+    Component.onCompleted: {
+        theme.inverted = true;
+    }
 
 //    Component.onCompleted: {
 //        theme.inverted = true;
@@ -21,92 +27,21 @@ PageStackWindow {
         engine: gmwEngine
     }
 
+//    HapticsEffect {
+//        id: rumbleEffect
+//        attackIntensity: 0.0
+//        attackTime: 250
+//        intensity: 1.0
+//        duration: 75
+//        fadeTime: 250
+//        fadeIntensity: 0.0
+//    }
+
     MainPage {
         id: mainPage
         orientationLock: PageOrientation.LockPortrait
     }
 
-    ToolBarLayout {
-        id: commonTools
-        visible: true
-        ToolIcon {
-            platformIconId: "toolbar-view-menu"
-//            anchors.left: (parent === undefined) ? undefined : parent.left
-            onClicked: (myMenu.status == DialogStatus.Closed) ? myMenu.open() : myMenu.close()
-        }
-        ToolIcon {
-            platformIconId: "toolbar-refresh"
-//            anchors.horizontalCenter: (parent === undefined) ? undefined : parent.horizontalCenter
-            onClicked: {
-                gmwModel.clearVehicles();
-                gmwEngine.refreshVehicles(false);
-            }
-        }
-//        ToolIcon {
-//            iconSource: "/usr/share/maps/images/icon_aroundme.png"
-////            anchors.right: (parent === undefined) ? undefined : parent.right
-//            onClicked: mainPage.zoomToCurrentPosition();
-//        }
-        ToolIcon {
-            id: mapListToggle
-//            anchors.right: (parent === undefined) ? undefined : parent.right
-            states: [
-                State {
-                    name: "map"; when: pageStack.depth === 1
-                    PropertyChanges { target: mapListToggle; iconId: "icon-m-toolbar-list" }
-                },
-                State {
-                    name: "list"; when: pageStack.depth === 2
-                    PropertyChanges { target: mapListToggle; iconSource: "images/icon-m-toolbar-map.png" }
-                }
-            ]
-            onClicked: {
-                myMenu.close();
-                if(state == "map") {
-                    var component = Qt.createComponent("ItemList.qml")
-                    if (component.status == Component.Ready) {
-                        pageStack.push(component, {model: gmwModel});
-                    } else {
-                        console.log("Error loading component:", component.errorString());
-                    }
-                } else {
-                    pageStack.pop();
-                }
-
-            }
-        }
-    }
-
-    Menu {
-        id: myMenu
-        visualParent: pageStack
-        MenuLayout {
-            MenuItem { text: qsTr("Settings"); onClicked: settingsSheet.open() }
-            MenuItem {
-                text: qsTr("Refresh all")
-                onClicked: {
-                    gmwModel.clearAll();
-                    gmwEngine.refreshStationary(false);
-                    gmwEngine.refreshVehicles(false);
-                }
-            }
-            MenuItem {
-                text: qsTr("About")
-                onClicked: aboutDialog.open();
-            }
-        }
-    }
-
-    SettingsSheet {
-        id: settingsSheet
-
-        onAccepted: {
-            mainPage.tracking= false;
-            gmwModel.clearAll();
-            gmwEngine.locationName = locationName;
-            gmwEngine.defaultAccountName = accountName;
-        }
-    }
 
     Dialog {
         id: aboutDialog
@@ -126,7 +61,7 @@ PageStackWindow {
                 anchors.topMargin: 20
                 color: "white"
                 font.pixelSize: 32
-                text: "GetMeWheels 1.1"
+                text: "GetMeWheels 1.2"
             }
 
         }

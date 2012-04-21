@@ -1,11 +1,13 @@
 import QtQuick 1.1
 import com.nokia.symbian 1.1
+import QtMobility.feedback 1.1
 import GetMeWheels 1.0
 
 PageStackWindow {
     id: appWindow
 
     initialPage: mainPage
+    property bool gpsAvailable: false
 
 //    Component.onCompleted: {
 //        theme.inverted = true;
@@ -19,6 +21,16 @@ PageStackWindow {
         id: gmwModel
 
         engine: gmwEngine
+    }
+
+    HapticsEffect {
+        id: rumbleEffect
+        attackIntensity: 0.0
+        attackTime: 250
+        intensity: 1.0
+        duration: 75
+        fadeTime: 250
+        fadeIntensity: 0.0
     }
 
     MainPage {
@@ -103,14 +115,6 @@ PageStackWindow {
 
     SettingsSheet {
         id: settingsSheet
-
-        onAccepted: {
-            pageStack.pop();
-            mainPage.tracking= false;
-            gmwModel.clearAll();
-            gmwEngine.locationName = locationName;
-            gmwEngine.defaultAccountName = accountName;
-        }
     }
 
     Dialog {
@@ -131,7 +135,7 @@ PageStackWindow {
                 anchors.topMargin: 20
                 color: "white"
                 font.pixelSize: 32
-                text: "GetMeWheels 1.1"
+                text: "GetMeWheels 1.2"
             }
 
         }
@@ -146,7 +150,7 @@ PageStackWindow {
                 anchors.centerIn: parent
                 width: parent.width - 20
                 color: "white"
-                text: "Copyright\n Michael Zanetti\n  michael_zanetti@gmx.net\n Christian Fetzer\n  fetzerch@googlemail.com\n\nThis product uses the car2go API but is not endorsed or certified by car2go.\nThe use of this application requires a data connection which may be associated with additional costs."
+                text: qsTr("Copyright") + "\n Michael Zanetti\n  michael_zanetti@gmx.net\n Christian Fetzer\n  fetzerch@googlemail.com\n\n" + qsTr("This product uses the car2go API but is not endorsed or certified by car2go.") + "\n" + qsTr("The use of this application requires a data connection which may be associated with additional costs.")
                 wrapMode: Text.WordWrap
             }
         }
@@ -154,7 +158,7 @@ PageStackWindow {
         buttons {
             Button {
                 id: closeButton
-                text: "close"; onClicked: aboutDialog.close()
+                text: qsTr("Close"); onClicked: aboutDialog.close()
                 width: parent.width*2/3
                 anchors.horizontalCenter: parent.horizontalCenter
             }

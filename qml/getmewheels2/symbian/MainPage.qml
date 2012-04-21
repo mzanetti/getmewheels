@@ -29,14 +29,19 @@ Page {
 //        visible: pageStack.count() === 1
 
         onItemsClicked: {
+            rumbleEffect.start();
             print("yeeha: " + items);
             detailsSheet.model = items;
             pageStack.push(detailsSheet)
         }
 
         onRoutingFailed: {
-            infoBanner.text = "Routing failed: Service Temporarily Unavailable";
+            infoBanner.text = qsTr("Routing failed: Service Temporarily Unavailable");
             infoBanner.open();
+        }
+
+        onGpsAvailableChanged: {
+            appWindow.gpsAvailable = gpsAvailable;
         }
     }
 
@@ -126,56 +131,62 @@ Page {
         }
     }
 
-    Rectangle {
-        id: sliderBackground
+//    Rectangle {
+//        id: sliderBackground
+//        height: 380
+//        width: 60
+//        anchors.right: parent.right
+//        anchors.rightMargin: 20
+//        anchors.verticalCenter: parent.verticalCenter
+//        color: "grey"
+//        opacity: .5
+//        radius: 15
+//        border.color: "black"
+//        border.width: 2
+//    }
+
+    Column {
         height: 380
-        width: 60
         anchors.right: parent.right
         anchors.rightMargin: 20
         anchors.verticalCenter: parent.verticalCenter
-        color: "grey"
-        opacity: .5
-        radius: 15
-        border.color: "black"
-        border.width: 2
-    }
+        spacing: 10
 
-    Column {
-        height: sliderBackground.height - 10
-        anchors.centerIn: sliderBackground
-        Slider {
-            orientation: Qt.Vertical
-            height: parent.height - centerButton.height - 10
+        ZoomSlider {
+            height: parent.height - centerButton.height - parent.spacing * 3
             value: map.zoomLevel
-            minimumValue: map.minimumZoomLevel
-            maximumValue: map.maximumZoomLevel
-            stepSize: 1
+            width: 36
+            maxValue: map.maximumZoomLevel
+            minValue: 10
+            radiusFactor: 1
             onValueChanged: {
                 map.zoomLevel = value;
             }
         }
-//        Rectangle {
-//            id: centerButton
-//            width: parent.width - 20
-//            height: width
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            border.width: 1
-//            border.color: "white"
-//            radius: 15
 
-            Image {
-                id: centerButton
-                anchors.horizontalCenter: parent.horizontalCenter
-                source: "images/location_mark.png"
-                width: 32
-                height: 32
-                MouseArea {
-                    anchors.fill: parent
-                    anchors.margins: -10
-                    onClicked: mainPage.zoomToCurrentPosition();
+        Image {
+            id: centerButton
+            anchors.horizontalCenter: parent.horizontalCenter
+            source: "images/location_mark.png"
+            width: 36
+            height: 36
+            MouseArea {
+                enabled: map.gpsAvailable
+                anchors.fill: parent
+                anchors.margins: -10
+                onClicked: {
+                    rumbleEffect.start();
+                    mainPage.zoomToCurrentPosition();
                 }
-//            }
-
+            }
+            Rectangle {
+                opacity: map.gpsAvailable ? 0 : .5
+                color: "black"
+                anchors.centerIn: parent
+                height: parent.height
+                width: parent.width
+                radius: parent.width / 2
+            }
         }
     }
 
