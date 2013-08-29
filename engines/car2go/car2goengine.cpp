@@ -108,7 +108,7 @@ QList<Location*> Car2goEngine::fetchLocations()
 {
     QList<Location*> retList;
 
-    QByteArray requestUrl( "http://www.car2go.com/api/v2.1/locations?oauth_consumer_key=GetMeWheels&format=json");
+    QByteArray requestUrl( "https://www.car2go.com/api/v2.1/locations?oauth_consumer_key=GetMeWheels&format=json");
     qDebug() << "requesting locations:" << requestUrl;
     QNetworkRequest request;
     request.setUrl(QUrl::fromEncoded(requestUrl));
@@ -191,21 +191,21 @@ QList<Location*> Car2goEngine::fetchLocations()
 void Car2goEngine::fetchGasStations(Location *location)
 {
     qDebug() << "Downloading gas stations";
-    m_networkReplyGasStations = m_network.get(QNetworkRequest("http://www.car2go.com/api/v2.1/gasstations?loc=" + location->name() + "&oauth_consumer_key=" + Car2goEngine::ConsumerKey + "&format=json"));
+    m_networkReplyGasStations = m_network.get(QNetworkRequest("https://www.car2go.com/api/v2.1/gasstations?loc=" + location->name() + "&oauth_consumer_key=" + Car2goEngine::ConsumerKey + "&format=json"));
 
 }
 
 void Car2goEngine::fetchParkingSpots(Location *location)
 {
     qDebug() << "Downloading parking spots";
-    m_networkReplyParkingSpots = m_network.get(QNetworkRequest("http://www.car2go.com/api/v2.1/parkingspots?loc=" + location->name() + "&oauth_consumer_key=" + Car2goEngine::ConsumerKey + "&format=json"));
+    m_networkReplyParkingSpots = m_network.get(QNetworkRequest("https://www.car2go.com/api/v2.1/parkingspots?loc=" + location->name() + "&oauth_consumer_key=" + Car2goEngine::ConsumerKey + "&format=json"));
 }
 
 void Car2goEngine::fetchVehicles(Location *location)
 {
     qDebug() << "Downloading vehicles for" << location->name();
     m_currentDownloadLocation = location;
-    m_networkReplyVehicles = m_network.get(QNetworkRequest("http://www.car2go.com/api/v2.1/vehicles?loc=" + location->name() + "&oauth_consumer_key=" + Car2goEngine::ConsumerKey + "&format=json"));
+    m_networkReplyVehicles = m_network.get(QNetworkRequest("https://www.car2go.com/api/v2.1/vehicles?loc=" + location->name() + "&oauth_consumer_key=" + Car2goEngine::ConsumerKey + "&format=json"));
 
 }
 
@@ -322,7 +322,8 @@ bool Car2goEngine::startAuthentication()
 //    url.append( "&" + ParamCallback + "=" + ParamCallbackValue );
     qDebug() << "got url:" << QUrl(url);
 
-    QDesktopServices::openUrl(QUrl::fromEncoded(url.toUtf8()));
+//    QDesktopServices::openUrl(QUrl::fromEncoded(url.toUtf8()));
+    emit authUrlReceived(url);
 
     return true;
 

@@ -28,7 +28,7 @@ Sheet {
         }
         SheetButton {
             text: qsTr("Save")
-            enabled: map.gpsAvailable
+//            enabled: map.gpsAvailable
             anchors.right: parent.right
             anchors.rightMargin: settingsSheet.platformStyle.acceptButtonRightMargin
             anchors.verticalCenter: parent.verticalCenter
@@ -160,8 +160,11 @@ Sheet {
             text: gmwEngine.authenticated ? qsTr("Renew Authorization") : qsTr("Authorize GetMeWheels")
             width: parent.width
             onClicked: {
-                oauthSetupSheet.state = "step1";
-                oauthSetupSheet.open();
+                var component = Qt.createComponent(Qt.resolvedUrl("OAuthSetupSheet.qml"));
+                var sheet = component.createObject(settingsSheet);
+                sheet.accepted.connect(function() { sheet.destroy() });
+                sheet.rejected.connect(function() { sheet.destroy() });
+                sheet.open();
             }
         }
         Button {
@@ -197,7 +200,8 @@ Sheet {
         titleText: qsTr("Select Location")
         model: locationsModel
         onAccepted: {
-            locationButton.subTitleText = locationsModel.get(selectLocationsDialog.selectedIndex).name;
+//            locationButton.subTitleText = locationsModel.get(selectLocationsDialog.selectedIndex).name;
+            gmwEngine.locationName = locationsModel.get(selectLocationsDialog.selectedIndex).name;
         }
     }
 
@@ -212,9 +216,5 @@ Sheet {
             gmwEngine.defaultAccountName = accountModel.get(selectAccountDialog.selectedIndex).name;
 //            accountSelectionButton.subTitleText = gmwEngine.defaultAccountName();
         }
-    }
-
-    OAuthSetupSheet {
-        id: oauthSetupSheet
     }
 }

@@ -59,6 +59,7 @@ signals:
     void gasStationsReceived(QList<GMWGasStation*> items);
     void parkingSpotsReceived(QList<GMWParkingSpot*> items);
     void vehiclesReceived(QList<GMWVehicle*> items);
+    void authUrlReceived(const QString &url);
 
 };
 

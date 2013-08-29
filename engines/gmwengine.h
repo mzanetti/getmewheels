@@ -89,6 +89,7 @@ signals:
     void businessAreaChanged();
     void authenticatedChanged();
     void defaultAccountChanged();
+    void authenticateUrl(const QString &url);
 
 private slots:
     void gasStationsReceived(QList<GMWGasStation*> gasStations);
