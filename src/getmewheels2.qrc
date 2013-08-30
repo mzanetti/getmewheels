@@ -24,6 +24,6 @@
         <file>qml/getmewheels2/harmattan/images/parking_map.png</file>
         <file>qml/getmewheels2/harmattan/images/parking.png</file>
         <file>qml/getmewheels2/harmattan/images/squircle_s_gray.png</file>
-        <file>i18n/getmewheels_de.qm</file>
+        <file>../i18n/getmewheels_de.qm</file>
     </qresource>
 </RCC>

@@ -68,12 +68,12 @@ else:unix {
     headers.path = $${INSTALL_PREFIX}/include/QtOAuth
     docs.path = $${INSTALL_PREFIX}/share/doc/$${TARGET}-$${VERSION}/html
     pkgconfig.path = $${target.path}/pkgconfig
-    INSTALLS += \
-        target \
-        headers \
-        docs \
-        pkgconfig \
-        features
+#    INSTALLS += \
+#        target \
+#        headers \
+#        docs \
+#        pkgconfig \
+#        features
 }
 
 CONFIG(debug_and_release) {

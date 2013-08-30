@@ -1,4 +1,5 @@
 # General project config
+TARGET = getmewheels2
 
 CONFIG += mobility
 MOBILITY += location
@@ -81,8 +82,8 @@ contains(MEEGO_EDITION,harmattan) {
     CONFIG += qdeclarative-boostable
     DEFINES += MEEGO
 
-    INCLUDEPATH += $$PWD/3rdParty/qoauth/include
-    LIBS += -L$$PWD/3rdParty/qoauth/lib/ -L$$PWD/3rdParty/qtm-geoservices-extras/build/ -lqca -lqoauth -lqjson -lqtgeoservices_osm
+    INCLUDEPATH += $$PWD/../3rdParty/qoauth/include
+    LIBS += -L$$OUT_PWD/../3rdParty/qoauth/lib/ -L$$OUT_PWD/../3rdParty/qtm-geoservices-extras/openstreetmap/ -lqca -lqoauth -lqjson -lqtgeoservices_osm
 
     qmldir.source = qml/getmewheels2/harmattan
     qmldir.target = qml
