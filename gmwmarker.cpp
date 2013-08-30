@@ -95,6 +95,7 @@ void GMWMarker::calculatePixmap()
             QImage image = pixmap.toImage();
             QPainter painter(&image);
             QPixmap overlay;
+#ifdef MEEGO
             if(timeLeft > 900) {
                 overlay = QPixmap("/usr/share/themes/blanco/meegotouch/icons/icon-s-common-presence-online.png");
             } else if(timeLeft > 0){
@@ -102,6 +103,15 @@ void GMWMarker::calculatePixmap()
             } else {
                 overlay = QPixmap("/usr/share/themes/blanco/meegotouch/icons/icon-s-common-presence-busy.png");
             }
+#elif defined Q_WS_S60
+            if(timeLeft > 900) {
+                overlay = QPixmap("qml/symbian/images/bookingstate_green_s.png");
+            } else if(timeLeft > 0){
+                overlay = QPixmap("qml/symbian/images/bookingstate_yellow_s.png");
+            } else {
+                overlay = QPixmap("qml/symbian/images/bookingstate_red_s.png");
+            }
+#endif
             painter.drawPixmap(image.width() - overlay.width() - 5, 5, overlay);
             pixmap = QPixmap::fromImage(image);
         }
@@ -118,7 +128,7 @@ void GMWMarker::calculatePixmap()
         QImage image = pixmap().toImage();
         QPainter painter(&image);
 
-        QPixmap overlay = QPixmap(":qml/getmewheels2/images/squircle_s_gray.png");
+        QPixmap overlay = QPixmap(":qml/getmewheels2/harmattan/images/squircle_s_gray.png");
         painter.drawPixmap(image.width() - overlay.width(), 0, overlay);
 
         QPen pen(Qt::white);

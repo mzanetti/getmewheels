@@ -1,16 +1,29 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/getmewheels2/images/gas_map.png</file>
-        <file>qml/getmewheels2/images/car_map.png</file>
-        <file>qml/getmewheels2/images/parking_map.png</file>
-        <file>qml/getmewheels2/images/car_ed_map.png</file>
-        <file>qml/getmewheels2/images/location_mark.png</file>
-        <file>qml/getmewheels2/images/parking_cp_map.png</file>
-        <file>qml/getmewheels2/images/car_ed_map_l.png</file>
-        <file>qml/getmewheels2/images/car_map_l.png</file>
-        <file>qml/getmewheels2/images/gas_map_l.png</file>
-        <file>qml/getmewheels2/images/parking_cp_map_l.png</file>
-        <file>qml/getmewheels2/images/parking_map_l.png</file>
-        <file>qml/getmewheels2/images/squircle_s_gray.png</file>
+        <file>qml/getmewheels2/harmattan/images/battery_green.png</file>
+        <file>qml/getmewheels2/harmattan/images/battery_orange.png</file>
+        <file>qml/getmewheels2/harmattan/images/battery_red.png</file>
+        <file>qml/getmewheels2/harmattan/images/car_blue.png</file>
+        <file>qml/getmewheels2/harmattan/images/car_ed_map_l.png</file>
+        <file>qml/getmewheels2/harmattan/images/car_ed_map.png</file>
+        <file>qml/getmewheels2/harmattan/images/car_green.png</file>
+        <file>qml/getmewheels2/harmattan/images/car_map_l.png</file>
+        <file>qml/getmewheels2/harmattan/images/car_map.png</file>
+        <file>qml/getmewheels2/harmattan/images/fuel_green.png</file>
+        <file>qml/getmewheels2/harmattan/images/fuel_orange.png</file>
+        <file>qml/getmewheels2/harmattan/images/fuel_red.png</file>
+        <file>qml/getmewheels2/harmattan/images/gas_map_l.png</file>
+        <file>qml/getmewheels2/harmattan/images/gas_map.png</file>
+        <file>qml/getmewheels2/harmattan/images/gas.png</file>
+        <file>qml/getmewheels2/harmattan/images/icon-m-toolbar-map.png</file>
+        <file>qml/getmewheels2/harmattan/images/location_mark.png</file>
+        <file>qml/getmewheels2/harmattan/images/parking_cp_map_l.png</file>
+        <file>qml/getmewheels2/harmattan/images/parking_cp_map.png</file>
+        <file>qml/getmewheels2/harmattan/images/parking_cp.png</file>
+        <file>qml/getmewheels2/harmattan/images/parking_map_l.png</file>
+        <file>qml/getmewheels2/harmattan/images/parking_map.png</file>
+        <file>qml/getmewheels2/harmattan/images/parking.png</file>
+        <file>qml/getmewheels2/harmattan/images/squircle_s_gray.png</file>
+        <file>i18n/getmewheels_de.qm</file>
     </qresource>
 </RCC>

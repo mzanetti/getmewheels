@@ -25,14 +25,30 @@
 #include "qmlapplicationviewer.h"
 #include <QtDeclarative>
 
-#ifndef QT_SIMULATOR
+#if !defined QT_SIMULATOR //&& !defined Q_WS_S60
 Q_IMPORT_PLUGIN(qtgeoservices_osm)
 #endif
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
+    QString language = QLocale::system().name().split('_').first();
+    qDebug() << "got languange" << language;
+
     QScopedPointer<QApplication> app(createApplication(argc, argv));
     QScopedPointer<QmlApplicationViewer> viewer(QmlApplicationViewer::create());
+
+    QTranslator qtTranslator;
+    if(!qtTranslator.load("qt_" + language, QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
+        qDebug() << "couldn't load qt_" + language;
+    }
+    app->installTranslator(&qtTranslator);
+
+    QTranslator translator;
+    if (!translator.load(":/i18n/getmewheels_" + language + ".qm")) {
+        qDebug() << "Cannot load translation file" << "getmewheels_" + language + ".pm";
+    }
+    app->installTranslator(&translator);
+
 
     qmlRegisterType<MapWidget>("GetMeWheels", 1, 0, "GmwMap");
     qmlRegisterType<GMWItemModel>("GetMeWheels", 1, 0, "GmwModel");
@@ -46,7 +62,11 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     qmlRegisterType<GMWEngine>("GetMeWheels", 1, 0, "GmwEngine");
 
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
-    viewer->setMainQmlFile(QLatin1String("qml/getmewheels2/main.qml"));
+#if defined Q_WS_S60
+    viewer->setMainQmlFile(QLatin1String("qml/symbian/main.qml"));
+#else
+    viewer->setMainQmlFile(QLatin1String("/opt/getmewheels2/qml/harmattan/main.qml"));
+#endif
     viewer->showExpanded();
 
     return app->exec();

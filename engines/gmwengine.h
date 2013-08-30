@@ -73,6 +73,8 @@ public slots:
 
     void setDefaultAccount(const GMWAccount &account);
     void clearDefaultAccount();
+    void clearAuthentication();
+
     void setDefaultAccountName(const QString &accountName);
     bool createBooking(GMWVehicle *vehicle, const GMWAccount &account = GMWAccount());
     bool cancelBooking(GMWVehicle *vehicle);
@@ -87,6 +89,7 @@ signals:
     void businessAreaChanged();
     void authenticatedChanged();
     void defaultAccountChanged();
+    void authenticateUrl(const QString &url);
 
 private slots:
     void gasStationsReceived(QList<GMWGasStation*> gasStations);

@@ -20,6 +20,7 @@
 #include "engines/car2go/car2goengine.h"
 
 #include <QDir>
+#include <QDebug>
 
 Core *Core::s_instance = 0;
 Core *Core::instance()
@@ -33,8 +34,9 @@ Core *Core::instance()
 Core::Core(QObject *parent) :
     QObject(parent)
 {
-#ifndef QT_SIMULATOR
+#if !defined QT_SIMULATOR //&& !defined Q_WS_S60
     m_serviceProvider = new QGeoServiceProvider("openstreetmap");
+    qDebug() << "created GeoServiceProvider" << m_serviceProvider->mappingManager();
 #else
     m_serviceProvider = new QGeoServiceProvider("nokia");
 #endif

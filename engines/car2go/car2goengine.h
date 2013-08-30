@@ -31,7 +31,13 @@
 #include <QtNetwork/QNetworkReply>
 #include <QEventLoop>
 
-#include <QtOAuth/QtOAuth>
+#ifndef Q_WS_S60
+ #include <QtOAuth>
+#else
+//#include "oauth/oauth.h"
+#include "../3rdParty/kqoauth/src/kqoauthmanager.h"
+#include "../3rdParty/kqoauth/src/kqoauthrequest.h"
+#endif
 
 class Car2goEngine : public EnginePlugin
 {
@@ -50,6 +56,7 @@ public:
     bool startAuthentication();
     bool setAccessCode(const QString &code);
     bool authenticated();
+    void removeAuthentication();
     QDateTime authExpirationDate();
     QList<GMWAccount> accounts(Location *location);
     GMWAccount account();
@@ -89,7 +96,22 @@ private:
 
     GMWBusinessArea m_businessArea;
 
+#ifndef Q_WS_S60
     QOAuth::Interface *m_qoauth;
+    QByteArray m_screenName;
+    QByteArray m_token;
+    QByteArray m_tokenSecret;
+#else
+    KQOAuthManager *m_oauthManager;
+    KQOAuthRequest *m_oauthRequest;
+    QString m_screenName;
+    QString m_token;
+    QString m_tokenSecret;
+    QString m_temporaryToken;
+    QString m_temporaryTokenSecret;
+#endif
+    GMWAccount m_account;
+
     static const QByteArray Car2GoRequestTokenURL;
     static const QByteArray Car2GoAccessTokenURL;
     static const QByteArray Car2GoAuthorizeURL;
@@ -102,14 +124,10 @@ private:
     static const QByteArray ParamVerifier;
     static const QByteArray ParamScreenName;
 
-    QByteArray m_screenName;
-    QByteArray m_token;
-    QByteArray m_tokenSecret;
-    GMWAccount m_account;
-
     QEventLoop m_loop;
     bool waitForResponse();
     bool m_timeout;
+    QByteArray m_lastData;
 
     Location *m_currentDownloadLocation;
 
@@ -128,6 +146,15 @@ private:
 private slots:
     void receivedData(QNetworkReply *reply);
     void loadBusinessArea();
+
+#ifdef Q_WS_S60
+    void receivedToken(const QString &token, const QString &tokenSecret);
+    void temporaryTokenReceived(const QString & token, const QString & tokenSecret);
+    void authorizationReceived(const QString & token, const QString & verifier);
+    void accessTokenReceived(const QString & token, const QString & tokenSecret);
+    void requestReady(const QByteArray &response);
+    void authorizedRequestDone();
+#endif
 };
 
 #endif // CAR2GOENGINE_H

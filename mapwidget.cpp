@@ -59,7 +59,7 @@ MapWidget::MapWidget() :
     addMapObject(&m_accuracyMarker);
 //    m_positionMarker.setRadius(10);
 //    QPixmap ownPosition("/usr/share/themes/blanco/meegotouch/icons/icon-m-common-location-selected.png");
-    QPixmap ownPosition(":qml/getmewheels2/images/location_mark.png");
+    QPixmap ownPosition(":qml/getmewheels2/harmattan/images/location_mark.png");
     m_positionMarker.setPixmap(ownPosition);
     m_positionMarker.setOffset(QPoint(-ownPosition.width() / 2, -ownPosition.height() / 2));
     addMapObject(&m_positionMarker);
@@ -69,12 +69,14 @@ MapWidget::MapWidget() :
 
     // GPS
     m_gps = QGeoPositionInfoSource::createDefaultSource(this);
-    qDebug() << "Got GPS:" << m_gps;
+    qDebug() << "Got GPS:" << m_gps << "available sources:" << QGeoPositionInfoSource::availableSources();
     if (m_gps) {
         m_gps->setUpdateInterval(5000);
         connect(m_gps, SIGNAL(positionUpdated(const QGeoPositionInfo&)), this, SLOT(positionUpdated(const QGeoPositionInfo&)));
+        m_gps->requestUpdate();
         m_gps->startUpdates();
     }
+    qDebug() << "bla" << Core::instance()->serviceProvider()->routingManager();
 
     Core::instance()->serviceProvider()->routingManager()->setLocale(QLocale("en"));
     connect(Core::instance()->serviceProvider()->routingManager(), SIGNAL(finished(QGeoRouteReply*)), SLOT(routingFinished(QGeoRouteReply*)));
@@ -101,6 +103,8 @@ MapWidget::~MapWidget()
 
 void MapWidget::positionUpdated(const QGeoPositionInfo &info) {
 //    qDebug() << "GPS Position updated:" << QDateTime::currentDateTime().toString();
+    bool firstFix = !m_positionMarker.coordinate().isValid();
+
     m_positionMarker.setCoordinate(info.coordinate());
     m_accuracyMarker.setCenter(info.coordinate());
     if(info.hasAttribute(QGeoPositionInfo::HorizontalAccuracy) && info.hasAttribute(QGeoPositionInfo::VerticalAccuracy)) {
@@ -117,6 +121,10 @@ void MapWidget::positionUpdated(const QGeoPositionInfo &info) {
 
     if(m_model->engine()) {
         m_model->currentPositionChanged(info.coordinate(), info.attribute(QGeoPositionInfo::Direction));
+    }
+
+    if(firstFix) {
+        emit gpsAvailableChanged();
     }
 }
 
@@ -147,7 +155,7 @@ void MapWidget::mapEngineChanged()
 
 void MapWidget::setBusinessArea()
 {
-    qDebug() << "Settings business area";
+    qDebug() << "Setting business area";
     // clean old ones
     removeMapObject(&m_businessAreaGroup);
 
@@ -203,12 +211,14 @@ void MapWidget::updateMapItems()
     double degrees;
     if(zoomLevel() < 9) {
         degrees = .1;
+    } else if(zoomLevel() < 14){
+        degrees = .4 / qPow(2,(zoomLevel() - 8));
     } else if(zoomLevel() < 17){
         degrees = .2 / qPow(2,(zoomLevel() - 8));
     } else {
         degrees = 0;
     }
-//    qDebug() << "zoomlevel changed to" << zoomLevel() << "degrees" << degrees;
+    qDebug() << "zoomlevel changed to" << zoomLevel() << "degrees" << degrees;
 
     QHash<GMWItem *, QGeoBoundingBox> presentItems;
     foreach(GMWItem *newItem, m_items.keys()) {
@@ -317,7 +327,7 @@ void MapWidget::rowsAboutToBeRemoved(const QModelIndex &parent, int start, int e
 {
     Q_UNUSED(parent)
 
-    qDebug() << "Removing markers from map" << start << "-" << end << "Current markers:" << m_items.count() << "Markers to remove:" << end-start+1;
+//    qDebug() << "Removing markers from map" << start << "-" << end << "Current markers:" << m_items.count() << "Markers to remove:" << end-start+1;
     for(int i = start; i <= end; ++i) {
         QModelIndex index = m_model->index(i, 0);
         GMWItem *item = m_model->data(index, Qt::UserRole).value<GMWItem*>();
@@ -377,6 +387,11 @@ void MapWidget::setCenterLongitude(double lon)
     setCenter(c);
 }
 
+bool MapWidget::gpsAvailable()
+{
+    return m_positionMarker.coordinate().isValid();
+}
+
 void MapWidget::clicked(qreal mouseX, qreal mouseY)
 {
     qDebug() << "clicked at" << mouseX << mouseY;
@@ -405,6 +420,7 @@ void MapWidget::clicked(qreal mouseX, qreal mouseY)
 
 void MapWidget::routeTo(GMWItem *item)
 {
+    qDebug() << "routing to" << item;//->name();
     if(!Core::instance()->serviceProvider()->routingManager()) {
         qDebug() << "Routing not supported by map provider";
         return;

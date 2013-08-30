@@ -1,0 +1,15 @@
+Source: 
+Section: user/other
+Priority: optional
+Maintainer: unknown <micha@unknown>
+Build-Depends: debhelper (>= 5), libqt4-dev
+Standards-Version: 3.7.3
+Homepage: <insert the upstream URL, if relevant>
+
+Package: 
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: 
+ <insert long description, indented with spaces>
+XSBC-Maemo-Display-Name: qtm-geoservices-extras
+XB-Maemo-Icon-26: 

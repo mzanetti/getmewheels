@@ -1,40 +1,13 @@
-# Add more folders to ship with the application, here
-qmldir.source = qml/getmewheels2
-qmldir.target = qml
+# General project config
 
-datadir.source = engines/car2go/data
-
-DEPLOYMENTFOLDERS = qmldir datadir
-
-# Additional import path used to resolve QML modules in Creator's code model
-QML_IMPORT_PATH =
-
-symbian:TARGET.UID3 = 0xE0BACF3E
-
-# Smart Installer package's UID
-# This UID is from the protected range and therefore the package will
-# fail to install if self-signed. By default qmake uses the unprotected
-# range value if unprotected UID is defined for the application and
-# 0x2002CCCF value if protected UID is given to the application
-#symbian:DEPLOYMENT.installer_header = 0x2002CCCF
-
-# Allow network access on Symbian
-symbian:TARGET.CAPABILITY += NetworkServices
-
-# If your application uses the Qt Mobility libraries, uncomment the following
-# lines and add the respective components to the MOBILITY variable.
 CONFIG += mobility
 MOBILITY += location
 
 QT += network
 
-# Speed up launching on MeeGo/Harmattan when using applauncherd daemon
-CONFIG += qdeclarative-boostable
 
-# Add dependency to Symbian components
-# CONFIG += qt-components
+# Files used on all platforms
 
-# The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     mapwidget.cpp \
     gmwmarker.cpp \
@@ -53,12 +26,6 @@ SOURCES += main.cpp \
     settings.cpp \
     engines/location.cpp \
     engines/engineplugin.cpp
-
-# Please do not modify the following two lines. Required for deployment.
-include(qmlapplicationviewer/qmlapplicationviewer.pri)
-#include(maps/maps.pri)
-
-qtcAddDeployment()
 
 HEADERS += \
     mapwidget.h \
@@ -88,19 +55,109 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/compat \
     qtc_packaging/debian_harmattan/changelog
 
-
-INCLUDEPATH += $$PWD/includes $$PWD/includes/QtCrypto
-
-simulator: {
-LIBS+= -lqoauth -lqjson -L$$PWD -lqca
-} else {
-LIBS+= -lqoauth -lqjson -lqtgeoservices_openstreetmap -L$$PWD -lqca
-}
-
 RESOURCES += \
     getmewheels2.qrc
 
-splash.files = splash.png
-splash.path = /opt/$${TARGET}
-INSTALLS += splash
+linguist {
+    SOURCES += \
+        qml/getmewheels2/symbian/ItemDetailsSheet.qml \
+        qml/getmewheels2/symbian/ItemList.qml \
+        qml/getmewheels2/symbian/MainPage.qml \
+        qml/getmewheels2/symbian/main.qml \
+        qml/getmewheels2/symbian/OAuthSetupSheet.qml \
+        qml/getmewheels2/symbian/SectionHeader.qml \
+        qml/getmewheels2/symbian/SelectionButton.qml \
+        qml/getmewheels2/symbian/SettingsSheet.qml \
+        qml/getmewheels2/symbian/ZoomSlider.qml \
+        qml/getmewheels2/harmattan/ItemDetailsSheet.qml \
+        qml/getmewheels2/harmattan/ItemList.qml \
+        qml/getmewheels2/harmattan/MainPage.qml \
+        qml/getmewheels2/harmattan/main.qml \
+        qml/getmewheels2/harmattan/OAuthSetupSheet.qml \
+        qml/getmewheels2/harmattan/SectionHeader.qml \
+        qml/getmewheels2/harmattan/SelectionButton.qml \
+        qml/getmewheels2/harmattan/SettingsSheet.qml \
+        qml/getmewheels2/harmattan/ZoomSlider.qml
+}
 
+# translations
+#translations.files = i18n/getmewheels_de.qm
+
+#translations.path = .
+#INSTALLS += translations
+
+# MeeGo specific stuff
+contains(MEEGO_EDITION,harmattan) {
+    # Speed up launching on MeeGo/Harmattan when using applauncherd daemon
+    CONFIG += qdeclarative-boostable
+    DEFINES += MEEGO
+
+    INCLUDEPATH += $$PWD/3rdParty/qoauth/include
+    LIBS += -L$$PWD/3rdParty/qoauth/lib/ -L$$PWD/3rdParty/qtm-geoservices-extras/build/ -lqca -lqoauth -lqjson -lqtgeoservices_osm
+
+    qmldir.source = qml/getmewheels2/harmattan
+    qmldir.target = qml
+    DEPLOYMENTFOLDERS = qmldir
+
+    splash.files = splash.png
+    splash.path = /opt/$${TARGET}
+    INSTALLS += splash
+}
+
+# Simulator specific stuff
+simulator: {
+    INCLUDEPATH += $$PWD/3rdParty/qoauth/include
+    LIBS+= -lqoauth -lqjson -L$$PWD -lqca
+}
+
+# Symbian specific stuff
+symbian: {
+    DEPLOYMENT.display_name = GetMeWheels
+
+    # Dependency to qt components for regular sis
+    CONFIG += qt-components qt
+    CONFIG += qtquickcomponents
+    # and for smart installer
+    DEPLOYMENT.installer_header = 0x2002CCCF
+
+    installrules.pkg_prerules += \
+        "; Dependency to Symbian Qt Quick components" \
+        "(0x200346DE), 1, 1, 0, {\"Qt Quick components\"}"
+    DEPLOYMENT += installrules
+
+    #TARGET.UID3 = 0xE0BACF3E
+    TARGET.UID3 = 0x20062245
+    # Allow network access on Symbian
+    TARGET.CAPABILITY += NetworkServices Location #ReadDeviceData #WriteDeviceData
+
+    # In case of Symbian we use our 3rdParty distribution of qjson
+    INCLUDEPATH += $$PWD/3rdParty/
+    LIBS += -lgmw_qjson.lib
+#    jsonFiles.sources = gmw_qjson.dll
+#    jsonFiles.path = /sys/bin
+#    DEPLOYMENT += jsonFiles
+
+    LIBS += -lgmw_kqoauth.lib
+#    oauthFiles.sources = gmw_kqoauth.dll
+#    oauthFiles.path = /sys/bin
+#    DEPLOYMENT += oauthFiles
+
+    LIBS += -lgmw_qtgeoservices_osm.lib
+#    osmFiles.sources = gmw_qtgeoservices_osm.dll
+#    osmFiles.path = /sys/bin
+#    DEPLOYMENT += osmFiles
+
+    qmldir.source = qml/getmewheels2/symbian
+    qmldir.target = qml
+    DEPLOYMENTFOLDERS = qmldir
+
+    my_deployment.pkg_prerules += vendorinfo
+
+    DEPLOYMENT += my_deployment
+
+    vendorinfo += "%{\"Michael Zanetti\"}" ":\"Michael Zanetti\""
+}
+
+# Please do not modify the following two lines. Required for deployment.
+include(qmlapplicationviewer/qmlapplicationviewer.pri)
+qtcAddDeployment()

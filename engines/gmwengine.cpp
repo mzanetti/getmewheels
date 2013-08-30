@@ -29,6 +29,7 @@ GMWEngine::GMWEngine(): QObject()
     connect(m_plugin, SIGNAL(gasStationsReceived(QList<GMWGasStation*>)), SLOT(gasStationsReceived(QList<GMWGasStation*>)));
     connect(m_plugin, SIGNAL(parkingSpotsReceived(QList<GMWParkingSpot*>)), SLOT(parkingSpotsReceived(QList<GMWParkingSpot*>)));
     connect(m_plugin, SIGNAL(vehiclesReceived(QList<GMWVehicle*>)), SLOT(vehiclesReceived(QList<GMWVehicle*>)));
+    connect(m_plugin, SIGNAL(authUrlReceived(QString)), SIGNAL(authenticateUrl(QString)));
 
     m_location = new Location();
     Settings settings;
@@ -170,6 +171,12 @@ bool GMWEngine::cancelBooking(GMWVehicle *vehicle)
 void GMWEngine::clearDefaultAccount()
 {
     setDefaultAccount(GMWAccount());
+}
+
+void GMWEngine::clearAuthentication()
+{
+    m_plugin->removeAuthentication();
+    emit authenticatedChanged();
 }
 
 void GMWEngine::refreshStationary(bool useCache)
