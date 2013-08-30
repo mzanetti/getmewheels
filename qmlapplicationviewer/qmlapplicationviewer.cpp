@@ -12,10 +12,18 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include <QtGui/QApplication>
-#include <QtDeclarative/QDeclarativeComponent>
-#include <QtDeclarative/QDeclarativeEngine>
-#include <QtDeclarative/QDeclarativeContext>
+
+#if QT_VERSION < 0x050000
+  #include <QApplication>
+  #include <QtDeclarative/QDeclarativeComponent>
+  #include <QtDeclarative/QDeclarativeEngine>
+  #include <QtDeclarative/QDeclarativeContext>
+  typedef QApplication QGuiApplication;
+
+#else
+  #include <QGuiApplication>
+  #include <QQmlEngine>
+#endif
 
 #include <qplatformdefs.h> // MEEGO_EDITION_HARMATTAN
 
@@ -73,11 +81,19 @@ QString QmlApplicationViewerPrivate::adjustPath(const QString &path)
 }
 
 QmlApplicationViewer::QmlApplicationViewer(QWidget *parent)
+#if QT_VERSION < 0x050000
     : QDeclarativeView(parent)
+#else
+    : QQuickView()
+#endif
     , d(new QmlApplicationViewerPrivate())
 {
     connect(engine(), SIGNAL(quit()), SLOT(close()));
+#if QT_VERSION < 0x050000
     setResizeMode(QDeclarativeView::SizeRootObjectToView);
+#else
+    setResizeMode(QQuickView::SizeRootObjectToView);
+#endif
     // Qt versions prior to 4.8.0 don't have QML/JS debugging services built in
 #if defined(QMLJSDEBUGGER) && QT_VERSION < 0x040800
 #if !defined(NO_JSDEBUGGER)
@@ -137,7 +153,7 @@ void QmlApplicationViewer::setOrientation(ScreenOrientation orientation)
     case ScreenOrientationAuto:
         attribute = static_cast<Qt::WidgetAttribute>(130);
         break;
-#else // QT_VERSION < 0x040702
+#elif QT_VERSION < 0x050000 // QT_VERSION < 0x040702
     case ScreenOrientationLockPortrait:
         attribute = Qt::WA_LockPortraitOrientation;
         break;
@@ -148,9 +164,11 @@ void QmlApplicationViewer::setOrientation(ScreenOrientation orientation)
     case ScreenOrientationAuto:
         attribute = Qt::WA_AutoOrientation;
         break;
-#endif // QT_VERSION < 0x040702
+#endif // QT_VERSION < 0x050000
     };
+#if QT_VERSION < 0x050000
     setAttribute(attribute, true);
+#endif
 }
 
 void QmlApplicationViewer::showExpanded()
@@ -164,11 +182,11 @@ void QmlApplicationViewer::showExpanded()
 #endif
 }
 
-QApplication *createApplication(int &argc, char **argv)
+QGuiApplication *createApplication(int &argc, char **argv)
 {
 #ifdef HARMATTAN_BOOSTER
     return MDeclarativeCache::qApplication(argc, argv);
 #else
-    return new QApplication(argc, argv);
+    return new QGuiApplication(argc, argv);
 #endif
 }

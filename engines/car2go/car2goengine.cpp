@@ -22,11 +22,14 @@
 #include "data/gmwparkingspot.h"
 #include "data/gmwgasstation.h"
 #include "data/gmwvehicle.h"
+#include "engines/location.h"
 
-#ifndef Q_WS_S60
+#ifdef Q_WS_S60
+#include <qjson/src/parser.h>
+#elif QT_VERSION < 0x050000
 #include <qjson/parser.h>
 #else
-#include <qjson/src/parser.h>
+#include <QJsonDocument>
 #endif
 
 #include <QtCore/QDebug>
@@ -40,7 +43,6 @@
 #include <QTimer>
 #include <QBuffer>
 #include <QPainter>
-#include <QtXml/QXmlStreamReader>
 
 const QByteArray Car2goEngine::Car2GoRequestTokenURL = "https://www.car2go.com/api/reqtoken";
 const QByteArray Car2goEngine::Car2GoAccessTokenURL  = "https://www.car2go.com/api/accesstoken";
@@ -62,7 +64,7 @@ Car2goEngine::Car2goEngine() :
 {
     connect(&m_network, SIGNAL(finished(QNetworkReply*)), this, SLOT(receivedData(QNetworkReply*)));
 
-#ifndef Q_WS_S60
+#if !defined Q_WS_S60 && QT_VERSION < 0x050000
     // Init qoauth
     m_qoauth = new QOAuth::Interface( this );
     m_qoauth->setConsumerKey( ConsumerKey );
@@ -124,12 +126,22 @@ QList<Location*> Car2goEngine::fetchLocations()
     }
     QByteArray response = reply->readAll();
     qDebug() << "got response" << response;
+#if QT_VERSION < 0x050000
     QJson::Parser parser;
     bool ok = true;
     QVariantMap locationMap = parser.parse(response, &ok).toMap();
     if(!ok) {
         qDebug() << "failed to parse locations" << response;
     }
+#else
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &error);
+
+    if(error.error != QJsonParseError::NoError) {
+        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+    }
+    QVariantMap locationMap = jsonDoc.toVariant().toMap();
+#endif
 
     foreach(const QVariant &location, locationMap.value("location").toList()) {
         Location *l = new Location();
@@ -140,28 +152,28 @@ QList<Location*> Car2goEngine::fetchLocations()
         // workaround for broken start coordinates in car2go api
         switch(l->id()) {
         case 1: // Ulm
-            l->setArea(QGeoBoundingBox(QGeoCoordinate(48.41000, 9.96000), QGeoCoordinate(48.39000, 10.00000)));
+            l->setArea(QGeoRectangle(QGeoCoordinate(48.41000, 9.96000), QGeoCoordinate(48.39000, 10.00000)));
             break;
         case 2: // Austin
-            l->setArea(QGeoBoundingBox(QGeoCoordinate(30.29000, -97.77000), QGeoCoordinate(30.25000, -97.70000)));
+            l->setArea(QGeoRectangle(QGeoCoordinate(30.29000, -97.77000), QGeoCoordinate(30.25000, -97.70000)));
             break;
         case 3: //Hamburg
-            l->setArea(QGeoBoundingBox(QGeoCoordinate(53.72000, 9.84000), QGeoCoordinate(53.41300, 10.15500)));
+            l->setArea(QGeoRectangle(QGeoCoordinate(53.72000, 9.84000), QGeoCoordinate(53.41300, 10.15500)));
             break;
         case 4: // Vancouver
-            l->setArea(QGeoBoundingBox(QGeoCoordinate(49.314789, -123.237269), QGeoCoordinate(49.230886, -123.062995)));
+            l->setArea(QGeoRectangle(QGeoCoordinate(49.314789, -123.237269), QGeoCoordinate(49.230886, -123.062995)));
             break;
         case 5: // Amsterdam
-            l->setArea(QGeoBoundingBox(QGeoCoordinate(52.396896, 4.853783), QGeoCoordinate(52.339317, 4.949881)));
+            l->setArea(QGeoRectangle(QGeoCoordinate(52.396896, 4.853783), QGeoCoordinate(52.339317, 4.949881)));
             break;
         case 7: // Wien
-            l->setArea(QGeoBoundingBox(QGeoCoordinate(48.303924, 16.240785), QGeoCoordinate(48.133475, 16.532411)));
+            l->setArea(QGeoRectangle(QGeoCoordinate(48.303924, 16.240785), QGeoCoordinate(48.133475, 16.532411)));
             break;
         case 8: // San Diego
-            l->setArea(QGeoBoundingBox(QGeoCoordinate(32.80715, -117.250194), QGeoCoordinate(32.707689, -117.117355)));
+            l->setArea(QGeoRectangle(QGeoCoordinate(32.80715, -117.250194), QGeoCoordinate(32.707689, -117.117355)));
             break;
         case 9: // Washington DC
-            l->setArea(QGeoBoundingBox(QGeoCoordinate(38.978878, -77.165943), QGeoCoordinate(38.810696, -76.919818)));
+            l->setArea(QGeoRectangle(QGeoCoordinate(38.978878, -77.165943), QGeoCoordinate(38.810696, -76.919818)));
             break;
         default: {
             QVariantMap mapSection = location.toMap().value("mapSection").toMap();
@@ -173,7 +185,7 @@ QList<Location*> Car2goEngine::fetchLocations()
             lowerRight.setLatitude(mapSection.value("lowerRight").toMap().value("latitude").toDouble());
             lowerRight.setLongitude(mapSection.value("lowerRight").toMap().value("longitude").toDouble());
 
-            QGeoBoundingBox area;
+            QGeoRectangle area;
             area.setTopLeft(upperLeft);
             area.setBottomRight(lowerRight);
             l->setArea(area);
@@ -213,7 +225,7 @@ QList<GMWAccount> Car2goEngine::accounts(Location *location)
 {
     QList<GMWAccount> retList;
 
-#ifndef Q_WS_S60
+#if !defined Q_WS_S60 && QT_VERSION < 0x050000
     QByteArray requestUrl( "https://www.car2go.com/api/v2.0/accounts");
 
     QOAuth::ParamMap map;
@@ -268,16 +280,30 @@ QList<GMWAccount> Car2goEngine::accounts(Location *location)
 
 #endif
     qDebug() << "got response" << response;
+#if QT_VERSION < 0x050000
     QJson::Parser parser;
     bool ok = true;
     QVariantMap accountsMap = parser.parse(response, &ok).toMap();
-    if(ok && accountsMap.contains("account")) {
-        foreach(const QVariant &account, accountsMap.value("account").toList()) {
-            retList.append(GMWAccount(account.toMap().value("accountId").toInt(), account.toMap().value("description").toString()));
-            qDebug() << "got account:" << retList.last().id() << retList.last().description();
-        }
-
+    if(!ok) {
+        qDebug() << "failed to parse data" << response << ":" << error.errorString();
     }
+#else
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &error);
+
+    if(error.error != QJsonParseError::NoError) {
+        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+    }
+    QVariantMap accountsMap = jsonDoc.toVariant().toMap();
+#endif
+
+    if (accountsMap.contains("account")) {
+    foreach(const QVariant &account, accountsMap.value("account").toList()) {
+        retList.append(GMWAccount(account.toMap().value("accountId").toInt(), account.toMap().value("description").toString()));
+        qDebug() << "got account:" << retList.last().id() << retList.last().description();
+    }
+
+}
 
     return retList;
 
@@ -301,7 +327,7 @@ GMWAccount Car2goEngine::account()
 
 bool Car2goEngine::startAuthentication()
 {
-#ifndef Q_WS_S60
+#if !defined Q_WS_S60 && QT_VERSION < 0x050000
     // Request Token
     QOAuth::ParamMap params;
     params.insert(ParamCallback, ParamCallbackValue);
@@ -354,7 +380,7 @@ bool Car2goEngine::startAuthentication()
 
 bool Car2goEngine::setAccessCode(const QString &code)
 {
-#ifndef Q_WS_S60
+#if !defined Q_WS_S60 && QT_VERSION < 0x050000
     // Authorize
     QOAuth::ParamMap otherArgs;
     otherArgs.insert( ParamVerifier, code.toLocal8Bit().toPercentEncoding());
@@ -444,7 +470,7 @@ bool Car2goEngine::createBooking(Location * location, GMWVehicle *vehicle, const
 //    return true;
 
 
-#ifndef Q_WS_S60
+#if !defined Q_WS_S60 && QT_VERSION < 0x050000
     QByteArray requestUrl("https://www.car2go.com/api/v2.1/bookings");
 
     QOAuth::ParamMap map;
@@ -510,47 +536,55 @@ bool Car2goEngine::createBooking(Location * location, GMWVehicle *vehicle, const
     QByteArray response = m_lastData;
 #endif
     qDebug() << "got response" << response;
+
+#if QT_VERSION < 0x050000
     QJson::Parser parser;
     bool ok = true;
     QVariantMap bookingResponseMap = parser.parse(response, &ok).toMap();
-    if(ok) {
-        if(bookingResponseMap.value("returnValue").toMap().value("code").toInt() != 0) {
-            m_error = bookingResponseMap.value("returnValue").toMap().value("description").toString();
-            qDebug() << "Booking failed:" << m_error;
-            return false;
-        }
-        QVariantList bookingDataList = bookingResponseMap.value("booking").toList();
-        qDebug() << "Booking successful";// << bookingData;
-        foreach(const QVariant &tmp, bookingDataList) {
-//            qDebug() << tmp;
-            QVariantMap bookingData = tmp.toMap();
-            qDebug() << "account:" << bookingData.value("account").toMap().value("accountId").toLongLong() << bookingData.value("account").toMap().value("description").toString();
-            qDebug() << "bookingId:" << bookingData.value("bookingId").toInt();
-            qDebug() << "bookingposition:" << bookingData.value("bookingposition").toMap().value("address").toString() << bookingData.value("bookingposition").toMap().value("latitude").toString() << bookingData.value("bookingposition").toMap().value("longitude").toString();
-
-            QDateTime reservationTime = QDateTime::fromTime_t(bookingData.value("reservationTime").toMap().value("timeInMillis").toLongLong()/1000);
-            GMWBooking *gmwbooking = new GMWBooking(bookingData.value("bookingId").toInt(), account);
-            gmwbooking->setTime(reservationTime);
-            gmwbooking->setExpirationTime(reservationTime.addSecs(15*60));
-            vehicle->setBooking(gmwbooking);
-            vehicle->setImage(m_imageVehicles);
-        }
-        return true;
-
-//        foreach(const QVariant &account, accountsMap.value("account").toList()) {
-//            retList.append(qMakePair(account.toMap().value("accountId").toLongLong(), account.toMap().value("description").toString()));
-//        }
-
+    if(!ok) {
+        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+        return false;
     }
-    return false;
+#else
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &error);
 
+    if(error.error != QJsonParseError::NoError) {
+        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+        return false;
+    }
+    QVariantMap bookingResponseMap = jsonDoc.toVariant().toMap();
+#endif
+
+    if(bookingResponseMap.value("returnValue").toMap().value("code").toInt() != 0) {
+        m_error = bookingResponseMap.value("returnValue").toMap().value("description").toString();
+        qDebug() << "Booking failed:" << m_error;
+        return false;
+    }
+    QVariantList bookingDataList = bookingResponseMap.value("booking").toList();
+    qDebug() << "Booking successful";// << bookingData;
+    foreach(const QVariant &tmp, bookingDataList) {
+//            qDebug() << tmp;
+        QVariantMap bookingData = tmp.toMap();
+        qDebug() << "account:" << bookingData.value("account").toMap().value("accountId").toLongLong() << bookingData.value("account").toMap().value("description").toString();
+        qDebug() << "bookingId:" << bookingData.value("bookingId").toInt();
+        qDebug() << "bookingposition:" << bookingData.value("bookingposition").toMap().value("address").toString() << bookingData.value("bookingposition").toMap().value("latitude").toString() << bookingData.value("bookingposition").toMap().value("longitude").toString();
+
+        QDateTime reservationTime = QDateTime::fromTime_t(bookingData.value("reservationTime").toMap().value("timeInMillis").toLongLong()/1000);
+        GMWBooking *gmwbooking = new GMWBooking(bookingData.value("bookingId").toInt(), account);
+        gmwbooking->setTime(reservationTime);
+        gmwbooking->setExpirationTime(reservationTime.addSecs(15*60));
+        vehicle->setBooking(gmwbooking);
+        vehicle->setImage(m_imageVehicles);
+    }
+    return true;
 }
 
 QList<GMWVehicle*> Car2goEngine::bookings(Location *location)
 {
     QList<GMWVehicle*> retList;
 
-#ifndef Q_WS_S60
+#if !defined Q_WS_S60 && QT_VERSION < 0x050000
     QByteArray requestUrl( "https://www.car2go.com/api/v2.1/bookings");
 
     QOAuth::ParamMap map;
@@ -607,24 +641,35 @@ QList<GMWVehicle*> Car2goEngine::bookings(Location *location)
 
 #endif
     qDebug() << "got response:" << response;
+#if QT_VERSION < 0x050000
     QJson::Parser parser;
     bool ok = true;
     QVariantMap accountsMap = parser.parse(response, &ok).toMap();
-    if(ok) {
-        foreach(const QVariant &booking, accountsMap.value("booking").toList()) {
-            QVariantMap bookingData = booking.toMap();
+    if(!ok) {
+        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+    }
+#else
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &error);
 
-            QDateTime reservationTime = QDateTime::fromTime_t(bookingData.value("reservationTime").toMap().value("timeInMillis").toLongLong()/1000);
-            GMWVehicle *vehicle = parseBookedVehicle(bookingData.value("vehicle").toMap());
-            GMWAccount account(bookingData.value("account").toMap().value("accountId").toInt(), bookingData.value("account").toMap().value("description").toString());
-            GMWBooking *gmwbooking = new GMWBooking(bookingData.value("bookingId").toInt(), account);
-            gmwbooking->setTime(reservationTime);
-            gmwbooking->setExpirationTime(reservationTime.addSecs(15*60));
-            vehicle->setBooking(gmwbooking);
-            retList.append(vehicle);
-            qDebug() << "booking:" << gmwbooking->account().description() << gmwbooking->time() << vehicle->vin();
-        }
+    if(error.error != QJsonParseError::NoError) {
+        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+    }
+    QVariantMap accountsMap = jsonDoc.toVariant().toMap();
+#endif
 
+    foreach(const QVariant &booking, accountsMap.value("booking").toList()) {
+        QVariantMap bookingData = booking.toMap();
+
+        QDateTime reservationTime = QDateTime::fromTime_t(bookingData.value("reservationTime").toMap().value("timeInMillis").toLongLong()/1000);
+        GMWVehicle *vehicle = parseBookedVehicle(bookingData.value("vehicle").toMap());
+        GMWAccount account(bookingData.value("account").toMap().value("accountId").toInt(), bookingData.value("account").toMap().value("description").toString());
+        GMWBooking *gmwbooking = new GMWBooking(bookingData.value("bookingId").toInt(), account);
+        gmwbooking->setTime(reservationTime);
+        gmwbooking->setExpirationTime(reservationTime.addSecs(15*60));
+        vehicle->setBooking(gmwbooking);
+        retList.append(vehicle);
+        qDebug() << "booking:" << gmwbooking->account().description() << gmwbooking->time() << vehicle->vin();
     }
 
 //    qDebug() << "bookings are:" << retList;
@@ -634,7 +679,7 @@ QList<GMWVehicle*> Car2goEngine::bookings(Location *location)
 
 bool Car2goEngine::cancelBooking(GMWVehicle *vehicle)
 {
-#ifndef Q_WS_S60
+#if !defined Q_WS_S60 && QT_VERSION < 0x050000
     if(!vehicle->booking()->isValid()) {
         qDebug() << "Vehicle does not seem to be booked!";
         return false;
@@ -694,26 +739,39 @@ bool Car2goEngine::cancelBooking(GMWVehicle *vehicle)
 
 #endif
     qDebug() << "got response" << response;
+
+#if QT_VERSION < 0x050000
     QJson::Parser parser;
     bool ok = true;
     QVariantMap bookingResponseMap = parser.parse(response, &ok).toMap();
-    if(ok) {
-        if(bookingResponseMap.value("returnValue").toMap().value("code").toInt() != 0) {
-            m_error = bookingResponseMap.value("returnValue").toMap().value("description").toString();
-            qDebug() << "Booking failed:" << m_error;
-            return false;
-        }
-        QVariantList bookingDataList = bookingResponseMap.value("cancelBooking").toList();
-        qDebug() << "Cancelling booking successful";// << bookingData;
-        foreach(const QVariant &tmp, bookingDataList) {
-            qDebug() << tmp;
-            QVariantMap bookingData = tmp.toMap();
-        }
-        vehicle->clearBooking();
-        return true;
+    if(!ok) {
+        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+        return false;
     }
+#else
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &error);
 
-    return false;
+    if(error.error != QJsonParseError::NoError) {
+        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+        return false;
+    }
+    QVariantMap bookingResponseMap = jsonDoc.toVariant().toMap();
+#endif
+
+    if(bookingResponseMap.value("returnValue").toMap().value("code").toInt() != 0) {
+        m_error = bookingResponseMap.value("returnValue").toMap().value("description").toString();
+        qDebug() << "Booking failed:" << m_error;
+        return false;
+    }
+    QVariantList bookingDataList = bookingResponseMap.value("cancelBooking").toList();
+    qDebug() << "Cancelling booking successful";// << bookingData;
+    foreach(const QVariant &tmp, bookingDataList) {
+        qDebug() << tmp;
+        QVariantMap bookingData = tmp.toMap();
+    }
+    vehicle->clearBooking();
+    return true;
 }
 
 void Car2goEngine::receivedData(QNetworkReply *reply)
@@ -723,35 +781,36 @@ void Car2goEngine::receivedData(QNetworkReply *reply)
         return;
     }
 
+    QByteArray response = reply->readAll();
+#if QT_VERSION < 0x050000
+    QJson::Parser parser;
+    bool ok = true;
+    QVariantMap replyMap = parser.parse(response, &ok).toMap();
+    if(!ok) {
+        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+    }
+#else
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &error);
+
+    if(error.error != QJsonParseError::NoError) {
+        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+    }
+    QVariantMap replyMap = jsonDoc.toVariant().toMap();
+#endif
+
+
     if (reply == m_networkReplyParkingSpots) {
         qDebug() << "received parking spots reply";
-        QByteArray parkingSpots = reply->readAll();
-        QJson::Parser parser;
-        bool ok;
-        QVariant parkingSpotsMap = parser.parse(parkingSpots, &ok);
-        if(ok) {
-            parseParkingSpots(parkingSpotsMap.toMap());
-        }
+        parseParkingSpots(replyMap);
 
     } else if (reply == m_networkReplyGasStations) {
         qDebug() << "received gas stations reply";
-        QByteArray gasStations = reply->readAll();
-        QJson::Parser parser;
-        bool ok;
-        QVariant gasStationsMap = parser.parse(gasStations, &ok);
-        if(ok) {
-            parseGasStations(gasStationsMap.toMap());
-        }
+        parseGasStations(replyMap);
 
     } else if (reply == m_networkReplyVehicles) {
         qDebug() << "received vehicles reply";
-        QByteArray vehicles = reply->readAll();
-        QJson::Parser parser;
-        bool ok;
-        QVariant vehicleMap = parser.parse(vehicles, &ok);
-        if(ok) {
-            parseVehicles(vehicleMap.toMap());
-        }
+        parseVehicles(replyMap);
     } else {
         m_timeout = false;
         m_loop.quit();
@@ -823,7 +882,7 @@ void Car2goEngine::loadBusinessArea()
     //    emit businessAreaChanged();
 }
 
-#ifdef Q_WS_S60
+#if defined Q_WS_S60 || QT_VERSION >= 0x050000
 void Car2goEngine::receivedToken(const QString &token, const QString &tokenSecret)
 {
 

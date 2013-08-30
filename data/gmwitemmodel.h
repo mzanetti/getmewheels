@@ -55,6 +55,10 @@ public:
     GMWEngine *engine();
     void setEngine(GMWEngine *engine);
 
+#if QT_VERSION >= 0x050000
+    QHash<int, QByteArray> roleNames() const;
+#endif
+
 public slots:
     void addObject(GMWItem *item);
     void addObjects(QList<GMWItem*> items);
@@ -73,6 +77,10 @@ private:
     GMWEngine *m_engine;
     QList<GMWItem*> m_objects;
     QGeoCoordinate m_currentPosition;
+
+#if QT_VERSION >= 0x050000
+    QHash<int, QByteArray> m_roleNames;
+#endif
 
 private slots:
     void itemChanged();

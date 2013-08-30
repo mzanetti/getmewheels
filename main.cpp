@@ -16,16 +16,28 @@
  *                                                                           *
  ****************************************************************************/
 
-#include "mapwidget.h"
 #include "core.h"
 #include "engines/car2go/car2goengine.h"
 #include "settings.h"
 
-#include <QtGui/QApplication>
-#include "qmlapplicationviewer.h"
-#include <QtDeclarative>
+#if QT_VERSION < 0x050000
+  #include "mapwidget.h"
+  #include <QApplication>
+  #include <QtDeclarative>
+  typedef QApplication QGuiApplication;
+#else
+  #include <QGuiApplication>
+  #include <QtQml/qqml.h>
+  #include <QDir>
+#endif
 
-#if !defined QT_SIMULATOR //&& !defined Q_WS_S60
+#include "qmlapplicationviewer.h"
+#include <QDebug>
+#include <QTranslator>
+#include <QLibraryInfo>
+
+
+#if !defined QT_SIMULATOR && QT_VERSION < 0x050000
 Q_IMPORT_PLUGIN(qtgeoservices_osm)
 #endif
 
@@ -34,7 +46,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QString language = QLocale::system().name().split('_').first();
     qDebug() << "got languange" << language;
 
-    QScopedPointer<QApplication> app(createApplication(argc, argv));
+    QScopedPointer<QGuiApplication> app(createApplication(argc, argv));
     QScopedPointer<QmlApplicationViewer> viewer(QmlApplicationViewer::create());
 
     QTranslator qtTranslator;
@@ -50,7 +62,9 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     app->installTranslator(&translator);
 
 
+#if QT_VERSION < 0x050000
     qmlRegisterType<MapWidget>("GetMeWheels", 1, 0, "GmwMap");
+#endif
     qmlRegisterType<GMWItemModel>("GetMeWheels", 1, 0, "GmwModel");
     qmlRegisterType<GMWItemSortFilterProxyModel>("GetMeWheels", 1, 0, "GmwProxyModel");
     qmlRegisterType<GMWItem>();
@@ -64,8 +78,14 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     viewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
 #if defined Q_WS_S60
     viewer->setMainQmlFile(QLatin1String("qml/symbian/main.qml"));
-#else
+#elif defined MEEGO
     viewer->setMainQmlFile(QLatin1String("/opt/getmewheels2/qml/harmattan/main.qml"));
+#else
+    if(QCoreApplication::applicationDirPath() == QDir(("/usr/bin")).canonicalPath()) {
+        viewer->setSource(QUrl::fromLocalFile("/usr/share/getmewheels/qml/ubuntu/main.qml"));
+    } else {
+        viewer->setSource(QUrl("qml/ubuntu/main.qml"));
+    }
 #endif
     viewer->showExpanded();
 

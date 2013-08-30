@@ -3,14 +3,16 @@
 CONFIG += mobility
 MOBILITY += location
 
-QT += network
+contains(QT_VERSION, ^5\\..\\..*) {
+  QT += gui quick qml network location xml
+} else {
+  QT += declarative
+}
 
 
 # Files used on all platforms
 
 SOURCES += main.cpp \
-    mapwidget.cpp \
-    gmwmarker.cpp \
     core.cpp \
     data/gmwitemmodel.cpp \
     data/gmwitem.cpp \
@@ -27,9 +29,8 @@ SOURCES += main.cpp \
     engines/location.cpp \
     engines/engineplugin.cpp
 
+
 HEADERS += \
-    mapwidget.h \
-    gmwmarker.h \
     core.h \
     data/gmwitemmodel.h \
     data/gmwitem.h \
@@ -46,6 +47,16 @@ HEADERS += \
     engines/location.h \
     engines/engineplugin.h
 
+!contains(QT_VERSION, ^5\\..\\..*) {
+
+SOURCES += mapwidget.cpp \
+    gmwmarker.cpp \
+
+HEADERS += \
+    mapwidget.h \
+    gmwmarker.h \
+}
+
 OTHER_FILES += \
     qtc_packaging/debian_harmattan/rules \
     qtc_packaging/debian_harmattan/README \
@@ -57,28 +68,6 @@ OTHER_FILES += \
 
 RESOURCES += \
     getmewheels2.qrc
-
-linguist {
-    SOURCES += \
-        qml/getmewheels2/symbian/ItemDetailsSheet.qml \
-        qml/getmewheels2/symbian/ItemList.qml \
-        qml/getmewheels2/symbian/MainPage.qml \
-        qml/getmewheels2/symbian/main.qml \
-        qml/getmewheels2/symbian/OAuthSetupSheet.qml \
-        qml/getmewheels2/symbian/SectionHeader.qml \
-        qml/getmewheels2/symbian/SelectionButton.qml \
-        qml/getmewheels2/symbian/SettingsSheet.qml \
-        qml/getmewheels2/symbian/ZoomSlider.qml \
-        qml/getmewheels2/harmattan/ItemDetailsSheet.qml \
-        qml/getmewheels2/harmattan/ItemList.qml \
-        qml/getmewheels2/harmattan/MainPage.qml \
-        qml/getmewheels2/harmattan/main.qml \
-        qml/getmewheels2/harmattan/OAuthSetupSheet.qml \
-        qml/getmewheels2/harmattan/SectionHeader.qml \
-        qml/getmewheels2/harmattan/SelectionButton.qml \
-        qml/getmewheels2/harmattan/SettingsSheet.qml \
-        qml/getmewheels2/harmattan/ZoomSlider.qml
-}
 
 # translations
 #translations.files = i18n/getmewheels_de.qm
@@ -102,6 +91,20 @@ contains(MEEGO_EDITION,harmattan) {
     splash.files = splash.png
     splash.path = /opt/$${TARGET}
     INSTALLS += splash
+
+    linguist {
+        SOURCES += \
+            qml/getmewheels2/harmattan/ItemDetailsSheet.qml \
+            qml/getmewheels2/harmattan/ItemList.qml \
+            qml/getmewheels2/harmattan/MainPage.qml \
+            qml/getmewheels2/harmattan/main.qml \
+            qml/getmewheels2/harmattan/OAuthSetupSheet.qml \
+            qml/getmewheels2/harmattan/SectionHeader.qml \
+            qml/getmewheels2/harmattan/SelectionButton.qml \
+            qml/getmewheels2/harmattan/SettingsSheet.qml \
+            qml/getmewheels2/harmattan/ZoomSlider.qml \
+    }
+
 }
 
 # Simulator specific stuff
@@ -156,6 +159,40 @@ symbian: {
     DEPLOYMENT += my_deployment
 
     vendorinfo += "%{\"Michael Zanetti\"}" ":\"Michael Zanetti\""
+
+    linguist {
+        SOURCES += \
+            qml/getmewheels2/symbian/ItemDetailsSheet.qml \
+            qml/getmewheels2/symbian/ItemList.qml \
+            qml/getmewheels2/symbian/MainPage.qml \
+            qml/getmewheels2/symbian/main.qml \
+            qml/getmewheels2/symbian/OAuthSetupSheet.qml \
+            qml/getmewheels2/symbian/SectionHeader.qml \
+            qml/getmewheels2/symbian/SelectionButton.qml \
+            qml/getmewheels2/symbian/SettingsSheet.qml \
+            qml/getmewheels2/symbian/ZoomSlider.qml \
+    }
+}
+
+contains(QT_VERSION, ^5\\..\\..*) {
+    LIBS += -L$$PWD/3rdParty/kqoauth/lib/ -lgmw_kqoauth
+
+    folder_01.source = qml/getmewheels2/ubuntu
+    folder_01.target = qml
+    DEPLOYMENTFOLDERS = folder_01
+
+    linguist {
+        SOURCES += \
+            qml/getmewheels2/ubuntu/ItemDetailsSheet.qml \
+            qml/getmewheels2/ubuntu/ItemList.qml \
+            qml/getmewheels2/ubuntu/MainPage.qml \
+            qml/getmewheels2/ubuntu/main.qml \
+            qml/getmewheels2/ubuntu/OAuthSetupSheet.qml \
+            qml/getmewheels2/ubuntu/SectionHeader.qml \
+            qml/getmewheels2/ubuntu/SelectionButton.qml \
+            qml/getmewheels2/ubuntu/SettingsSheet.qml \
+            qml/getmewheels2/ubuntu/ZoomSlider.qml
+    }
 }
 
 # Please do not modify the following two lines. Required for deployment.

@@ -36,7 +36,12 @@ GMWItemSortFilterProxyModel::GMWItemSortFilterProxyModel(QObject *parent) :
     roleNames.insert(GMWItemModel::RoleType, "itemType");
     roleNames.insert(GMWItemModel::RoleEngineType, "itemEngineType");
     roleNames.insert(GMWItemModel::RoleParkingCP, "itemParkingCP");
+
+#if QT_VERSION < 0x050000
     setRoleNames(roleNames);
+#else
+    m_roleNames = roleNames;
+#endif
 
     setSortRole(GMWItemModel::RoleDistance);
 }
@@ -84,6 +89,13 @@ void GMWItemSortFilterProxyModel::setOnlyBooked(bool onlyBooked)
     invalidateFilter();
     sort(0);
 }
+
+#if QT_VERSION >= 0x050000
+QHash<int, QByteArray> GMWItemSortFilterProxyModel::roleNames() const
+{
+    return m_roleNames;
+}
+#endif
 
 bool GMWItemSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {

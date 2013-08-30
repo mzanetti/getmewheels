@@ -25,7 +25,9 @@
 #include <QGeoPositionInfo>
 #include <QMetaType>
 
+#if QT_VERSION < 0x050000
 QTM_USE_NAMESPACE
+#endif
 
 class GMWItem: public QObject
 {

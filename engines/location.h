@@ -21,9 +21,14 @@
 
 #include <QObject>
 #include <QString>
-#include <QGeoBoundingBox>
+#if QT_VERSION < 0x050000
+  #include <QGeoBoundingBox>
+  typedef QGeoBoundingBox QGeoRectangle;
+  QTM_USE_NAMESPACE
+#else
+  #include <QGeoRectangle>
+#endif
 
-QTM_USE_NAMESPACE
 
 class Location: public QObject
 {
@@ -40,12 +45,13 @@ public:
     QString name() const;
     void setName(const QString &name);
 
-    QGeoBoundingBox area() const;
-    void setArea(const QGeoBoundingBox &area);
+    QGeoRectangle area() const;
+    void setArea(const QGeoRectangle &area);
+
 private:
     int m_id;
     QString m_name;
-    QGeoBoundingBox m_area;
+    QGeoRectangle m_area;
 
 };
 

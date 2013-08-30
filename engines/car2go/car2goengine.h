@@ -21,7 +21,6 @@
 #define CAR2GOENGINE_H
 
 #include "engines/gmwengine.h"
-#include "engines/location.h"
 #include "data/gmwgasstation.h"
 #include "data/gmwparkingspot.h"
 
@@ -31,13 +30,14 @@
 #include <QtNetwork/QNetworkReply>
 #include <QEventLoop>
 
-#ifndef Q_WS_S60
- #include <QtOAuth>
-#else
-//#include "oauth/oauth.h"
+#if defined Q_WS_S60 || QT_VERSION >= 0x050000
 #include "../3rdParty/kqoauth/src/kqoauthmanager.h"
 #include "../3rdParty/kqoauth/src/kqoauthrequest.h"
+#else
+#include <QtOAuth>
 #endif
+
+class Location;
 
 class Car2goEngine : public EnginePlugin
 {
@@ -96,12 +96,7 @@ private:
 
     GMWBusinessArea m_businessArea;
 
-#ifndef Q_WS_S60
-    QOAuth::Interface *m_qoauth;
-    QByteArray m_screenName;
-    QByteArray m_token;
-    QByteArray m_tokenSecret;
-#else
+#if defined Q_WS_S60 || QT_VERSION >= 0x050000
     KQOAuthManager *m_oauthManager;
     KQOAuthRequest *m_oauthRequest;
     QString m_screenName;
@@ -109,6 +104,11 @@ private:
     QString m_tokenSecret;
     QString m_temporaryToken;
     QString m_temporaryTokenSecret;
+#else
+    QOAuth::Interface *m_qoauth;
+    QByteArray m_screenName;
+    QByteArray m_token;
+    QByteArray m_tokenSecret;
 #endif
     GMWAccount m_account;
 
@@ -147,7 +147,7 @@ private slots:
     void receivedData(QNetworkReply *reply);
     void loadBusinessArea();
 
-#ifdef Q_WS_S60
+#if defined Q_WS_S60 || QT_VERSION >= 0x050000
     void receivedToken(const QString &token, const QString &tokenSecret);
     void temporaryTokenReceived(const QString & token, const QString & tokenSecret);
     void authorizationReceived(const QString & token, const QString & verifier);

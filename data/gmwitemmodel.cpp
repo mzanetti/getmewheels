@@ -41,7 +41,11 @@ GMWItemModel::GMWItemModel(QObject *parent) :
     roleNames.insert(RoleType, "itemType");
     roleNames.insert(RoleEngineType, "itemEngineType");
     roleNames.insert(RoleParkingCP, "itemParkingCP");
+#if QT_VERSION < 0x050000
     setRoleNames(roleNames);
+#else
+    m_roleNames = roleNames;
+#endif
 }
 
 GMWEngine *GMWItemModel::engine()
@@ -62,6 +66,13 @@ void GMWItemModel::setEngine(GMWEngine *engine)
 
     emit engineChanged();
 }
+
+#if QT_VERSION >= 0x050000
+QHash<int, QByteArray> GMWItemModel::roleNames() const
+{
+    return m_roleNames;
+}
+#endif
 
 void GMWItemModel::addObject(GMWItem *item) {
     addObjects(QList<GMWItem*>() << item);

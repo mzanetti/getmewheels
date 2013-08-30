@@ -22,8 +22,9 @@
 #include <qgeocoordinate.h>
 #include <QtCore/QList>
 
+#if QT_VERSION < 0x050000
 QTM_USE_NAMESPACE
-
+#endif
 class Area
 {
 public:

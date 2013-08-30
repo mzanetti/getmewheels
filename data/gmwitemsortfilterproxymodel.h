@@ -44,6 +44,10 @@ public:
     bool onlyBooked();
     void setOnlyBooked(bool onlyBooked);
 
+#if QT_VERSION >= 0x050000
+    QHash<int, QByteArray> roleNames() const;
+#endif
+
 signals:
     void filterChanged(GMWItem::Types types);
     void itemModelChanged();
@@ -58,6 +62,10 @@ private:
     GMWItem::Types m_gmwObjectTypes;
     QGeoCoordinate m_currentPosition;
     bool m_onlyBooked;
+
+#if QT_VERSION >= 0x050000
+    QHash<int, QByteArray> m_roleNames;
+#endif
 };
 
 

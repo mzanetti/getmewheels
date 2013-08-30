@@ -21,6 +21,10 @@
 #include <QStringList>
 #include <QUrl>
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0 ,0)
+#include <QUrlQuery>
+#endif
+
 #include "kqoauthauthreplyserver.h"
 #include "kqoauthauthreplyserver_p.h"
 
@@ -74,7 +78,11 @@ QMultiMap<QString, QString> KQOAuthAuthReplyServerPrivate::parseQueryParams(QByt
     splitGetLine.prepend("http://localhost");                      // Now, make it a URL
 
     QUrl getTokenUrl(splitGetLine);
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QList< QPair<QString, QString> > tokens = getTokenUrl.queryItems();  // Ask QUrl to do our work.
+#else
+    QList< QPair<QString, QString> > tokens = QUrlQuery(getTokenUrl.query()).queryItems();  // Ask QUrl to do our work.
+#endif
 
     QMultiMap<QString, QString> queryParams;
     QPair<QString, QString> tokenPair;

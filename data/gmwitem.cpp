@@ -19,7 +19,7 @@
 
 #include "gmwitem.h"
 
-#include <QApplication>
+#include <QCoreApplication>
 
 GMWItem::GMWItem(const QString &name, const QString &address, const QGeoCoordinate &location, const QPixmap &image, const QPixmap &imageL) :
     m_name(name),
@@ -94,7 +94,7 @@ qreal GMWItem::distance() const
 QString GMWItem::distanceString() const
 {
     if (m_distance == -1) {
-        return QApplication::tr("Waiting for GPS...");
+        return QCoreApplication::tr("Waiting for GPS...");
     } else if (m_distance < 1000) {
         return QString::number(m_distance, 'f', 0) + " m";
     } else {
@@ -110,7 +110,7 @@ qreal GMWItem::azimuth() const
 QString GMWItem::azimuthString() const
 {
     if (m_distance == -1) {
-        return QApplication::tr("Waiting for GPS...");
+        return QCoreApplication::tr("Waiting for GPS...");
     } else {
         return QString::number(m_azimuth, 'f', 0);
     }

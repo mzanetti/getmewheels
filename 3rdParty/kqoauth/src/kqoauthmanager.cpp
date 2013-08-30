@@ -252,7 +252,13 @@ void KQOAuthManager::executeRequest(KQOAuthRequest *request) {
 
         // Take the original URL and append the query params to it.
         QUrl urlWithParams = networkRequest.url();
+#if QT_VERSION < 0x050000
         urlWithParams.setQueryItems(urlParams);
+#else
+        QUrlQuery query;
+        query.setQueryItems(urlParams);
+        urlWithParams.setQuery(query);
+#endif
         networkRequest.setUrl(QUrl(request->requestEndpoint().toString() + QByteArray::fromPercentEncoding(authHeader)));
 
         qDebug() << "KQOauth: deleting" << networkRequest.url() << networkRequest.rawHeader("Authorization") ;
@@ -345,7 +351,13 @@ void KQOAuthManager::getUserAuthorization(QUrl authorizationEndpoint) {
     QList< QPair<QString, QString> > queryParams;
     queryParams.append(tokenParam);
 
+#if QT_VERSION < 0x050000
     authorizationEndpoint.setQueryItems(queryParams);
+#else
+    QUrlQuery query;
+    query.setQueryItems(queryParams);
+    authorizationEndpoint.setQuery(query);
+#endif
 
     // Open the user's default browser to the resource authorization page provided
     // by the service.

@@ -19,7 +19,9 @@
 #include "settings.h"
 #include <QGeoCoordinate>
 
+#if QT_VERSION < 0x050000
 QTM_USE_NAMESPACE
+#endif
 
 Settings::Settings(QObject *parent) :
     QObject(parent)
@@ -54,7 +56,7 @@ bool Settings::readDefaultLocation(Location *location)
     bottomRight.setLatitude(m_settings->value("locationBottomRightLatitude").toDouble());
     bottomRight.setLongitude(m_settings->value("locationBottomRightLongitude").toDouble());
 
-    QGeoBoundingBox area;
+    QGeoRectangle area;
     area.setTopLeft(topLeft);
     area.setBottomRight(bottomRight);
 

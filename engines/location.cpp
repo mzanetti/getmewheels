@@ -42,12 +42,12 @@ void Location::setName(const QString &name)
     m_name = name;
 }
 
-QGeoBoundingBox Location::area() const
+QGeoRectangle Location::area() const
 {
     return m_area;
 }
 
-void Location::setArea(const QGeoBoundingBox &area)
+void Location::setArea(const QGeoRectangle &area)
 {
     m_area = area;
 }
