@@ -23,8 +23,8 @@
 #include <QString>
 #if QT_VERSION < 0x050000
   #include <QGeoBoundingBox>
-  typedef QGeoBoundingBox QGeoRectangle;
   QTM_USE_NAMESPACE
+  typedef QGeoBoundingBox QGeoRectangle;
 #else
   #include <QGeoRectangle>
 #endif

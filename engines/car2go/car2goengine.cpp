@@ -285,7 +285,7 @@ QList<GMWAccount> Car2goEngine::accounts(Location *location)
     bool ok = true;
     QVariantMap accountsMap = parser.parse(response, &ok).toMap();
     if(!ok) {
-        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+        qDebug() << "failed to parse data" << response;
     }
 #else
     QJsonParseError error;
@@ -542,7 +542,7 @@ bool Car2goEngine::createBooking(Location * location, GMWVehicle *vehicle, const
     bool ok = true;
     QVariantMap bookingResponseMap = parser.parse(response, &ok).toMap();
     if(!ok) {
-        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+        qDebug() << "failed to parse data" << response;
         return false;
     }
 #else
@@ -646,7 +646,7 @@ QList<GMWVehicle*> Car2goEngine::bookings(Location *location)
     bool ok = true;
     QVariantMap accountsMap = parser.parse(response, &ok).toMap();
     if(!ok) {
-        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+        qDebug() << "failed to parse data" << response;
     }
 #else
     QJsonParseError error;
@@ -745,7 +745,7 @@ bool Car2goEngine::cancelBooking(GMWVehicle *vehicle)
     bool ok = true;
     QVariantMap bookingResponseMap = parser.parse(response, &ok).toMap();
     if(!ok) {
-        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+        qDebug() << "failed to parse data" << response;
         return false;
     }
 #else
@@ -787,7 +787,7 @@ void Car2goEngine::receivedData(QNetworkReply *reply)
     bool ok = true;
     QVariantMap replyMap = parser.parse(response, &ok).toMap();
     if(!ok) {
-        qDebug() << "failed to parse data" << response << ":" << error.errorString();
+        qDebug() << "failed to parse data" << response;
     }
 #else
     QJsonParseError error;
