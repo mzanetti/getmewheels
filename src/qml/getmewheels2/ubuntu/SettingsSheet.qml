@@ -44,6 +44,7 @@ ComposerSheet {
                 onSelectedIndexChanged: {
                     if (gmwEngine.locationName != values[selectedIndex]) {
                         gmwEngine.locationName = values[selectedIndex];
+                        accountSelectionButton.values = gmwEngine.accountNames(gmwEngine.locationName);
                     }
                 }
             }

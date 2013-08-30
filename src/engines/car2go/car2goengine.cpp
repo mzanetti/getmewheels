@@ -126,22 +126,7 @@ QList<Location*> Car2goEngine::fetchLocations()
     }
     QByteArray response = reply->readAll();
     qDebug() << "got response" << response;
-#if QT_VERSION < 0x050000
-    QJson::Parser parser;
-    bool ok = true;
-    QVariantMap locationMap = parser.parse(response, &ok).toMap();
-    if(!ok) {
-        qDebug() << "failed to parse locations" << response;
-    }
-#else
-    QJsonParseError error;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &error);
-
-    if(error.error != QJsonParseError::NoError) {
-        qDebug() << "failed to parse data" << response << ":" << error.errorString();
-    }
-    QVariantMap locationMap = jsonDoc.toVariant().toMap();
-#endif
+    QVariantMap locationMap = parseJson(response);
 
     foreach(const QVariant &location, locationMap.value("location").toList()) {
         Location *l = new Location();
@@ -280,22 +265,7 @@ QList<GMWAccount> Car2goEngine::accounts(Location *location)
 
 #endif
     qDebug() << "got response" << response;
-#if QT_VERSION < 0x050000
-    QJson::Parser parser;
-    bool ok = true;
-    QVariantMap accountsMap = parser.parse(response, &ok).toMap();
-    if(!ok) {
-        qDebug() << "failed to parse data" << response;
-    }
-#else
-    QJsonParseError error;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &error);
-
-    if(error.error != QJsonParseError::NoError) {
-        qDebug() << "failed to parse data" << response << ":" << error.errorString();
-    }
-    QVariantMap accountsMap = jsonDoc.toVariant().toMap();
-#endif
+    QVariantMap accountsMap = parseJson(response);
 
     if (accountsMap.contains("account")) {
     foreach(const QVariant &account, accountsMap.value("account").toList()) {
@@ -537,24 +507,10 @@ bool Car2goEngine::createBooking(Location * location, GMWVehicle *vehicle, const
 #endif
     qDebug() << "got response" << response;
 
-#if QT_VERSION < 0x050000
-    QJson::Parser parser;
-    bool ok = true;
-    QVariantMap bookingResponseMap = parser.parse(response, &ok).toMap();
-    if(!ok) {
-        qDebug() << "failed to parse data" << response;
+    QVariantMap bookingResponseMap = parseJson(response);
+    if (bookingResponseMap.isEmpty()) {
         return false;
     }
-#else
-    QJsonParseError error;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &error);
-
-    if(error.error != QJsonParseError::NoError) {
-        qDebug() << "failed to parse data" << response << ":" << error.errorString();
-        return false;
-    }
-    QVariantMap bookingResponseMap = jsonDoc.toVariant().toMap();
-#endif
 
     if(bookingResponseMap.value("returnValue").toMap().value("code").toInt() != 0) {
         m_error = bookingResponseMap.value("returnValue").toMap().value("description").toString();
@@ -641,22 +597,7 @@ QList<GMWVehicle*> Car2goEngine::bookings(Location *location)
 
 #endif
     qDebug() << "got response:" << response;
-#if QT_VERSION < 0x050000
-    QJson::Parser parser;
-    bool ok = true;
-    QVariantMap accountsMap = parser.parse(response, &ok).toMap();
-    if(!ok) {
-        qDebug() << "failed to parse data" << response;
-    }
-#else
-    QJsonParseError error;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &error);
-
-    if(error.error != QJsonParseError::NoError) {
-        qDebug() << "failed to parse data" << response << ":" << error.errorString();
-    }
-    QVariantMap accountsMap = jsonDoc.toVariant().toMap();
-#endif
+    QVariantMap accountsMap = parseJson(response);
 
     foreach(const QVariant &booking, accountsMap.value("booking").toList()) {
         QVariantMap bookingData = booking.toMap();
@@ -740,24 +681,10 @@ bool Car2goEngine::cancelBooking(GMWVehicle *vehicle)
 #endif
     qDebug() << "got response" << response;
 
-#if QT_VERSION < 0x050000
-    QJson::Parser parser;
-    bool ok = true;
-    QVariantMap bookingResponseMap = parser.parse(response, &ok).toMap();
-    if(!ok) {
-        qDebug() << "failed to parse data" << response;
+    QVariantMap bookingResponseMap = parseJson(response);
+    if(bookingResponseMap.isEmpty()) {
         return false;
     }
-#else
-    QJsonParseError error;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &error);
-
-    if(error.error != QJsonParseError::NoError) {
-        qDebug() << "failed to parse data" << response << ":" << error.errorString();
-        return false;
-    }
-    QVariantMap bookingResponseMap = jsonDoc.toVariant().toMap();
-#endif
 
     if(bookingResponseMap.value("returnValue").toMap().value("code").toInt() != 0) {
         m_error = bookingResponseMap.value("returnValue").toMap().value("description").toString();
@@ -781,38 +708,22 @@ void Car2goEngine::receivedData(QNetworkReply *reply)
         return;
     }
 
-    QByteArray response = reply->readAll();
-#if QT_VERSION < 0x050000
-    QJson::Parser parser;
-    bool ok = true;
-    QVariantMap replyMap = parser.parse(response, &ok).toMap();
-    if(!ok) {
-        qDebug() << "failed to parse data" << response;
-    }
-#else
-    QJsonParseError error;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &error);
-
-    if(error.error != QJsonParseError::NoError) {
-        qDebug() << "failed to parse data" << response << ":" << error.errorString();
-    }
-    QVariantMap replyMap = jsonDoc.toVariant().toMap();
-#endif
-
-
     if (reply == m_networkReplyParkingSpots) {
+        QByteArray response = reply->readAll();
         qDebug() << "received parking spots reply";
-        parseParkingSpots(replyMap);
+        parseParkingSpots(parseJson(response));
 
     } else if (reply == m_networkReplyGasStations) {
+        QByteArray response = reply->readAll();
         qDebug() << "received gas stations reply";
-        parseGasStations(replyMap);
-
+        parseGasStations(parseJson(response));
     } else if (reply == m_networkReplyVehicles) {
+        QByteArray response = reply->readAll();
         qDebug() << "received vehicles reply";
-        parseVehicles(replyMap);
+        parseVehicles(parseJson(response));
     } else {
         m_timeout = false;
+        qDebug() << "stopping loop";
         m_loop.quit();
     }
 }
@@ -898,9 +809,11 @@ void Car2goEngine::temporaryTokenReceived(const QString &token, const QString &t
     QString url = Car2GoAuthorizeURL;
     url.append( "?" );
     url.append( "&oauth_token=" + m_temporaryToken );
-    qDebug() << "got url:" << QUrl(url);
+    qDebug() << "got url2:" << QUrl(url);
 
-    QDesktopServices::openUrl(QUrl::fromEncoded(url.toUtf8()));
+//    QDesktopServices::openUrl(QUrl::fromEncoded(url.toUtf8()));
+    emit authUrlReceived(url);
+
 }
 
 void Car2goEngine::authorizationReceived(const QString &token, const QString &verifier)
@@ -938,9 +851,31 @@ void Car2goEngine::requestReady(const QByteArray &response)
 
 void Car2goEngine::authorizedRequestDone()
 {
-//    qDebug() << "oauth response received" << m_oauthManager->lastError();
+    //    qDebug() << "oauth response received" << m_oauthManager->lastError();
 }
+
 #endif
+
+QVariantMap Car2goEngine::parseJson(const QByteArray &data)
+{
+#if QT_VERSION < 0x050000
+    QJson::Parser parser;
+    bool ok = true;
+    QVariantMap replyMap = parser.parse(data, &ok).toMap();
+    if(!ok) {
+        qDebug() << "failed to parse data" << data;
+    }
+#else
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+
+    if(error.error != QJsonParseError::NoError) {
+        qDebug() << "failed to parse data" << data << ":" << error.errorString();
+    }
+    QVariantMap replyMap = jsonDoc.toVariant().toMap();
+#endif
+    return replyMap;
+}
 
 bool Car2goEngine::waitForResponse()
 {

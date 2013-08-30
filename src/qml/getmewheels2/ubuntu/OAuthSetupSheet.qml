@@ -14,7 +14,8 @@ DefaultSheet {
 
     Connections {
         target: gmwEngine
-        onAuthUrlReceived: {
+        onAuthenticateUrl: {
+            print("foooooooooooooooooooo", url)
             webView.url = url
             webView.visible = true;
         }

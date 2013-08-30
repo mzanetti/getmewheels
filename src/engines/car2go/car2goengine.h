@@ -155,6 +155,9 @@ private slots:
     void requestReady(const QByteArray &response);
     void authorizedRequestDone();
 #endif
+
+private:
+    QVariantMap parseJson(const QByteArray &data);
 };
 
 #endif // CAR2GOENGINE_H
