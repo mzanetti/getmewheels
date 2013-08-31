@@ -13,9 +13,6 @@ Standards-Version: 3.9.3
 
 Package: getmewheels2
 Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         qt-components-ubuntu,
-         qtdeclarative5-qtlocation-plugin,
+Depends: ${misc:Depends},libqt5webkit5-qmlwebkitplugin,qtdeclarative5-localstorage-plugin,qtdeclarative5-particles-plugin,qtdeclarative5-qtlocation-plugin,qtdeclarative5-qtquick2-plugin,qtdeclarative5-ubuntu-ui-toolkit-plugin|qt-components-ubuntu,qtdeclarative5-window-plugin,qtdeclarative5-xmllistmodel-plugin,${shlibs:Depends},ubuntu-ui-toolkit-theme,qmlscene
 Description: An application to blabla
   An application to blabla

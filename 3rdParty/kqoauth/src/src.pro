@@ -81,12 +81,12 @@ else:unix {
     headers.path = $${INSTALL_PREFIX}/include/QtKOAuth
     docs.path = $${INSTALL_PREFIX}/share/doc/$${TARGET}-$${VERSION}/html
     pkgconfig.path = $${target.path}/pkgconfig
-    INSTALLS += \
-        target \
-        headers \
-        docs \
-        pkgconfig \
-        features
+#    INSTALLS += \
+#        target \
+#        headers \
+#        docs \
+#        pkgconfig \
+#        features
 }
 
 symbian {

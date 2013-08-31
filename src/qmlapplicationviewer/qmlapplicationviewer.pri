@@ -77,11 +77,13 @@ symbian {
         desktopfile.path = /usr/share/applications/hildon
         icon.files = $${TARGET}64.png
         icon.path = /usr/share/icons/hicolor/64x64/apps
+        installPrefix = /opt/$${TARGET}
     } else:!isEmpty(MEEGO_VERSION_MAJOR) {
         desktopfile.files = $${TARGET}_harmattan.desktop
         desktopfile.path = /usr/share/applications
         icon.files = $${TARGET}80.png
         icon.path = /usr/share/icons/hicolor/80x80/apps
+        installPrefix = /opt/$${TARGET}
     } else { # Assumed to be a Desktop Unix
         copyCommand =
         for(deploymentfolder, DEPLOYMENTFOLDERS) {
@@ -110,8 +112,8 @@ symbian {
             export(copydeploymentfolders.commands)
             QMAKE_EXTRA_TARGETS += first copydeploymentfolders
         }
+        installPrefix = /usr/
     }
-    installPrefix = /opt/$${TARGET}
     for(deploymentfolder, DEPLOYMENTFOLDERS) {
         item = item$${deploymentfolder}
         itemfiles = $${item}.files

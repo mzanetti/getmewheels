@@ -64,7 +64,7 @@ public slots:
     void addObjects(QList<GMWItem*> items);
     void clearAll();
     void clearVehicles();
-    void currentPositionChanged(const QGeoCoordinate &position, qreal direction);
+    void currentPositionChanged(const QGeoCoordinate &position, qreal direction = 0);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent) const;

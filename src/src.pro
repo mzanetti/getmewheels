@@ -179,7 +179,7 @@ contains(QT_VERSION, ^5\\..\\..*) {
     LIBS += -L$$OUT_PWD/../3rdParty/kqoauth/lib/ -lgmw_kqoauth
 
     folder_01.source = qml/getmewheels2/ubuntu
-    folder_01.target = qml
+    folder_01.target = share/getmewheels2/qml
     DEPLOYMENTFOLDERS = folder_01
 
     linguist {
@@ -194,6 +194,9 @@ contains(QT_VERSION, ^5\\..\\..*) {
             qml/getmewheels2/ubuntu/SettingsSheet.qml \
             qml/getmewheels2/ubuntu/ZoomSlider.qml
     }
+
+    desktopfile.files = $${TARGET}_ubuntu.desktop
+    desktopfile.path = /usr/share/applications
 }
 
 # Please do not modify the following two lines. Required for deployment.

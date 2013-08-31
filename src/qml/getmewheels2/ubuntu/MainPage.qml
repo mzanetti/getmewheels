@@ -104,6 +104,26 @@ Page {
 //        }
 //    }
 
+    PositionSource {
+        id: positionSource
+        updateInterval: 1000
+        active: true
+        onPositionChanged: {
+            var coord = positionSource.position.coordinate;
+            gmwModel.currentPositionChanged(coord)
+            console.log("Coordinate:", coord.longitude, coord.latitude);
+        }
+    }
+    Timer {
+        interval: 2000
+        running: true
+        repeat: true
+        onTriggered: {
+            var coord = positionSource.position.coordinate;
+            console.log("Coordinate:", coord.longitude, coord.latitude);
+        }
+    }
+
     Map {
         id: map
         anchors.fill: parent
@@ -132,6 +152,10 @@ Page {
         }
 
         onCenterChanged: {
+            if (oneGridUnitInMeters == 0) {
+                oneGridUnitInMeters = calculateGuMeters();
+            }
+
             if (map.center.distanceTo(oldCenter) > oneGridUnitInMeters * calculationStep) {
                 print("moved by %1 gu".arg(calculationStep));
                 map.oldCenter = QtLocation.coordinate(center.latitude, center.longitude);
@@ -140,6 +164,7 @@ Page {
 
         function calculateGuMeters() {
             var centerInPixels = map.toScreenPosition(center);
+            print("centerInPxels", centerInPixels.x, centerInPixels.y)
             centerInPixels.x += units.gu(1);
             var offsetPoint = map.toCoordinate(centerInPixels);
             var distance = offsetPoint.distanceTo(center);

@@ -82,10 +82,11 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     viewer->setMainQmlFile(QLatin1String("/opt/getmewheels2/qml/harmattan/main.qml"));
 #else
     if(QCoreApplication::applicationDirPath() == QDir(("/usr/bin")).canonicalPath()) {
-        viewer->setSource(QUrl::fromLocalFile("/usr/share/getmewheels/qml/ubuntu/main.qml"));
+        viewer->setSource(QUrl::fromLocalFile("/usr/share/getmewheels2/qml/ubuntu/main.qml"));
     } else {
         viewer->setSource(QUrl("qml/ubuntu/main.qml"));
     }
+    viewer->resize(720, 1280);
 #endif
     viewer->showExpanded();
 
