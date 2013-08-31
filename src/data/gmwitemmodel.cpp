@@ -187,6 +187,11 @@ QVariant GMWItemModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+GMWItem *GMWItemModel::item(int row) const
+{
+    return m_objects.at(row);
+}
+
 GMWItem *GMWItemModel::nearestItem(GMWItem::Type type) const
 {
     GMWItem *nearest = 0;

@@ -48,6 +48,7 @@ public:
     explicit GMWItemModel(QObject *parent = 0);
 
     QVariant data(const QModelIndex &index, int role) const;
+    GMWItem *item(int row) const;
 
     GMWItem *nearestItem(GMWItem::Type type) const;
     GMWVehicle *findVehicle(const QString &vin) const;

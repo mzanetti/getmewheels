@@ -32,6 +32,8 @@ class GMWItemSortFilterProxyModel : public QSortFilterProxyModel
 
     Q_PROPERTY(GMWItemModel *model READ itemModel WRITE setItemModel NOTIFY itemModelChanged())
     Q_PROPERTY(bool onlyBooked READ onlyBooked WRITE setOnlyBooked)
+    Q_PROPERTY(bool thinningEnabled READ thinningEnabled WRITE setThinningEnabled)
+    Q_PROPERTY(int zoomLevel READ zoomLevel WRITE setZoomLevel)
 
 public:
 
@@ -48,6 +50,12 @@ public:
     QHash<int, QByteArray> roleNames() const;
 #endif
 
+    bool thinningEnabled() const;
+    void setThinningEnabled(bool thinningEnabled);
+
+    int zoomLevel() const;
+    void setZoomLevel(int zoomLevel);
+
 signals:
     void filterChanged(GMWItem::Types types);
     void itemModelChanged();
@@ -58,7 +66,11 @@ protected:
 
 private slots:
     void modelDataChanged(const QModelIndex &firstIndex, const QModelIndex &lastIndex);
+
+    void updateThinningFilter();
+
 private:
+    GMWItemModel *m_sourceModel;
     GMWItem::Types m_gmwObjectTypes;
     QGeoCoordinate m_currentPosition;
     bool m_onlyBooked;
@@ -66,6 +78,11 @@ private:
 #if QT_VERSION >= 0x050000
     QHash<int, QByteArray> m_roleNames;
 #endif
+
+    bool m_thinning;
+    int m_zoomLevel;
+    QHash<GMWItem *, QGeoRectangle> m_visibleItems;
+
 };
 
 

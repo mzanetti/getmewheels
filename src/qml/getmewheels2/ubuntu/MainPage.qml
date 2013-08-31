@@ -175,8 +175,8 @@ Page {
         GmwProxyModel {
             id: mapModel
             model: gmwModel
-//            zoomLevel: map.zoomLevel
-//            thinningEnabled: true
+            zoomLevel: map.zoomLevel
+            thinningEnabled: true
         }
 
         function isOnScreen(gmwitem, mapCenter) {

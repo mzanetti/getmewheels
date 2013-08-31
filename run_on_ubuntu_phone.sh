@@ -40,7 +40,9 @@ setup_adb_forwarding() {
 
 sync_code() {
     [ -e .bzr ] && bzr export --uncommitted --format=dir /tmp/$CODE_DIR
-    [ -e .git ] && git checkout-index -a -f --prefix=/tmp/$CODE_DIR/
+    WORK_DIR=`pwd`
+    echo workdir is $WORK_DIR
+    [ -e .git ] && cd /tmp && git checkout $WORK_DIR && cd -
     rsync -crlOzv --delete --exclude builddir -e "ssh -p $TARGET_SSH_PORT -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" /tmp/$CODE_DIR/ $USER@$TARGET_IP:$CODE_DIR/
     rm -rf /tmp/$CODE_DIR
 }

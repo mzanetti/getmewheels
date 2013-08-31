@@ -20,10 +20,14 @@
 #include "gmwitemsortfilterproxymodel.h"
 
 #include <core.h>
+#include <qmath.h>
 #include <QDebug>
 
 GMWItemSortFilterProxyModel::GMWItemSortFilterProxyModel(QObject *parent) :
-    QSortFilterProxyModel(parent)
+    QSortFilterProxyModel(parent),
+    m_sourceModel(0),
+    m_onlyBooked(false),
+    m_thinning(false)
 {
     m_gmwObjectTypes = GMWItem::TypeUnknown | GMWItem::TypeVehicle | GMWItem::TypeGasStation | GMWItem::TypeParkingSpot;
 
@@ -60,17 +64,71 @@ void GMWItemSortFilterProxyModel::setFilterType(GMWItem::Types types)
 
 void GMWItemSortFilterProxyModel::setItemModel(GMWItemModel *model)
 {
+    m_sourceModel = model;
     setSourceModel(model);
     emit itemModelChanged();
     sort(0);
     connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), SLOT(modelDataChanged(QModelIndex, QModelIndex)));
-}
+    connect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(updateThinningFilter()));}
 
 void GMWItemSortFilterProxyModel::modelDataChanged(const QModelIndex &firstIndex, const QModelIndex &lastIndex)
 {
     Q_UNUSED(firstIndex)
     Q_UNUSED(lastIndex)
     sort(0);
+    updateThinningFilter();
+}
+
+void GMWItemSortFilterProxyModel::updateThinningFilter()
+{
+    if (!m_thinning || !m_sourceModel) {
+        return;
+    }
+
+    double degrees;
+    if(m_zoomLevel < 9) {
+        degrees = .1;
+    } else if(m_zoomLevel < 14){
+        degrees = .4 / qPow(2,(m_zoomLevel - 8));
+    } else if(m_zoomLevel < 17){
+        degrees = .2 / qPow(2,(m_zoomLevel - 8));
+    } else {
+        degrees = 0;
+    }
+
+    // TODO: add a thinningFactor property
+    degrees *= 2;
+
+//    qDebug() << "filtering for" << degrees << "°";
+
+    m_visibleItems.clear();
+    for (int i = 0; i < sourceModel()->rowCount() -1 ; ++i) {
+        GMWItem *newItem = m_sourceModel->item(i);
+
+        bool alwaysShown = false;
+        if(newItem->objectType() == GMWItem::TypeVehicle) {
+            GMWVehicle *vehicle = qobject_cast<GMWVehicle*>(newItem);
+            if(vehicle->booking()->isValid()) {
+                alwaysShown = true;
+            }
+        }
+        bool intersects = false;
+        if(!alwaysShown && m_zoomLevel < 17) {
+            foreach(GMWItem *tmp, m_visibleItems.keys()) {
+                if(tmp->objectType() == newItem->objectType() && m_visibleItems.value(tmp).contains(newItem->location())) {
+                    intersects = true;
+                    break;
+                }
+            }
+        }
+        if(!intersects) {
+            m_visibleItems.insert(newItem, QGeoRectangle(newItem->location(), degrees, degrees));
+        }
+    }
+//    qDebug() << "filtering finished";
+
+    invalidateFilter();
+//    qDebug() << "map contains" << m_visibleItems.count() << "items now";
 }
 
 GMWItemModel *GMWItemSortFilterProxyModel::itemModel()
@@ -109,24 +167,34 @@ bool GMWItemSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIn
             return false;
         }
     }
+
+    if (m_thinning && !m_visibleItems.keys().contains(object)) {
+        return false;
+    }
     return m_gmwObjectTypes.testFlag(object->objectType());
 }
 
-//bool GMWItemSortFilterProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
-//{
-//    GMWItem* leftObject = sourceModel()->data(left, Qt::UserRole).value<GMWItem*>();
-//    GMWItem* rightObject = sourceModel()->data(right, Qt::UserRole).value<GMWItem*>();
+bool GMWItemSortFilterProxyModel::thinningEnabled() const
+{
+    return m_thinning;
+}
 
-//    switch (left.column()) {
-//        case 0:
-//            return leftObject->objectType() < rightObject->objectType();
-//        case 1:
-//            return leftObject->address() < rightObject->address();
-//        case 2:
-//            return leftObject->distance() < rightObject->distance();
-//        case 3:
-//            return leftObject->azimuth() < rightObject->azimuth();
-//        default:
-//            return leftObject->distance() < rightObject->distance();
-//    }
-//}
+void GMWItemSortFilterProxyModel::setThinningEnabled(bool thinningEnabled)
+{
+    m_thinning = thinningEnabled;
+    updateThinningFilter();
+}
+
+int GMWItemSortFilterProxyModel::zoomLevel() const
+{
+    return m_zoomLevel;
+}
+
+void GMWItemSortFilterProxyModel::setZoomLevel(int zoomLevel)
+{
+    if (zoomLevel != m_zoomLevel) {
+        qDebug() << "zoom level set" << zoomLevel;
+        m_zoomLevel = zoomLevel;
+        updateThinningFilter();
+    }
+}
