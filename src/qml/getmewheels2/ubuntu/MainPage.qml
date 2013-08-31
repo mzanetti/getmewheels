@@ -138,40 +138,6 @@ Page {
           name : "osm"
         }
 
-        property var oldCenter
-        property int oneGridUnitInMeters
-        readonly property int calculationStep: 4 //gus
-
-        Component.onCompleted: {
-            oldCenter = QtLocation.coordinate(center.latitude, center.longitude);
-            oneGridUnitInMeters = calculateGuMeters();
-        }
-
-        onZoomLevelChanged: {
-            oneGridUnitInMeters = calculateGuMeters();
-        }
-
-        onCenterChanged: {
-            if (oneGridUnitInMeters == 0) {
-                oneGridUnitInMeters = calculateGuMeters();
-            }
-
-            if (map.center.distanceTo(oldCenter) > oneGridUnitInMeters * calculationStep) {
-                print("moved by %1 gu".arg(calculationStep));
-                map.oldCenter = QtLocation.coordinate(center.latitude, center.longitude);
-            }
-        }
-
-        function calculateGuMeters() {
-            var centerInPixels = map.toScreenPosition(center);
-            print("centerInPxels", centerInPixels.x, centerInPixels.y)
-            centerInPixels.x += units.gu(1);
-            var offsetPoint = map.toCoordinate(centerInPixels);
-            var distance = offsetPoint.distanceTo(center);
-            print("distance is:", distance)
-            return distance;
-        }
-
         GmwProxyModel {
             id: mapModel
             model: gmwModel
@@ -179,61 +145,46 @@ Page {
             thinningEnabled: true
         }
 
-        function isOnScreen(gmwitem, mapCenter) {
-            // TODO: adjust gmwitem.location calculationStep * units.gu(1) towards the map center to make items appear/disappear outside the visible area
-            var screenCoords = map.toScreenPosition(gmwitem.location);
-            return screenCoords.x > 0;
-        }
-
         MapItemView {
             model: mapModel
 
             delegate: MapQuickItem {
                 id: itemDelegate
-                property bool onScreen: map.isOnScreen(gmwitem, map.oldCenter)
-                sourceItem: Loader {
-                    id: delegateLoader
-                    sourceComponent: itemDelegate.onScreen ? delegateComponent : undefined
-                }
-
-                Component {
-                    id: delegateComponent
-                    Image {
-                        id: itemImage
-                        height: units.gu(4)
-                        width: units.gu(4)
-                        source: if (itemType == GmwItem.TypeVehicle) {
-                                    if (gmwitem.engineType == GmwVehicle.EngineTypeED) {
-                                        return "images/car_ed_map.png";
-                                    } else {
-                                        return "images/car_map.png";
-                                    }
-                                } else if (itemType == GmwItem.TypeGasStation){
-                                    return "images/gas_map.png";
+                sourceItem: Image {
+                    id: itemImage
+                    height: units.gu(4)
+                    width: units.gu(4)
+                    source: if (itemType == GmwItem.TypeVehicle) {
+                                if (gmwitem.engineType == GmwVehicle.EngineTypeED) {
+                                    return "images/car_ed_map.png";
                                 } else {
-                                     if (gmwitem.chargingPole) {
-                                         return "images/parking_cp_map.png"
-                                     } else {
-                                         return "images/parking_map.png"
-                                     }
+                                    return "images/car_map.png";
                                 }
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
+                            } else if (itemType == GmwItem.TypeGasStation){
+                                return "images/gas_map.png";
+                            } else {
+                                 if (gmwitem.chargingPole) {
+                                     return "images/parking_cp_map.png"
+                                 } else {
+                                     return "images/parking_map.png"
+                                 }
+                            }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
 //                                var component = Qt.createComponent("ItemDetailsSheet.qml")
 //                                print(component.error)
-                                PopupUtils.open(Qt.resolvedUrl("ItemDetailsSheet.qml"), itemDelegate, { gmwItem: gmwitem });
-                                //PopupUtils.open(testSheet, itemImage)
-                            }
+                            PopupUtils.open(Qt.resolvedUrl("ItemDetailsSheet.qml"), itemDelegate, { gmwItem: gmwitem });
+                            //PopupUtils.open(testSheet, itemImage)
                         }
-
                     }
+
                 }
                 coordinate: gmwitem.location
                 z: 1
 
-                anchorPoint.x: delegateLoader.width / 2
-                anchorPoint.y: delegateLoader.height
+                anchorPoint.x: itemDelegate.width / 2
+                anchorPoint.y: itemDelegate.height
             }
         }
 

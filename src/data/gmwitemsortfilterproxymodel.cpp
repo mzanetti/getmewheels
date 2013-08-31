@@ -88,10 +88,12 @@ void GMWItemSortFilterProxyModel::updateThinningFilter()
     double degrees;
     if(m_zoomLevel < 9) {
         degrees = .1;
+    } else if(m_zoomLevel < 11){
+        degrees = .2;
     } else if(m_zoomLevel < 14){
         degrees = .4 / qPow(2,(m_zoomLevel - 8));
     } else if(m_zoomLevel < 17){
-        degrees = .2 / qPow(2,(m_zoomLevel - 8));
+        degrees = .3 / qPow(2,(m_zoomLevel - 8));
     } else {
         degrees = 0;
     }
