@@ -73,7 +73,7 @@ MapWidget::MapWidget() :
     if (m_gps) {
         m_gps->setUpdateInterval(5000);
         connect(m_gps, SIGNAL(positionUpdated(const QGeoPositionInfo&)), this, SLOT(positionUpdated(const QGeoPositionInfo&)));
-        m_gps->requestUpdate();
+        //m_gps->requestUpdate();
         m_gps->startUpdates();
     }
     qDebug() << "bla" << Core::instance()->serviceProvider()->routingManager();
@@ -234,11 +234,14 @@ void MapWidget::updateMapItems()
             foreach(GMWItem *tmp, presentItems.keys()) {
                 if(tmp->objectType() == newItem->objectType() && presentItems.value(tmp).contains(newItem->location())) {
                     intersects = true;
+                    GMWMarker *marker = m_items.value(tmp);
+                    marker->setCount(marker->count()+1);
                     break;
                 }
             }
         }
         if(!intersects) {
+            m_items.value(newItem)->setCount(1);
             presentItems.insert(newItem, QGeoBoundingBox(newItem->location(), degrees, degrees));
         }
     }

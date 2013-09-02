@@ -613,7 +613,7 @@ QList<GMWVehicle*> Car2goEngine::bookings(Location *location)
         qDebug() << "booking:" << gmwbooking->account().description() << gmwbooking->time() << vehicle->vin();
     }
 
-//    qDebug() << "bookings are:" << retList;
+    qDebug() << "bookings are:" << retList;
 
     return retList;
 }

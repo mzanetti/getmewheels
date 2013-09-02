@@ -7,6 +7,12 @@ import GetMeWheels 1.0
 MainView {
     id: appWindow
 
+    headerColor: "#0249b3"
+    backgroundColor: "#0365bf"
+    footerColor: "#06bce4"
+
+     //
+
 /*    tools: ToolbarActions {
         Action {
             text: "Settings"

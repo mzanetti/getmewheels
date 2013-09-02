@@ -36,12 +36,16 @@ class GMWItemSortFilterProxyModel : public QSortFilterProxyModel
     Q_PROPERTY(int zoomLevel READ zoomLevel WRITE setZoomLevel)
 
 public:
+    enum FilterRole {
+        FilterRoleHideCount = Qt::UserRole + 1000
+    };
 
     explicit GMWItemSortFilterProxyModel(QObject *parent = 0);
     GMWItem::Types filterType() const;
     void setFilterType(GMWItem::Types types);
     void setItemModel(GMWItemModel *model);
     GMWItemModel *itemModel();
+    QVariant data(const QModelIndex &index, int role) const;
 
     bool onlyBooked();
     void setOnlyBooked(bool onlyBooked);
@@ -82,6 +86,7 @@ private:
     bool m_thinning;
     int m_zoomLevel;
     QHash<GMWItem *, QGeoRectangle> m_visibleItems;
+    QHash<GMWItem *, int> m_hideCount;
 
 };
 

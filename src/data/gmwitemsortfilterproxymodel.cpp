@@ -40,6 +40,7 @@ GMWItemSortFilterProxyModel::GMWItemSortFilterProxyModel(QObject *parent) :
     roleNames.insert(GMWItemModel::RoleType, "itemType");
     roleNames.insert(GMWItemModel::RoleEngineType, "itemEngineType");
     roleNames.insert(GMWItemModel::RoleParkingCP, "itemParkingCP");
+    roleNames.insert(FilterRoleHideCount, "hideCount");
 
 #if QT_VERSION < 0x050000
     setRoleNames(roleNames);
@@ -75,8 +76,9 @@ void GMWItemSortFilterProxyModel::modelDataChanged(const QModelIndex &firstIndex
 {
     Q_UNUSED(firstIndex)
     Q_UNUSED(lastIndex)
+    qDebug() << "sorting list";
     sort(0);
-    updateThinningFilter();
+    emit layoutChanged();
 }
 
 void GMWItemSortFilterProxyModel::updateThinningFilter()
@@ -104,6 +106,7 @@ void GMWItemSortFilterProxyModel::updateThinningFilter()
 //    qDebug() << "filtering for" << degrees << "°";
 
     m_visibleItems.clear();
+    m_hideCount.clear();
     for (int i = 0; i < sourceModel()->rowCount() -1 ; ++i) {
         GMWItem *newItem = m_sourceModel->item(i);
 
@@ -115,10 +118,14 @@ void GMWItemSortFilterProxyModel::updateThinningFilter()
             }
         }
         bool intersects = false;
-        if(!alwaysShown && m_zoomLevel < 17) {
+        if(!alwaysShown && m_zoomLevel < 18) {
             foreach(GMWItem *tmp, m_visibleItems.keys()) {
                 if(tmp->objectType() == newItem->objectType() && m_visibleItems.value(tmp).contains(newItem->location())) {
                     intersects = true;
+                    if (tmp->name() == "UL-KT3602") {
+                        qDebug() << "increasing hideCount for item" << tmp->name() << "to" <<m_hideCount.value(tmp) + 1;
+                    }
+                    ++m_hideCount[tmp];
                     break;
                 }
             }
@@ -129,13 +136,27 @@ void GMWItemSortFilterProxyModel::updateThinningFilter()
     }
 //    qDebug() << "filtering finished";
 
-    invalidateFilter();
+    beginResetModel();
+    endResetModel();
+//    invalidateFilter();
 //    qDebug() << "map contains" << m_visibleItems.count() << "items now";
 }
 
 GMWItemModel *GMWItemSortFilterProxyModel::itemModel()
 {
     return qobject_cast<GMWItemModel*>(sourceModel());
+}
+
+QVariant GMWItemSortFilterProxyModel::data(const QModelIndex &index, int role) const
+{
+    if (role == FilterRoleHideCount) {
+        GMWItem *item = m_sourceModel->item(mapToSource(index).row());
+        if (item->name() == "UL-KT3619") {
+            qDebug() << "asked for hide count" << item->name() << m_hideCount.value(item);
+        }
+        return m_hideCount.value(m_sourceModel->item(mapToSource(index).row()));
+    }
+    return sourceModel()->data(mapToSource(index), role);
 }
 
 bool GMWItemSortFilterProxyModel::onlyBooked()
@@ -170,8 +191,14 @@ bool GMWItemSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIn
         }
     }
 
-    if (m_thinning && !m_visibleItems.keys().contains(object)) {
-        return false;
+    if (object->objectType() == GMWItem::TypeVehicle && qobject_cast<GMWVehicle*>(object)->booking()->isValid()) {
+        return true;
+    }
+
+    if (m_thinning) {
+        if (!m_visibleItems.keys().contains(object)) {
+            return false;
+        }
     }
     return m_gmwObjectTypes.testFlag(object->objectType());
 }

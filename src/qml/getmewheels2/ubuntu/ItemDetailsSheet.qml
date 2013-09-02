@@ -197,22 +197,24 @@ Popover {
                 text: gmwItem.booking.valid && !gmwItem.booking.expired ? qsTr("Cancel") : qsTr("Book")
                 onClicked: {
                     if(gmwEngine.defaultAccountName.length === 0) {
-                        createBookingDialog.state = "error"
-                        createBookingDialog.open();
+                        PopupUtils.open(createBookingDialog, itemDetailsSheet, {state: "error" })
                         return;
                     }
 
                     if(gmwItem.booking.valid && !gmwItem.booking.expired) {
-                        createBookingDialog.state = "cancel"
-                        createBookingDialog.gmwItem = gmwItem;
-                        createBookingDialog.open();
+                        PopupUtils.open(createBookingDialog, itemDetailsSheet, {state: "cancel", gmwItem: gmwItem })
                     } else {
-                        createBookingDialog.state = "book"
-                        createBookingDialog.gmwItem = gmwItem;
-                        createBookingDialog.open();
+                        PopupUtils.open(createBookingDialog, itemDetailsSheet, {state: "book", gmwItem: gmwItem })
+                    }
+                }
+
+                Component {
+                    id: createBookingDialog
+                    CreateBookingDialog {
                     }
                 }
             }
+
 
             Row {
                 spacing: 10

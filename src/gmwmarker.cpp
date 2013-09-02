@@ -124,7 +124,7 @@ void GMWMarker::calculatePixmap()
         setZValue(0);
     }
 
-    if(d->m_count > 0 && !booked) {
+    if(d->m_count > 1 && !booked) {
         QImage image = pixmap().toImage();
         QPainter painter(&image);
 

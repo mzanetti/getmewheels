@@ -52,9 +52,7 @@ AutoGenerateAegisFile
 	-->
 
 		<!-- Read Location information. -->
-	<!--
 		<credential name="Location" />
-	-->
 
 		<!-- Access to Audio, Multimedia and Camera. -->
 	<!--
