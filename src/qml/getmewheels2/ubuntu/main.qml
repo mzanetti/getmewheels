@@ -61,13 +61,6 @@ MainView {
         engine: gmwEngine
     }
 
-    PositionSource {
-        id: positionSource
-        updateInterval: 1000
-        active: true
-    }
-
-
 
 //    Dialog {
 //        id: aboutDialog

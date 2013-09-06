@@ -19,8 +19,8 @@ Page {
         map.routeTo(item);
     }
 
-    tools: ToolbarActions {
-        Action {
+    tools: ToolbarItems {
+        ToolbarButton {
             iconSource: "/usr/share/icons/ubuntu-mobile/actions/scalable/settings.svg"
             text: "Settings"
             onTriggered: {

@@ -881,6 +881,7 @@ bool Car2goEngine::waitForResponse()
 {
     m_timeout = true;
     QTimer::singleShot(10000, &m_loop, SLOT(quit()));
+    qDebug() << "looping" << m_loop.isRunning();
     m_loop.exec();
     return !m_timeout;
 }
