@@ -166,6 +166,7 @@ bool GMWItemSortFilterProxyModel::onlyBooked()
 
 void GMWItemSortFilterProxyModel::setOnlyBooked(bool onlyBooked)
 {
+    qDebug() << "switching to onlybooked" << onlyBooked;
     m_onlyBooked = onlyBooked;
     invalidateFilter();
     sort(0);

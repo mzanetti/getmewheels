@@ -19,15 +19,7 @@ Page {
         map.routeTo(item);
     }
 
-    tools: ToolbarItems {
-        ToolbarButton {
-            iconSource: "/usr/share/icons/ubuntu-mobile/actions/scalable/settings.svg"
-            text: "Settings"
-            onTriggered: {
-                PopupUtils.open(Qt.resolvedUrl("SettingsSheet.qml"), mainPage);
-            }
-        }
-    }
+    tools: mainToolbar
 
     //    ToolBarLayout {
     //        id: commonTools
@@ -104,33 +96,6 @@ Page {
     //        }
     //    }
 
-    PositionSource {
-        id: positionSource
-        updateInterval: 10000
-        active: true
-        property bool gotPosition: false
-        onPositionChanged: {
-            gotPosition = true
-            print("Bug tvoss as long as this show up more often than every 10 seconds.")
-        }
-    }
-
-    // Workaround for positionSource updateInterval not working yet
-    Timer {
-        interval: 10000
-        running: positionSource.active && positionSource.gotPosition
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: {
-            var coord = positionSource.position.coordinate;
-            gmwModel.currentPositionChanged(coord)
-            console.log("updating position:", coord.longitude, coord.latitude);
-            if (map.tracking) {
-                map.center = coord;
-            }
-        }
-    }
-
     Map {
         id: map
         anchors.fill: parent
@@ -151,9 +116,9 @@ Page {
             id: mapModel
             model: gmwModel
             thinningEnabled: true
-            //onlyBooked: true
-
+            onlyBooked: showOnlyBookedCars
         }
+
         Binding {
             target: mapModel
             property: "zoomLevel"
@@ -207,11 +172,11 @@ Page {
                         visible: itemType == GmwItem.TypeVehicle && gmwitem.booking.valid
                         anchors {
                             top: parent.top
-                            left: parent.left
+                            right: parent.right
                             margins: -units.gu(.5)
                         }
 
-                        color: itemType == GmwItem.TypeVehicle ? (gmwitem.booking.exired ? "red" : (gmwitem.booking.timeLeft > 10 ? "#9bd500" : "yellow")) : "transparent"
+                        color: itemType == GmwItem.TypeVehicle ? (gmwitem.booking.exired ? "red" : (gmwitem.booking.timeLeft > 900 ? "#9bd500" : "orange")) : "transparent"
                     }
                     MouseArea {
                         anchors.fill: parent
@@ -267,89 +232,6 @@ Page {
 
     }
 
-    //    ItemDetailsSheet {
-    //        id: detailsSheet
-
-    //        onGoTo: {
-    //            map.routeTo(item);
-    //        }
-    //    }
-
-    //    PinchArea {
-    //        id: pincharea
-
-    //        property double __oldZoom
-
-    //        anchors.fill: parent
-
-    //        function calcZoomDelta(zoom, percent) {
-    //            return Math.round(zoom + Math.log(percent)/Math.log(2))
-    //        }
-
-    //        onPinchStarted: {
-    //            print("pinch started")
-    //            __oldZoom = map.zoomLevel
-    //        }
-
-    //        onPinchUpdated: {
-    //            print("pinch updated")
-    //            var newZoomLevel = calcZoomDelta(__oldZoom, pinch.scale);
-    //            if(map.zoomLevel != newZoomLevel) {
-    //                map.zoomLevel = newZoomLevel;
-    //            }
-    //        }
-
-    //        onPinchFinished: {
-    //            print("pinch finished")
-    //            var newZoomLevel = calcZoomDelta(__oldZoom, pinch.scale);
-    //            if(map.zoomLevel != newZoomLevel) {
-    //                map.zoomLevel = newZoomLevel;
-    //            }
-    //        }
-    //    }
-
-    //    MouseArea {
-    //        id: mousearea
-
-    //        property bool __isPanning: false
-    //        property int __lastX: -1
-    //        property int __lastY: -1
-    //        property bool __panned: false
-
-    //        anchors.fill : parent
-
-    //        onPressed: {
-    //            map.tracking = false
-    //            __isPanning = true
-    //            __lastX = mouse.x
-    //            __lastY = mouse.y
-    //            __panned = false
-    //        }
-
-    //        onReleased: {
-    //            __isPanning = false
-    //            if(!__panned) {
-    //                map.clicked(mouseX, mouseY)
-    //            }
-    //        }
-
-    //        onPositionChanged: {
-    //            if (__isPanning) {
-    //                var dx = mouse.x - __lastX
-    //                var dy = mouse.y - __lastY
-    //                if(Math.abs(dx) > 5 || Math.abs(dy) > 5) {
-    //                    __panned = true
-    //                    map.pan(-dx, -dy)
-    //                    __lastX = mouse.x
-    //                    __lastY = mouse.y
-    //                }
-    //            }
-    //        }
-
-    //        onCanceled: {
-    //            __isPanning = false;
-    //        }
-    //    }
 
     Row {
         anchors {
@@ -393,11 +275,4 @@ Page {
             }
         }
     }
-
-    //    InfoBanner {
-    //        id: infoBanner
-    //        timerShowTime: 5000
-    //    }
-
-
 }

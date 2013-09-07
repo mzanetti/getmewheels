@@ -12,8 +12,11 @@ Page {
     property alias model: proxyModel.model
     property alias onlyBooked: proxyModel.onlyBooked
 
+    tools: mainToolbar
+
     GmwProxyModel {
         id: proxyModel
+        onlyBooked: itemList.onlyBooked
     }
 
 
@@ -42,8 +45,7 @@ Page {
             }
 
             onClicked: {
-                var component = Qt.createComponent("ItemDetailsSheet.qml")
-                PopupUtils.open(component, itemList, { model: [gmwitem] });
+                PopupUtils.open(Qt.resolvedUrl("ItemDetailsSheet.qml"), listItem, { gmwItem: gmwitem });
             }
 
             function dialogAccepted() {

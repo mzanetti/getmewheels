@@ -11,7 +11,33 @@ MainView {
     backgroundColor: "#0365bf"
     footerColor: "#06bce4"
 
-     //
+    property bool showOnlyBookedCars: false
+
+    ToolbarItems {
+        id: mainToolbar
+        ToolbarButton {
+            iconSource: "/usr/share/icons/ubuntu-mobile/actions/scalable/reload.svg"
+            text: qsTr("Roload")
+            onTriggered: {
+                gmwModel.clearVehicles();
+                gmwEngine.refreshVehicles(false);
+            }
+        }
+        ToolbarButton {
+            iconSource: "/usr/share/icons/ubuntu-mobile/actions/scalable/favorite-" + (showOnlyBookedCars ? "" : "un") + "selected.svg"
+            text: showOnlyBookedCars ? qsTr("All") : qsTr("Booked")
+            onTriggered: {
+                showOnlyBookedCars = !showOnlyBookedCars
+            }
+        }
+        ToolbarButton {
+            iconSource: "/usr/share/icons/ubuntu-mobile/actions/scalable/settings.svg"
+            text: "Settings"
+            onTriggered: {
+                PopupUtils.open(Qt.resolvedUrl("SettingsSheet.qml"), appWindow);
+            }
+        }
+    }
 
 /*    tools: ToolbarActions {
         Action {
@@ -31,8 +57,11 @@ MainView {
     }
 */
 
+
     Tabs {
         anchors.fill: parent
+
+
 
         Tab {
             title: "Map"
@@ -44,7 +73,7 @@ MainView {
             title: "List"
             page: ItemList {
                 model: gmwModel
-                onlyBooked: false
+                onlyBooked: showOnlyBookedCars
             }
         }
     }
@@ -59,6 +88,33 @@ MainView {
         id: gmwModel
 
         engine: gmwEngine
+    }
+
+    PositionSource {
+        id: positionSource
+        updateInterval: 10000
+        active: true
+        property bool gotPosition: false
+        onPositionChanged: {
+            gotPosition = true
+            print("Bug tvoss as long as this show up more often than every 10 seconds.")
+        }
+    }
+
+    // Workaround for positionSource updateInterval not working yet
+    Timer {
+        interval: 10000
+        running: positionSource.active && positionSource.gotPosition
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: {
+            var coord = positionSource.position.coordinate;
+            gmwModel.currentPositionChanged(coord)
+            console.log("updating position:", coord.longitude, coord.latitude);
+            if (map.tracking) {
+                map.center = coord;
+            }
+        }
     }
 
 
@@ -119,5 +175,6 @@ MainView {
 //            }
 //        }
 //    }
+
 
 }

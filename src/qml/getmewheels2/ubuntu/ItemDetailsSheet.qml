@@ -2,6 +2,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import GetMeWheels 1.0
 import Ubuntu.Components.Popups 0.1
+import Ubuntu.Components.Themes.Ambiance 0.1
 
 Popover {
     id: itemDetailsSheet
@@ -9,6 +10,12 @@ Popover {
     signal goTo(variant item)
 
     property variant gmwItem
+
+    foregroundStyle: PopoverForegroundStyle {
+        bubbleColor: "#221e1c"
+        bubbleOpacity: 0.9
+        arrowSource: "images/quicklist_tooltip.png"
+    }
 
     Connections {
         target: gmwEngine
@@ -23,7 +30,7 @@ Popover {
             right: parent.right
             margins: units.gu(1)
         }
-        height: contentColumn.height + units.gu(2)
+        height: contentColumn.height + units.gu(3)
 
         Column {
             id: contentColumn
@@ -39,22 +46,26 @@ Popover {
                 width: parent.width
                 height: nameLabel.height
                 spacing: units.gu(1)
-                Image {
-                    id: iconImage
-                    source: itemTypeToImageSource(gmwItem.itemType, gmwItem.engineType, gmwItem.chargingPole)
-                    anchors.verticalCenter: parent.verticalCenter
+                UbuntuShape {
+                    height: units.gu(3)
+                    width: units.gu(3)
+                    image: Image {
+                        id: iconImage
+                        source: itemTypeToImageSource(gmwItem.itemType, gmwItem.engineType, gmwItem.chargingPole)
+                        anchors.verticalCenter: parent.verticalCenter
 
-                    function itemTypeToImageSource(itemType, engineType, parkingCP) {
-                        switch(itemType) {
-                        case GmwItem.TypeGasStation:
-                            return "images/gas.png";
-                        case GmwItem.TypeVehicle:
-                            return engineType === GmwVehicle.EngineTypeED ? "images/car_green.png" : "images/car_blue.png";
-                        case GmwItem.TypeParkingSpot:
-                            return parkingCP ? "images/parking_cp.png" : "images/parking.png"
+                        function itemTypeToImageSource(itemType, engineType, parkingCP) {
+                            switch(itemType) {
+                            case GmwItem.TypeGasStation:
+                                return "images/gas.svg";
+                            case GmwItem.TypeVehicle:
+                                return engineType === GmwVehicle.EngineTypeED ? "images/car_green.svg" : "images/car_blue.svg";
+                            case GmwItem.TypeParkingSpot:
+                                return parkingCP ? "images/parking_green.svg" : "images/parking_blue.svg"
+                            }
                         }
-                    }
 
+                    }
                 }
                 Column {
                     width: parent.width - iconImage.width - parent.spacing
@@ -116,9 +127,13 @@ Popover {
                 Row {
                     id: fuelRow
                     spacing: 10
-                    Image {
-                        property string typeString: gmwItem.engineType === GmwVehicle.EngineTypeED ? "battery" : "fuel"
-                        source: gmwItem.fuelLevel > 25 ? "images/" + typeString + "_green.png" : gmwItem.fuelLevel > 15 ? "images/" + typeString + "_orange.png" : "images/" + typeString + "_red.png"
+                    UbuntuShape {
+                        height: units.gu(2)
+                        width: units.gu(2)
+                        image: Image {
+                            property string typeString: gmwItem.engineType === GmwVehicle.EngineTypeED ? "battery" : "fuel"
+                            source: "images/" + typeString + (gmwItem.fuelLevel > 35 ? "_green" : gmwItem.fuelLevel > 15 ? "_orange" : "_red") + ".svg"
+                        }
                     }
 
                     Label {
@@ -131,17 +146,13 @@ Popover {
                 function stateToIconSource(state) {
                     switch(state) {
                     case GmwVehicle.StateUnacceptable:
-                        return "image://theme/icon-m-messaging-smiley-cry";
                     case GmwVehicle.StateIssuesExist:
-                        return "image://theme/icon-m-messaging-smiley-sad";
+                        return "images/state_bad.svg";
                     case GmwVehicle.StateSatisfied:
-                        return "image://theme/icon-m-messaging-smiley-happy";
                     case GmwVehicle.StateGood:
-                        return "image://theme/icon-m-messaging-smiley-happy";
                     case GmwVehicle.StateExcellent:
-                        return "image://theme/icon-m-messaging-smiley-very-happy";
+                        return "images/state_good.svg";
                     }
-                    return "image://theme/icon-m-invitation-pending";
                 }
 
                 Label {
@@ -150,9 +161,17 @@ Popover {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                Image {
-                    id: stateImage
-                    source: vehicleGrid.stateToIconSource(gmwItem.interiorState)
+                UbuntuShape {
+                    height: units.gu(2)
+                    width: units.gu(2)
+                    color: "#0365bf"
+                    Image {
+                        anchors.centerIn: parent
+                        height: units.gu(2)
+                        width: units.gu(2)
+                        id: stateImage
+                        source: vehicleGrid.stateToIconSource(gmwItem.interiorState)
+                    }
                 }
                 Label {
                     text: qsTr("Exterior State:")
@@ -160,8 +179,16 @@ Popover {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                Image {
-                    source: vehicleGrid.stateToIconSource(gmwItem.exteriorState)
+                UbuntuShape {
+                    height: units.gu(2)
+                    width: units.gu(2)
+                    color: "#0365bf"
+                    Image {
+                        anchors.centerIn: parent
+                        height: units.gu(2)
+                        width: units.gu(2)
+                        source: vehicleGrid.stateToIconSource(gmwItem.exteriorState)
+                    }
                 }
             }
 
@@ -176,13 +203,13 @@ Popover {
                 width: parent.width
                 visible: gmwItem.itemType === GmwItem.TypeVehicle
                 spacing: 10
-                Image {
+                UbuntuShape {
                     id: availabilityIcon
                     visible: gmwItem.booking.valid
-                    width: 48
-                    height: 48
+                    width: units.gu(2)
+                    height: units.gu(2)
                     property int timeLeft: gmwItem.booking.timeLeft
-                    source: timeLeft > 900 ? "image://theme/icon-m-common-presence-online" : (timeLeft > 0 ?"image://theme/icon-m-common-presence-away" : "image://theme/icon-m-common-presence-busy")
+                    color: timeLeft > 900 ? "green" : (timeLeft > 0 ?"orange" : "red")
                 }
                 Label {
                     width: parent.width - availabilityIcon.width - 10
@@ -197,7 +224,9 @@ Popover {
                 text: gmwItem.booking.valid && !gmwItem.booking.expired ? qsTr("Cancel") : qsTr("Book")
                 onClicked: {
                     if(gmwEngine.defaultAccountName.length === 0) {
-                        PopupUtils.open(createBookingDialog, itemDetailsSheet, {state: "error" })
+                        var errorPopup = PopupUtils.open(createBookingDialog, itemDetailsSheet, {state: "error" })
+                        errorPopup.openSettings.connect(function() {PopupUtils.open(Qt.resolvedUrl("SettingsSheet.qml"), mainPage)})
+
                         return;
                     }
 
@@ -219,9 +248,12 @@ Popover {
             Row {
                 spacing: 10
                 visible: gmwItem.itemType === GmwItem.TypeParkingSpot
-                Image {
+                UbuntuShape {
+                    height: units.gu(2)
+                    width: units.gu(2)
+                    color:  gmwItem.capacityTotal - gmwItem.capacityUsed === 0 ? "red" : "green"
                     id: parkingFreeIcon
-                    source: gmwItem.capacityTotal - gmwItem.capacityUsed === 0 ? "image://theme/icon-m-common-presence-busy" : "image://theme/icon-m-common-presence-online"
+
                 }
 
                 Label {
