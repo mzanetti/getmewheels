@@ -30,10 +30,12 @@ class GMWItemSortFilterProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 
-    Q_PROPERTY(GMWItemModel *model READ itemModel WRITE setItemModel NOTIFY itemModelChanged())
-    Q_PROPERTY(bool onlyBooked READ onlyBooked WRITE setOnlyBooked)
-    Q_PROPERTY(bool thinningEnabled READ thinningEnabled WRITE setThinningEnabled)
+    Q_PROPERTY(GMWItemModel *model READ itemModel WRITE setItemModel NOTIFY itemModelChanged)
+    Q_PROPERTY(bool onlyBooked READ onlyBooked WRITE setOnlyBooked NOTIFY onlyBookedChanged)
+    Q_PROPERTY(bool thinningEnabled READ thinningEnabled WRITE setThinningEnabled NOTIFY sortingEnabledChanged)
+    Q_PROPERTY(bool sortingEnabled READ sortingEnabled WRITE setSortingEnabled NOTIFY sortingEnabledChanged)
     Q_PROPERTY(int zoomLevel READ zoomLevel WRITE setZoomLevel)
+    Q_PROPERTY(QGeoRectangle visibleRect READ visibleRect WRITE setVisibleRect NOTIFY visibleRectChanged)
 
 public:
     enum FilterRole {
@@ -57,16 +59,25 @@ public:
     bool thinningEnabled() const;
     void setThinningEnabled(bool thinningEnabled);
 
+    bool sortingEnabled() const;
+    void setSortingEnabled(bool sortingEnabled);
+
     int zoomLevel() const;
     void setZoomLevel(int zoomLevel);
+
+    QGeoRectangle visibleRect() const;
+    void setVisibleRect(const QGeoRectangle &rect);
 
 signals:
     void filterChanged(GMWItem::Types types);
     void itemModelChanged();
+    void thinningEnabledChanged();
+    void sortingEnabledChanged();
+    void visibleRectChanged();
+    void onlyBookedChanged();
 
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-//    bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
 
 private slots:
     void modelDataChanged(const QModelIndex &firstIndex, const QModelIndex &lastIndex);
@@ -84,7 +95,9 @@ private:
 #endif
 
     bool m_thinning;
+    bool m_sorting;
     int m_zoomLevel;
+    QGeoRectangle m_visibleRect;
     QHash<GMWItem *, QGeoRectangle> m_visibleItems;
     QHash<GMWItem *, int> m_hideCount;
 

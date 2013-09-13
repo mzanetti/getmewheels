@@ -26,11 +26,19 @@ Page {
             platformStyle: TabButtonStyle { }
             TabButton {
                 text: "All"
-                onClicked: proxyModel.onlyBooked = false;
+                onClicked: {
+                    proxyModel.onlyBooked = false;
+                    listView.model = undefined
+                    listView.model = proxyModel
+                }
             }
             TabButton {
                 text: "Booked"
-                onClicked: proxyModel.onlyBooked = true;
+                onClicked: {
+                    proxyModel.onlyBooked = true;
+                    listView.model = undefined
+                    listView.model = proxyModel
+                }
             }
         }
 
@@ -41,6 +49,8 @@ Page {
         anchors {left: parent.left; top: header.bottom; right: parent.right; bottom: parent.bottom }
         model: proxyModel
         clip: true
+
+        onCountChanged: print("model count changed", count)
 
         delegate:   Item {
             id: listItem

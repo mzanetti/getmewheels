@@ -84,7 +84,11 @@ Car2goEngine::Car2goEngine() :
     m_oauthRequest = new KQOAuthRequest(this);
 #endif
 
+#if QT_VERSION < 0x050000
     QSettings settings("getmewheels", "getmewheels");
+#else
+    QSettings settings("com.ubuntu.developer.mzanetti.getmewheels2", "getmewheels2");
+#endif
     settings.beginGroup("car2go");
     if(settings.contains("OAuthAccessToken")) {
         m_account = GMWAccount(settings.value("OAuthAccountID").toInt(), settings.value("OAuthAccountDescription").toString());
@@ -283,7 +287,11 @@ void Car2goEngine::setAccount(const GMWAccount &account)
 {
     if(m_account != account) {
         m_account = account;
+#if QT_VERSION < 0x050000
         QSettings settings("getmewheels", "getmewheels");
+#else
+        QSettings settings("com.ubuntu.developer.mzanetti.getmewheels2", "getmewheels2");
+#endif
         settings.beginGroup("car2go");
         settings.setValue("OAuthAccountID", m_account.id());
         settings.setValue("OAuthAccountDescription", m_account.description());
@@ -412,7 +420,11 @@ void Car2goEngine::removeAuthentication()
     m_token.clear();
     m_tokenSecret.clear();
 
+#if QT_VERSION < 0x050000
     QSettings settings("getmewheels", "getmewheels");
+#else
+    QSettings settings("com.ubuntu.developer.mzanetti.getmewheels2", "getmewheels2");
+#endif
     settings.beginGroup("car2go");
     settings.setValue("OAuthAccessToken", m_token);
     settings.setValue("OAuthAccessTokenSecret", m_tokenSecret);
@@ -421,7 +433,11 @@ void Car2goEngine::removeAuthentication()
 
 QDateTime Car2goEngine::authExpirationDate()
 {
+#if QT_VERSION < 0x050000
     QSettings settings("getmewheels", "getmewheels");
+#else
+    QSettings settings("com.ubuntu.developer.mzanetti.getmewheels2", "getmewheels2");
+#endif
     settings.beginGroup("car2go");
     return settings.value("AuthExpirationDate").toDateTime();
 }
@@ -830,7 +846,11 @@ void Car2goEngine::accessTokenReceived(const QString &token, const QString &toke
         m_token = token;
         m_tokenSecret = tokenSecret;
 
+#if QT_VERSION < 0x050000
         QSettings settings("getmewheels", "getmewheels");
+#else
+        QSettings settings("com.ubuntu.developer.mzanetti.getmewheels2", "getmewheels2");
+#endif
         settings.beginGroup("car2go");
         settings.setValue("OAuthAccessToken", m_token);
         settings.setValue("OAuthAccessTokenSecret", m_tokenSecret);

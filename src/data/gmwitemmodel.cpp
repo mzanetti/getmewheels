@@ -95,6 +95,7 @@ void GMWItemModel::itemChanged()
 {
     for(int i = 0; i <  m_objects.count() - 1; ++i) {
         if(m_objects.at(i) == sender()) {
+            qDebug() << "emitting dataChanged 2";
             emit dataChanged(index(i, 0),index(i,0));
         }
     }
@@ -128,9 +129,14 @@ void GMWItemModel::clearVehicles() {
 void GMWItemModel::currentPositionChanged(const QGeoCoordinate &position, qreal direction)
 {
     foreach (GMWItem* obj, m_objects) {
-         obj->calculateDistance(position, direction);
+        obj->calculateDistance(position, direction);
     }
+    qDebug() << "emitting dataChanged 1";
+#if QT_VERSION < 0x050000
     emit dataChanged(index(0, 1), index(m_objects.size()-1, 2));
+#else
+    emit dataChanged(index(0, 1), index(m_objects.size()-1, 2), QVector<int>() << RoleDistance);
+#endif
 }
 
 int GMWItemModel::rowCount(const QModelIndex &parent) const

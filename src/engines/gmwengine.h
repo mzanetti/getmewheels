@@ -40,6 +40,7 @@ class GMWEngine : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString locationName READ locationName WRITE setLocationName NOTIFY locationChanged)
+    Q_PROPERTY(Location* location READ location NOTIFY locationChanged)
     Q_PROPERTY(QString defaultAccountName READ defaultAccountName WRITE setDefaultAccountName NOTIFY defaultAccountChanged)
     Q_PROPERTY(bool authenticated READ authenticated NOTIFY authenticatedChanged)
     Q_PROPERTY(QDateTime authExpirationDate READ authExpirationDate NOTIFY authenticatedChanged())

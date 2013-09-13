@@ -81,13 +81,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 #elif defined MEEGO
     viewer->setMainQmlFile(QLatin1String("/opt/getmewheels2/qml/harmattan/main.qml"));
 #else
-    QString prefix;
-    if(QCoreApplication::applicationDirPath() == QDir(("/usr/bin")).canonicalPath()) {
-        prefix = "/usr";
-    } else {
-        prefix = ".";
-    }
-    viewer->setSource(QUrl::fromLocalFile(prefix + "/share/getmewheels2/qml/ubuntu/main.qml"));
+    viewer->setSource(QUrl::fromLocalFile("./qml/ubuntu/main.qml"));
     viewer->resize(720, 1280);
 #endif
     viewer->showExpanded();

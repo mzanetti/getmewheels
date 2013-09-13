@@ -1,10 +1,16 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.Themes.Ambiance 0.1
 import Ubuntu.Components.Popups 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItems
 
 ComposerSheet {
     id: settingsSheet
+
+    Component.onCompleted: {
+        __foreground.__styleInstance.headerColor = "#0249b3"
+        __foreground.__styleInstance.backgroundColor = "#0365bf"
+    }
 
     function done() {
         /*        if(gmwEngine.defaultAccountName !== accountName) {
@@ -17,9 +23,9 @@ ComposerSheet {
         }
     }
 
-    onConfirmClicked: {
-        done();
-    }
+//    onConfirmClicked: {
+//        done();
+//    }
 
     ListModel {
         id: locationsModel
@@ -41,6 +47,7 @@ ComposerSheet {
                 text: qsTr("Location:")
                 values: gmwEngine.supportedLocationNames()
                 selectedIndex: values.indexOf(gmwEngine.locationName)
+
                 onSelectedIndexChanged: {
                     if (gmwEngine.locationName != values[selectedIndex]) {
                         gmwEngine.locationName = values[selectedIndex];

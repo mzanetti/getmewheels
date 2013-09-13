@@ -18,7 +18,7 @@
 
 #include "location.h"
 
-Location::Location()
+Location::Location(QObject *parent): QObject(parent)
 {
 }
 

@@ -26,7 +26,11 @@ QTM_USE_NAMESPACE
 Settings::Settings(QObject *parent) :
     QObject(parent)
 {
+#if QT_VERSION < 0x050000
     m_settings = new QSettings("getmewheels");
+#else
+    m_settings = new QSettings("com.ubuntu.developer.mzanetti.getmewheels2", "getmewheels2");
+#endif
 
 }
 

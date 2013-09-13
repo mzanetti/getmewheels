@@ -179,7 +179,7 @@ contains(QT_VERSION, ^5\\..\\..*) {
     LIBS += -L$$OUT_PWD/../3rdParty/kqoauth/lib/ -lgmw_kqoauth
 
     folder_01.source = qml/getmewheels2/ubuntu
-    folder_01.target = share/getmewheels2/qml
+    folder_01.target = qml
     DEPLOYMENTFOLDERS = folder_01
 
     linguist {

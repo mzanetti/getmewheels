@@ -102,7 +102,7 @@ Popover {
                 }
 
                 Label {
-                    text: gmwItem.distance === -1 ? qsTr("Waiting for GPS...") : gmwItem.distance
+                    text: gmwItem.distance
                 }
             }
 

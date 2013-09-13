@@ -36,8 +36,9 @@ class Location: public QObject
 
     Q_PROPERTY(int id READ id WRITE setId)
     Q_PROPERTY(QString name READ name WRITE setName)
+    Q_PROPERTY(QGeoRectangle area READ area CONSTANT)
 public:
-    Location();
+    Location(QObject *parent = 0);
 
     int id() const;
     void setId(int id);

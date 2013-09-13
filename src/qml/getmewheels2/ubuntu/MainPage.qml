@@ -6,9 +6,11 @@ import QtLocation 5.0
 
 Page {
     id: mainPage
-    property string name: "mapwindow"
     title: "Map"
-    //    property alias tracking: map.tracking
+
+    property string name: "mapwindow"
+    property alias positionCoordinate: positionMarker.coordinate
+    property alias tracking: map.tracking
 
     function zoomToCurrentPosition() {
         map.zoomLevel = 16;
@@ -102,10 +104,43 @@ Page {
 
         property bool tracking: false
 
-        // TODO: init with location from engine
-        center {
-            latitude: 48.468
-            longitude: 9.94117
+        onTrackingChanged: {
+            if (tracking && positionSource.valid) {
+                map.center = positionCoordinate
+            }
+        }
+
+        center: gmwEngine.location.area.center
+
+        Connections {
+            target: gmwEngine
+            onLocationChanged: {
+                map.zoomLevel = 13
+            }
+        }
+
+        Connections {
+            target: map.gesture
+            onPanFinished: {
+                map.tracking = false
+
+                // This is very unreliable for now as it doesn't get emitted when slowly dragging the map, only when flicking
+                mapModel.visibleRect = QtLocation.rectangle(map.toCoordinate(Qt.point(0, 0)), map.toCoordinate(Qt.point(map.width, map.height)))
+            }
+        }
+
+        // So lets use this as a workaround for now...
+        onCenterChanged: {
+            filterTimer.restart();
+        }
+        Timer {
+            id: filterTimer
+            repeat: false
+            interval: 200
+
+            onTriggered: {
+                mapModel.visibleRect = QtLocation.rectangle(map.toCoordinate(Qt.point(0, 0)), map.toCoordinate(Qt.point(map.width, map.height)))
+            }
         }
 
         plugin : Plugin {
@@ -190,16 +225,22 @@ Page {
         }
 
         MapQuickItem {
+            id: positionMarker
             sourceItem: Image {
                 width: units.gu(3)
                 height: units.gu(3)
                 source: "images/location_mark.png"
-
             }
             coordinate: positionSource.position.coordinate
             z: 3
             anchorPoint.x: width / 2
             anchorPoint.y: height / 2
+
+            onCoordinateChanged: {
+                if (map.tracking) {
+                    map.center = coordinate;
+                }
+            }
 
         }
 
@@ -245,6 +286,7 @@ Page {
             height: zoomSlider.height
             width: height
             color: "#44000000"
+            visible: positionSource.valid
             Image {
                 height: parent.height - units.gu(1)
                 width: height

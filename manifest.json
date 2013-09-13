@@ -1,0 +1,15 @@
+{
+    "description": "Car finder application for car2go.",
+    "framework": "ubuntu-sdk-13.10",
+    "architecture": "armhf",
+    "hooks": {
+        "getmewheels2": {
+            "apparmor": "getmewheels2.json",
+            "desktop": "getmewheels2_ubuntu.desktop"
+        }
+    },
+    "maintainer": "Michael Zanetti <michael.zanetti@canonical.com>",
+    "name": "com.ubuntu.developer.mzanetti.getmewheels2",
+    "title": "GetMeWheels",
+    "version": "1.3.0.2"
+}

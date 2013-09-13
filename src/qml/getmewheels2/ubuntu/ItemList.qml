@@ -17,6 +17,13 @@ Page {
     GmwProxyModel {
         id: proxyModel
         onlyBooked: itemList.onlyBooked
+        sortingEnabled: true
+
+        onOnlyBookedChanged: {
+            model = null
+            model = gmwModel
+            print("onlybooked changed",model.count)
+        }
     }
 
 

@@ -53,6 +53,17 @@ build() {
     exec_with_ssh PATH=/usr/lib/ccache:$PATH "cd $CODE_DIR/$BUILD_DIR && PATH=/usr/lib/ccache:$PATH make -j$NUM_JOBS"
 }
 
+create_click_package() {
+    exec_with_ssh mkdir -p $CODE_DIR/$BUILD_DIR/install
+    exec_with_ssh cp $CODE_DIR/$BUILD_DIR/src/getmewheels2 $CODE_DIR/$BUILD_DIR/install/
+    exec_with_ssh cp $CODE_DIR/src/getmewheels2_ubuntu.desktop $CODE_DIR/$BUILD_DIR/install/
+    exec_with_ssh cp -r $CODE_DIR/$BUILD_DIR/src/qml/ $CODE_DIR/$BUILD_DIR/install/
+    exec_with_ssh cp $CODE_DIR/getmewheels2_ubuntu.svg $CODE_DIR/$BUILD_DIR/install/getmewheels2.svg
+    exec_with_ssh cp $CODE_DIR/manifest.json $CODE_DIR/$BUILD_DIR/install/
+    exec_with_ssh cp $CODE_DIR/getmewheels2.json $CODE_DIR/$BUILD_DIR/install/
+    exec_with_ssh click build $CODE_DIR/$BUILD_DIR/install
+}
+
 run() {
     echo "runningcd cd $CODE_DIR/$BUILD_DIR/src && ./getmewheels2 --desktop_file_hint=/home/$USER/$CODE_DIR/src/getmewheels2_ubuntu.desktop"
     exec_with_ssh "cd $CODE_DIR/$BUILD_DIR/src && ./getmewheels2 --desktop_file_hint=/home/$USER/$CODE_DIR/src/getmewheels2_ubuntu.desktop"
@@ -66,6 +77,10 @@ echo "Transferring code.."
 sync_code
 echo "Building.."
 build
-echo "Running.."
-run
+create_click_package
+
+if [ "$1" != "-o" ]; then
+    echo "Running.."
+    run
+fi
 
