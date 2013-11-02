@@ -7,7 +7,7 @@ MOBILITY += location
 contains(QT_VERSION, ^5\\..\\..*) {
   QT += gui quick qml network location xml
 } else {
-  QT += declarative
+  QT += declarative network
 }
 
 
@@ -110,8 +110,12 @@ contains(MEEGO_EDITION,harmattan) {
 
 # Simulator specific stuff
 simulator: {
-    INCLUDEPATH += $$PWD/3rdParty/qoauth/include
+    INCLUDEPATH += $$PWD/../3rdParty/qoauth/include
     LIBS+= -lqoauth -lqjson -L$$PWD -lqca
+
+    qmldir.source = qml/getmewheels2/harmattan
+    qmldir.target = qml
+    DEPLOYMENTFOLDERS = qmldir
 }
 
 # Symbian specific stuff

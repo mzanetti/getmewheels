@@ -103,7 +103,29 @@ MainView {
             }
 
             wrapMode: Text.WordWrap
-            text: qsTr("Welcome to GetMeWheels. A car finder application for car2go. Please select a location for which you would like to browse available cars. In order to create bookings for cars, you need to sign in with your car2go account.")
+            text: qsTr("Welcome to GetMeWheels. A car finder application for car2go.")
+            horizontalAlignment: Text.AlignHCenter
+        }
+
+        Label {
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+
+            wrapMode: Text.WordWrap
+            text: qsTr("Please select a location for which you would like to browse available cars.")
+            horizontalAlignment: Text.AlignHCenter
+        }
+
+        Label {
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+
+            wrapMode: Text.WordWrap
+            text: qsTr("If you want to create bookings for cars, additionally you need to sign in with your car2go account.")
             horizontalAlignment: Text.AlignHCenter
         }
 
@@ -210,72 +232,6 @@ MainView {
 
             }
 
-/*            MouseArea {
-                anchors.fill: contentColumn
-                onClicked: PopupUtils.close(aboutDialog)
-            }
-
-        */
         }
     }
-
-//    Dialog {
-//        id: aboutDialog
-
-//        title: Item {
-//            height: 200
-//            width: parent.width
-//            Image {
-//                id: icon
-//                anchors.top: parent.top
-//                anchors.horizontalCenter: parent.horizontalCenter
-//                source: "/usr/share/icons/hicolor/80x80/apps/getmewheels280.png"
-//            }
-//            Text {
-//                anchors.top: icon.bottom
-//                anchors.horizontalCenter: parent.horizontalCenter
-//                anchors.topMargin: 20
-//                color: "white"
-//                font.pixelSize: 32
-//                text: "GetMeWheels 1.2"
-//            }
-
-//        }
-
-//        content:Item {
-//            id: name
-//            height: 200
-//            width: parent.width
-//            Label {
-//                id: text
-//                font.pixelSize: 22
-//                anchors.centerIn: parent
-//                color: "white"
-//                text: "Copyright\n Michael Zanetti\n  michael_zanetti@gmx.net\n Christian Fetzer\n  fetzerch@googlemail.com"
-//            }
-//        }
-
-//        buttons {
-//            Button {
-//                id: closeButton
-//                text: "close"; onClicked: aboutDialog.close()
-//            }
-//            Button {
-//                id: donateButton
-//                anchors.top: closeButton.bottom
-//                anchors.topMargin: 10
-//                text: "donate";
-
-//                onClicked: Qt.openUrlExternally("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UPA7TFA73GKFY")
-//            }
-//            Button {
-//                anchors.top: donateButton.bottom
-//                anchors.topMargin: 10
-//                text: "flattr";
-//                onClicked: Qt.openUrlExternally("https://flattr.com/thing/465960/GetMeWheels")
-//            }
-//        }
-//    }
-
-
 }

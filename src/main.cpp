@@ -80,6 +80,8 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     viewer->setMainQmlFile(QLatin1String("qml/symbian/main.qml"));
 #elif defined MEEGO
     viewer->setMainQmlFile(QLatin1String("/opt/getmewheels2/qml/harmattan/main.qml"));
+#elif defined QT_SIMULATOR
+    viewer->setSource(QUrl::fromLocalFile("./qml/harmattan/main.qml"));
 #else
     viewer->setSource(QUrl::fromLocalFile("./qml/ubuntu/main.qml"));
     viewer->resize(720, 1280);

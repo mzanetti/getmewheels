@@ -18,12 +18,15 @@ Page {
         id: proxyModel
         onlyBooked: itemList.onlyBooked
         sortingEnabled: true
+        sortRoleName: positionSource.gotPosition ? "itemDistance" : "itemAddress"
 
         onOnlyBookedChanged: {
             model = null
             model = gmwModel
             print("onlybooked changed",model.count)
         }
+
+        Component.onCompleted: print("############", proxyModel, sortRoleName, positionSource.gotPosition)
     }
 
 

@@ -34,6 +34,7 @@ class GMWItemSortFilterProxyModel : public QSortFilterProxyModel
     Q_PROPERTY(bool onlyBooked READ onlyBooked WRITE setOnlyBooked NOTIFY onlyBookedChanged)
     Q_PROPERTY(bool thinningEnabled READ thinningEnabled WRITE setThinningEnabled NOTIFY sortingEnabledChanged)
     Q_PROPERTY(bool sortingEnabled READ sortingEnabled WRITE setSortingEnabled NOTIFY sortingEnabledChanged)
+    Q_PROPERTY(QString sortRoleName READ sortRoleName WRITE setSortRoleName NOTIFY sortRoleNameChanged)
     Q_PROPERTY(int zoomLevel READ zoomLevel WRITE setZoomLevel)
     Q_PROPERTY(QGeoRectangle visibleRect READ visibleRect WRITE setVisibleRect NOTIFY visibleRectChanged)
 
@@ -68,6 +69,9 @@ public:
     QGeoRectangle visibleRect() const;
     void setVisibleRect(const QGeoRectangle &rect);
 
+    QString sortRoleName() const;
+    void setSortRoleName(const QString &sortRoleName);
+
 signals:
     void filterChanged(GMWItem::Types types);
     void itemModelChanged();
@@ -75,6 +79,7 @@ signals:
     void sortingEnabledChanged();
     void visibleRectChanged();
     void onlyBookedChanged();
+    void sortRoleNameChanged();
 
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;

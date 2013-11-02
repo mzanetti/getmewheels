@@ -40,33 +40,32 @@ ComposerSheet {
             id: contentColumn
             anchors.left: parent.left
             anchors.right: parent.right
-            spacing: 10
+            spacing: units.gu(1)
 
-            ListItems.ValueSelector {
+            OptionSelector {
                 width: parent.width
                 text: qsTr("Location:")
-                values: gmwEngine.supportedLocationNames()
-                selectedIndex: values.indexOf(gmwEngine.locationName)
+                model: gmwEngine.supportedLocationNames()
+                selectedIndex: model.indexOf(gmwEngine.locationName)
+                showDivider: false
 
                 onSelectedIndexChanged: {
-                    if (gmwEngine.locationName != values[selectedIndex]) {
-                        gmwEngine.locationName = values[selectedIndex];
+                    if (gmwEngine.locationName != model[selectedIndex]) {
+                        gmwEngine.locationName = model[selectedIndex];
                         accountSelectionButton.values = gmwEngine.accountNames(gmwEngine.locationName);
                     }
                 }
             }
 
-            Label {
-                width: parent.width
-                text: qsTr("To be able to create bookings for cars you need to authorize GetMeWheels and select the account which will be charged for the ride.")
-                wrapMode: Text.WordWrap
+            SectionHeader {
+                headerText: qsTr("Login (Optional)")
             }
 
             Label {
                 width: parent.width
-                text: qsTr("Authorization expiry:") + " " + Qt.formatDate(gmwEngine.authExpirationDate)
+                text: gmwEngine.authenticated ? qsTr("Authorization expiry:") + " " + Qt.formatDate(gmwEngine.authExpirationDate)
+                                              : qsTr("GetMeWheels is not authorized to create bookings for cars.")
                 wrapMode: Text.WordWrap
-                visible: gmwEngine.authenticated
             }
 
             Button {
@@ -87,21 +86,22 @@ ComposerSheet {
             }
 
 
-            ListItems.ValueSelector {
+            OptionSelector {
                 id: accountSelectionButton
                 text: qsTr("Account")
                 width: parent.width
                 enabled: gmwEngine.authenticated
-                values: enabled ? gmwEngine.accountNames(gmwEngine.locationName) : []
-                selectedIndex: values.indexOf(gmwEngine.defaultAccountName)
+                model: enabled ? gmwEngine.accountNames(gmwEngine.locationName) : []
+                selectedIndex: model.indexOf(gmwEngine.defaultAccountName)
+                visible: model.count > 1
 
                 onSelectedIndexChanged: {
-                    if (gmwEngine.defaultAccountName != values[selectedIndex]) {
-                        gmwEngine.defaultAccountName = values[selectedIndex]
+                    if (gmwEngine.defaultAccountName != model[selectedIndex]) {
+                        gmwEngine.defaultAccountName = model[selectedIndex]
                     }
                 }
-                onValuesChanged: {
-                    if (values.length == 1) {
+                onModelChanged: {
+                    if (model.length == 1) {
                         selectedIndex = 0;
                     }
                 }

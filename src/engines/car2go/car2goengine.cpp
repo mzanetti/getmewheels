@@ -46,7 +46,7 @@
 
 const QByteArray Car2goEngine::Car2GoRequestTokenURL = "https://www.car2go.com/api/reqtoken";
 const QByteArray Car2goEngine::Car2GoAccessTokenURL  = "https://www.car2go.com/api/accesstoken";
-const QByteArray Car2goEngine::Car2GoAuthorizeURL    = "https://www.car2go.com/api/authorize";
+const QByteArray Car2goEngine::Car2GoAuthorizeURL    = "https://m.car2go.com/api/authorize";
 
 const QByteArray Car2goEngine::ConsumerKey    = "GetMeWheels";
 const QByteArray Car2goEngine::ConsumerSecret = "qleDqQghx5lPelzT";
@@ -91,7 +91,9 @@ Car2goEngine::Car2goEngine() :
 #endif
     settings.beginGroup("car2go");
     if(settings.contains("OAuthAccessToken")) {
+#ifndef QT_SIMULATOR
         m_account = GMWAccount(settings.value("OAuthAccountID").toInt(), settings.value("OAuthAccountDescription").toString());
+#endif
         m_token = settings.value("OAuthAccessToken").toByteArray();
         m_tokenSecret = settings.value("OAuthAccessTokenSecret").toByteArray();
 

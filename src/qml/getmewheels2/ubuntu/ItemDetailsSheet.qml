@@ -28,9 +28,9 @@ Popover {
         anchors {
             left: parent.left
             right: parent.right
-            margins: units.gu(1)
+            margins: units.gu(2)
         }
-        height: contentColumn.height + units.gu(3)
+        height: contentColumn.height + units.gu(5)
 
         Column {
             id: contentColumn
@@ -44,11 +44,12 @@ Popover {
 
             Row {
                 width: parent.width
-                height: nameLabel.height
+                height: iconShape.height
                 spacing: units.gu(1)
                 UbuntuShape {
-                    height: units.gu(3)
-                    width: units.gu(3)
+                    id: iconShape
+                    height: units.gu(4)
+                    width: units.gu(4)
                     image: Image {
                         id: iconImage
                         source: itemTypeToImageSource(gmwItem.itemType, gmwItem.engineType, gmwItem.chargingPole)
@@ -75,7 +76,7 @@ Popover {
                         id: nameLabel
                         width: parent.width
                         text: gmwItem.name
-                        font.pixelSize: 40
+                        fontSize: "large"
                         wrapMode: Text.WordWrap
                     }
                     Label {
@@ -114,34 +115,9 @@ Popover {
 
             Grid {
                 id: vehicleGrid
-                spacing: 10
+                spacing: units.gu(2)
                 visible: gmwItem.itemType === GmwItem.TypeVehicle
                 columns: 2
-
-                Label {
-                    height: fuelRow.height
-                    text: gmwItem.engineType === GmwVehicle.EngineTypeED ? qsTr("Battery level:") : qsTr("Fuel level:")
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                Row {
-                    id: fuelRow
-                    spacing: 10
-                    UbuntuShape {
-                        height: units.gu(2)
-                        width: units.gu(2)
-                        image: Image {
-                            property string typeString: gmwItem.engineType === GmwVehicle.EngineTypeED ? "battery" : "fuel"
-                            source: "images/" + typeString + (gmwItem.fuelLevel > 35 ? "_green" : gmwItem.fuelLevel > 15 ? "_orange" : "_red") + ".svg"
-                        }
-                    }
-
-                    Label {
-                        height: parent.height
-                        text: gmwItem.fuelLevel + " %"
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                }
 
                 function stateToIconSource(state) {
                     switch(state) {
@@ -156,40 +132,61 @@ Popover {
                 }
 
                 Label {
-                    text: qsTr("Interior State:")
-    //                            height: stateImage.height
+                    text: qsTr("Status Interior | Exterior:")
                     verticalAlignment: Text.AlignVCenter
                 }
-
-                UbuntuShape {
-                    height: units.gu(2)
-                    width: units.gu(2)
-                    color: "#0365bf"
-                    Image {
-                        anchors.centerIn: parent
+                Row {
+                    spacing: units.gu(1)
+                    UbuntuShape {
                         height: units.gu(2)
                         width: units.gu(2)
-                        id: stateImage
-                        source: vehicleGrid.stateToIconSource(gmwItem.interiorState)
+                        color: "#0365bf"
+                        Image {
+                            anchors.centerIn: parent
+                            height: units.gu(2)
+                            width: units.gu(2)
+                            id: stateImage
+                            source: vehicleGrid.stateToIconSource(gmwItem.interiorState)
+                        }
+                    }
+                    Label {
+                        text: "|"
+                    }
+                    UbuntuShape {
+                        height: units.gu(2)
+                        width: units.gu(2)
+                        color: "#0365bf"
+                        Image {
+                            anchors.centerIn: parent
+                            height: units.gu(2)
+                            width: units.gu(2)
+                            source: vehicleGrid.stateToIconSource(gmwItem.exteriorState)
+                        }
                     }
                 }
                 Label {
-                    text: qsTr("Exterior State:")
-    //                            height: stateImage.height
+                    height: units.gu(2)
+                    text: gmwItem.engineType === GmwVehicle.EngineTypeED ? qsTr("Battery:") : qsTr("Fuel:")
                     verticalAlignment: Text.AlignVCenter
                 }
-
-                UbuntuShape {
-                    height: units.gu(2)
-                    width: units.gu(2)
-                    color: "#0365bf"
-                    Image {
-                        anchors.centerIn: parent
+                Row {
+                    spacing: units.gu(1)
+                    UbuntuShape {
                         height: units.gu(2)
                         width: units.gu(2)
-                        source: vehicleGrid.stateToIconSource(gmwItem.exteriorState)
+                        image: Image {
+                            property string typeString: gmwItem.engineType === GmwVehicle.EngineTypeED ? "battery" : "fuel"
+                            source: "images/" + typeString + (gmwItem.fuelLevel > 35 ? "_green" : gmwItem.fuelLevel > 15 ? "_orange" : "_red") + ".svg"
+                        }
+                    }
+
+                    Label {
+                        height: units.gu(2)
+                        text: gmwItem.fuelLevel + " %"
+                        verticalAlignment: Text.AlignVCenter
                     }
                 }
+
             }
 
             SectionHeader {
@@ -264,94 +261,94 @@ Popover {
         }
     }
 
-//    Dialog {
-//        id: createBookingDialog
-//        width: parent.width
-//        property QtObject gmwItem
+    //    Dialog {
+    //        id: createBookingDialog
+    //        width: parent.width
+    //        property QtObject gmwItem
 
-//        states: [
-//            State {
-//                name: "book"
-//                PropertyChanges { target: createBookingHeaderLabel; text: qsTr("Create booking?") }
-//                PropertyChanges { target: createBookingTextLabel; text: qsTr("The booking will be valid for 30 minutes from now.")}
-//            },
-//            State {
-//                name: "cancel"
-//                PropertyChanges { target: createBookingHeaderLabel; text: qsTr("Cancel booking") }
-//                PropertyChanges { target: createBookingTextLabel; text: qsTr("Are you sure?")}
-//            },
-//            State {
-//                name: "error"
-//                PropertyChanges { target: createBookingHeaderLabel; text: qsTr("Not authorized") }
-//                PropertyChanges { target: createBookingTextLabel; text: qsTr("To be able to create bookings for cars you need to authorize GetMeWheels and select the account which will be charged for the ride.") + "\n\n" + qsTr("Open settings now?")}
-//            }
-//        ]
-//        title: Column {
-//            width: parent.width
-//            Label {
-//                id: createBookingHeaderLabel
-//                width: parent.width
-//                font.pixelSize: 40
-//                color: "white"
-//            }
-//        }
+    //        states: [
+    //            State {
+    //                name: "book"
+    //                PropertyChanges { target: createBookingHeaderLabel; text: qsTr("Create booking?") }
+    //                PropertyChanges { target: createBookingTextLabel; text: qsTr("The booking will be valid for 30 minutes from now.")}
+    //            },
+    //            State {
+    //                name: "cancel"
+    //                PropertyChanges { target: createBookingHeaderLabel; text: qsTr("Cancel booking") }
+    //                PropertyChanges { target: createBookingTextLabel; text: qsTr("Are you sure?")}
+    //            },
+    //            State {
+    //                name: "error"
+    //                PropertyChanges { target: createBookingHeaderLabel; text: qsTr("Not authorized") }
+    //                PropertyChanges { target: createBookingTextLabel; text: qsTr("To be able to create bookings for cars you need to authorize GetMeWheels and select the account which will be charged for the ride.") + "\n\n" + qsTr("Open settings now?")}
+    //            }
+    //        ]
+    //        title: Column {
+    //            width: parent.width
+    //            Label {
+    //                id: createBookingHeaderLabel
+    //                width: parent.width
+    //                font.pixelSize: 40
+    //                color: "white"
+    //            }
+    //        }
 
-//        Column {
-//            width: parent.width
-//            Label {
-//                id: createBookingTextLabel
-//                width: parent.width
-//                wrapMode: Text.WordWrap
-//                color: "white"
-//            }
-//            Item {
-//                width: parent.width
-//                height: 50
-//            }
-//        }
+    //        Column {
+    //            width: parent.width
+    //            Label {
+    //                id: createBookingTextLabel
+    //                width: parent.width
+    //                wrapMode: Text.WordWrap
+    //                color: "white"
+    //            }
+    //            Item {
+    //                width: parent.width
+    //                height: 50
+    //            }
+    //        }
 
-//        buttons {
-//            Row {
-//                width: parent.width
-//                Button {
-//                    id: yesButton
-//                    text: qsTr("Yes")
-//                    onClicked: {
-//                        if(createBookingDialog.state == "book") {
-//                            if(gmwEngine.createBooking(createBookingDialog.gmwItem)) {
-//                                infoBanner.text = qsTr("Car booked successfully");
-//                                infoBanner.show();
-//                            } else {
-//                                infoBanner.text = qsTr("Failed to create booking: %1").arg(gmwEngine.error());
-//                                infoBanner.show();
-//                            }
-//                        } else if(createBookingDialog.state == "cancel") {
-//                            if(gmwEngine.cancelBooking(createBookingDialog.gmwItem)) {
-//                                infoBanner.text = qsTr("Booking cancelled successfully");
-//                                infoBanner.show();
-//                            } else {
-//                                infoBanner.text = qsTr("Failed to cancel booking: %1").arg(gmwEngine.error());
-//                                infoBanner.show();
-//                            }
-//                        } else if(createBookingDialog.state == "error") {
-//                            var component = Qt.createComponent("SettingsSheet.qml")
-//                            if (component.status == Component.Ready) {
-//                                var sheet = component.createObject(itemDetailsSheet);
-//                                sheet.open();
-//                            } else {
-//                                console.log("Error loading component:", component.errorString());
-//                            }
-//                        }
-//                        createBookingDialog.close();
-//                    }
-//                }
-//                Button {
-//                    id: noButton
-//                    text: qsTr("No")
-//                    onClicked: createBookingDialog.close();
-//                }
-//            }
-//        }
-//    }
+    //        buttons {
+    //            Row {
+    //                width: parent.width
+    //                Button {
+    //                    id: yesButton
+    //                    text: qsTr("Yes")
+    //                    onClicked: {
+    //                        if(createBookingDialog.state == "book") {
+    //                            if(gmwEngine.createBooking(createBookingDialog.gmwItem)) {
+    //                                infoBanner.text = qsTr("Car booked successfully");
+    //                                infoBanner.show();
+    //                            } else {
+    //                                infoBanner.text = qsTr("Failed to create booking: %1").arg(gmwEngine.error());
+    //                                infoBanner.show();
+    //                            }
+    //                        } else if(createBookingDialog.state == "cancel") {
+    //                            if(gmwEngine.cancelBooking(createBookingDialog.gmwItem)) {
+    //                                infoBanner.text = qsTr("Booking cancelled successfully");
+    //                                infoBanner.show();
+    //                            } else {
+    //                                infoBanner.text = qsTr("Failed to cancel booking: %1").arg(gmwEngine.error());
+    //                                infoBanner.show();
+    //                            }
+    //                        } else if(createBookingDialog.state == "error") {
+    //                            var component = Qt.createComponent("SettingsSheet.qml")
+    //                            if (component.status == Component.Ready) {
+    //                                var sheet = component.createObject(itemDetailsSheet);
+    //                                sheet.open();
+    //                            } else {
+    //                                console.log("Error loading component:", component.errorString());
+    //                            }
+    //                        }
+    //                        createBookingDialog.close();
+    //                    }
+    //                }
+    //                Button {
+    //                    id: noButton
+    //                    text: qsTr("No")
+    //                    onClicked: createBookingDialog.close();
+    //                }
+    //            }
+    //        }
+    //    }
 
 }

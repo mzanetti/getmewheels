@@ -49,7 +49,7 @@ GMWItemSortFilterProxyModel::GMWItemSortFilterProxyModel(QObject *parent) :
     m_roleNames = roleNames;
 #endif
 
-    setSortRole(GMWItemModel::RoleDistance);
+    QSortFilterProxyModel::setSortRole(GMWItemModel::RoleDistance);
 }
 
 GMWItem::Types GMWItemSortFilterProxyModel::filterType() const
@@ -73,6 +73,7 @@ void GMWItemSortFilterProxyModel::setItemModel(GMWItemModel *model)
     connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), SLOT(modelDataChanged(QModelIndex, QModelIndex)));
     connect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(updateThinningFilter()));
     if (m_sorting) {
+        qDebug() << this << "sorting by" << roleNames()[sortRole()];
         sort(0);
     }
 }
@@ -235,8 +236,10 @@ void GMWItemSortFilterProxyModel::setSortingEnabled(bool sortingEnabled)
         emit sortingEnabledChanged();
 
         if (m_sorting) {
+            qDebug() << this << "sorting by" << sortRole();
             sort(0);
         } else {
+            qDebug() << this << "NOT sorting by" << sortRole();
             sort(-1);
         }
     }
@@ -276,4 +279,26 @@ void GMWItemSortFilterProxyModel::setVisibleRect(const QGeoRectangle &rect)
         qDebug() << "visible rect changed:" << m_visibleRect.topLeft() << m_visibleRect.bottomRight();
         updateThinningFilter();
     }
+}
+
+QString GMWItemSortFilterProxyModel::sortRoleName() const
+{
+#if QT_VERSION < 0x050000
+    return roleNames()[QSortFilterProxyModel::sortRole()];
+#else
+    return m_roleNames[QSortFilterProxyModel::sortRole()];
+#endif
+}
+
+void GMWItemSortFilterProxyModel::setSortRoleName(const QString &sortRoleName)
+{
+#if QT_VERSION < 0x050000
+    QSortFilterProxyModel::setSortRole(roleNames().key(sortRoleName.toLatin1(), GMWItemModel::RoleDistance));
+#else
+    QSortFilterProxyModel::setSortRole(m_roleNames.key(sortRoleName.toLatin1(), GMWItemModel::RoleDistance));
+#endif
+    invalidate();
+    qDebug() << this << "sorting by---:" << sortRoleName;
+    sort(0);
+    emit sortRoleNameChanged();
 }
