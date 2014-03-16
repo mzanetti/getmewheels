@@ -41,7 +41,7 @@ Page {
             text: itemAddress
             subText: itemDistanceString + " - " + itemName
 
-            icon: itemTypeToImageSource(itemType, itemEngineType, itemParkingCP);
+            iconSource: itemTypeToImageSource(itemType, itemEngineType, itemParkingCP);
 
             function itemTypeToImageSource(itemType, engineType, parkingCP) {
                 switch(itemType) {

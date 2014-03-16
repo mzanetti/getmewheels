@@ -2,6 +2,7 @@ import QtQuick 2.0
 import Ubuntu.Components.Popups 0.1
 import Ubuntu.Components 0.1
 import QtLocation 5.0
+import QtPositioning 5.2
 import GetMeWheels 1.0
 
 MainView {

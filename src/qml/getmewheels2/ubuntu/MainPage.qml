@@ -3,6 +3,7 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.Popups 0.1
 import GetMeWheels 1.0
 import QtLocation 5.0
+import QtPositioning 5.2
 
 Page {
     id: mainPage
@@ -125,7 +126,7 @@ Page {
                 map.tracking = false
 
                 // This is very unreliable for now as it doesn't get emitted when slowly dragging the map, only when flicking
-                mapModel.visibleRect = QtLocation.rectangle(map.toCoordinate(Qt.point(0, 0)), map.toCoordinate(Qt.point(map.width, map.height)))
+//                mapModel.visibleRect = QtPositioning.rectangle(map.toCoordinate(Qt.point(0, 0)), map.toCoordinate(Qt.point(map.width, map.height)))
             }
         }
 
@@ -139,7 +140,7 @@ Page {
             interval: 200
 
             onTriggered: {
-                mapModel.visibleRect = QtLocation.rectangle(map.toCoordinate(Qt.point(0, 0)), map.toCoordinate(Qt.point(map.width, map.height)))
+                mapModel.visibleRect = QtPositioning.rectangle(map.toCoordinate(Qt.point(0, 0)), map.toCoordinate(Qt.point(map.width, map.height)))
             }
         }
 
