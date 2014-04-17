@@ -3,6 +3,7 @@ import QtWebKit 3.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.Popups 0.1
 import Ubuntu.Components.ListItems 0.1
+import Ubuntu.Components.Extras.Browser 0.1
 
 DefaultSheet {
     id: root
@@ -20,7 +21,7 @@ DefaultSheet {
             webView.visible = true;
         }
     }
-    WebView {
+    UbuntuWebView {
         id: webView
         anchors.fill: parent
         visible: false
